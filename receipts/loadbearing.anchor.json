@@ -10,5 +10,15 @@
   "conformant": true,
   "rows": 12,
   "head": "45eaa2ed4b18e583061f466ed74eab40a8e9db1ba568c39fc9f7b062d05b6c81",
-  "signature": null
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "2026-08-29T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "RkNzfMK5CNfqYjtuEPzoRbM8KS3UW2D3vZoIeV-p_AFVUsRSdtFSXYO-e_J_pagTYCgE6qFXV_bQw22ZoV6yAA"
+  }
 }

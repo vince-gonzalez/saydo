@@ -56,6 +56,12 @@ def _paths(name):
     }
 
 
+def _default_key():
+    """The F-Keys signing key if it is present, else None (unsigned draft)."""
+    k = os.path.join(ROOT, "keys", "f-keys-poc.private.jwk")
+    return k if os.path.exists(k) else None
+
+
 def _declaration_for(name):
     p = _paths(name)
     if name == "malserver":
@@ -121,9 +127,13 @@ def cmd_verify(args):
           "--python", python, "--plan", name])
 
     print("\n[3/3] emit the hash-chained receipt")
-    _run([python, os.path.join(TOOLS, "receipt.py"),
-          p["report"], declaration, p["capture"], p["receipts"],
-          "--at", args.at])
+    receipt_cmd = [python, os.path.join(TOOLS, "receipt.py"),
+                   p["report"], declaration, p["capture"], p["receipts"],
+                   "--at", args.at]
+    key = args.sign or _default_key()
+    if key:
+        receipt_cmd += ["--sign", key]
+    _run(receipt_cmd)
 
     with open(p["anchor"], encoding="utf-8") as fh:
         anchor = json.load(fh)
@@ -172,7 +182,7 @@ def cmd_selfcheck(args):
 
     print("[1] harness vs seeded non-conformant server")
     rc = cmd_verify(argparse.Namespace(name="malserver", python=python,
-                                       at=args.at))
+                                       at=args.at, sign=None))
     caught = (rc == 1)
     print("\n   seeded server caught: {}".format("YES" if caught else
                                                  "NO -- HARNESS BROKEN"))
@@ -202,6 +212,9 @@ def main():
                                     "(default: this one)")
     v.add_argument("--at", default="1970-01-01T00:00:00Z",
                    help="generatedAt stamp for a reproducible receipt")
+    v.add_argument("--sign", metavar="PRIVATE_JWK",
+                   help="private-key JWK to sign the receipt (default: the "
+                        "F-Keys key under keys/ if present, else unsigned)")
     v.set_defaults(fn=cmd_verify)
 
     c = sub.add_parser("check")

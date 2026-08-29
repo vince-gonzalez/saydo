@@ -1,0 +1,10 @@
+{
+  "kty": "OKP",
+  "crv": "Ed25519",
+  "x": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+  "kid": "urn:fkeys:saydo:key:f-keys-poc",
+  "use": "sig",
+  "alg": "Ed25519",
+  "supplier": "F-Keys Creative LLC",
+  "note": "PROOF-OF-CONCEPT key, not the production signing identity."
+}

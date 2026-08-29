@@ -69,9 +69,31 @@ is safe, correct, or good — only that what was declared was tested and held,
 and that the evidence is tamper-evident. The monitor's ceiling (Python
 runtime, not the kernel; not a sandbox) is stated in the receipt itself.
 
-## Not yet built (item 3 stops here)
+## Signing
 
-Signing. A declared receipt carries a supplier signature over the head; the
-anchor's `signature` field is `null` in every receipt here because they are
-drafts. The signing step, and whose key signs, is a decision for the supplier
-and the next unit of work.
+A receipt's head commits to its whole chain, so signing the head signs the
+receipt. `receipt.py --sign <private.jwk>` adds an Ed25519 signature to the
+anchor:
+
+    "signature": {
+      "role": "supplier", "algorithm": "Ed25519",
+      "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+      "publicKey": "<raw Ed25519 public key, base64url>",
+      "covers": "head", "signedAt": "...",
+      "signer": "F-Keys Creative LLC", "value": "<signature, base64url>"
+    }
+
+The public key travels in the anchor, so the browser verifier checks the
+signature with nothing else: it recomputes the head, then verifies the
+Ed25519 signature over it with `crypto.subtle`. A valid signature over a
+verified head means this exact chain was signed by the holder of that key. An
+invalid signature fails the receipt even when the chain itself verifies; a
+browser without Ed25519 in WebCrypto reports the signature as present but
+unchecked rather than implying it passed.
+
+`keygen.py` generates the keypair as JWK. The current key
+(`urn:fkeys:saydo:key:f-keys-poc`) is a PROOF-OF-CONCEPT key: the private
+half is gitignored and lives only on the build machine, and it is not the
+LLC's production signing identity. A production key is managed (HSM or a
+managed KMS key), rotated, and its public key published at a controlled URL.
+Trust a receipt only as far as you trust the key in its anchor.

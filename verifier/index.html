@@ -193,10 +193,42 @@ async function verify(ledgerText, anchorText) {
     result.ok = false;
     result.headMismatch = true;
   }
+  result.signature = await verifySignature(prev, anchor && anchor.signature);
   return result;
 
   function fail(rowNo, why) {
-    return { ok: false, atRow: rowNo, why: why, rows: rows, genesis: genesis };
+    return { ok: false, atRow: rowNo, why: why, rows: rows, genesis: genesis,
+             signature: { status: "none" } };
+  }
+}
+
+// A signature vouches for who stands behind the receipt. It signs the head,
+// which commits to the whole chain, so a valid signature over a verified head
+// means this exact chain was signed by the holder of that key. The key travels
+// in the anchor; the verifier trusts it only as far as it trusts that anchor.
+async function verifySignature(headHex, sig) {
+  if (!sig) return { status: "none" };
+  var meta = { keyId: sig.keyId, signer: sig.signer, algorithm: sig.algorithm };
+  if (sig.algorithm !== "Ed25519") {
+    return Object.assign({ status: "unknown-alg" }, meta);
+  }
+  var b64u = function (s) {
+    s = s.replace(/-/g, "+").replace(/_/g, "/");
+    s += "=".repeat((4 - s.length % 4) % 4);
+    return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); });
+  };
+  try {
+    var key = await crypto.subtle.importKey(
+      "raw", b64u(sig.publicKey), { name: "Ed25519" }, false, ["verify"]);
+    var ok = await crypto.subtle.verify(
+      { name: "Ed25519" }, key, b64u(sig.value),
+      new TextEncoder().encode(headHex));
+    return Object.assign({ status: ok ? "valid" : "invalid" }, meta);
+  } catch (e) {
+    // Older browsers lack Ed25519 in WebCrypto. The chain still verified;
+    // the signature is simply not checkable here, and we say so rather than
+    // implying it passed.
+    return Object.assign({ status: "unsupported", detail: e.message }, meta);
   }
 }
 
@@ -215,24 +247,46 @@ function render(result) {
   var verdicts = result.rows.filter(function (r) { return r.type === "verdict"; });
   var findings = result.rows.filter(function (r) { return r.type === "finding"; });
 
-  if (!result.ok) {
+  var sig = result.signature || { status: "none" };
+  var sigLine = "";
+  if (sig.status === "valid")
+    sigLine = "<br>signature valid &mdash; signed by " +
+      esc(sig.signer || sig.keyId);
+  else if (sig.status === "invalid")
+    sigLine = "<br><b>signature INVALID</b> &mdash; the head was not signed by " +
+      esc(sig.keyId);
+  else if (sig.status === "unsupported")
+    sigLine = "<br>signature present (" + esc(sig.keyId) +
+      "); this browser cannot check Ed25519, so it was not verified here";
+  else if (sig.status === "unknown-alg")
+    sigLine = "<br>signature present in an unrecognized algorithm (" +
+      esc(sig.algorithm) + "); not verified";
+  else if (sig.status === "none")
+    sigLine = "<br>unsigned receipt (draft)";
+
+  // An invalid signature is a failure even when the chain itself verified.
+  var sigBad = sig.status === "invalid";
+
+  if (!result.ok || sigBad) {
     banner.className = "banner bad";
     if (result.headMismatch) {
       banner.innerHTML = "Chain is internally valid, but its head does not " +
         "match the anchor." +
         "<span class='sub'>computed " + esc(result.head) +
         "<br>anchor&nbsp;&nbsp; " + esc(result.anchorHead) + "</span>";
-    } else {
+    } else if (!result.ok) {
       banner.innerHTML = "Receipt FAILED verification at row " + result.atRow +
         ".<span class='sub'>" + esc(result.why) + "</span>";
+    } else {
+      banner.innerHTML = "Chain verified, but the signature does not." +
+        "<span class='sub'>head " + esc(result.head) + sigLine + "</span>";
     }
   } else {
     banner.className = "banner ok";
-    var conf = close && close.conformant;
     banner.innerHTML = "Chain verified: " + result.rows.length + " rows." +
       (result.anchorGiven ? " Head matches the anchor." :
         " Genesis derived from the receipt (no anchor supplied).") +
-      "<span class='sub'>head " + esc(result.head) + "</span>";
+      "<span class='sub'>head " + esc(result.head) + sigLine + "</span>";
   }
 
   var html = "";
@@ -339,7 +393,17 @@ window.addEventListener("load", function () {
   "conformant": true,
   "rows": 13,
   "head": "353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a",
-  "signature": null
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "2026-08-29T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "qVcGL6bebCVK4TtpItuoglgK4VkRSlK7XXjDv8OhZOIZh27gi1cuyqhvMDUVJAAcAhghGdYEqhe2Sv-LGzFlCA"
+  }
 }
 </script>
 </body>

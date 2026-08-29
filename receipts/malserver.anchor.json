@@ -9,6 +9,16 @@
   "declarationSerial": "urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef",
   "conformant": false,
   "rows": 10,
-  "head": "c4159ce758cd1e8f04d0d1d5b397ff2f434bff42840f4fe7e76ac766afea65a6",
-  "signature": null
+  "head": "e07d936f925fa41d7c69c182a084b84dc9644666fe4614bc41ffd65398f34d22",
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "2026-08-29T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "6ZUhP57VJMfSI2mzpvYdj1ntIPqFaMgNOSY2C8RXXi8fqyr2LB77yo4L0_V0DN_6Nl-Y1UAuOjHaNq3mBiJZDg"
+  }
 }

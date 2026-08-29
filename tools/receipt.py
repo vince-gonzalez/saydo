@@ -41,9 +41,45 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import os
+
+
+def _b64u(raw):
+    return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+
+def _b64u_decode(s):
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+
+def sign_head(head_hex, private_jwk_path, signed_at):
+    """An Ed25519 signature over the receipt head, as a signature block.
+
+    The head commits to the whole chain, so signing it signs the receipt.
+    Returns the block for anchor.signature, carrying the public key inline so
+    a verifier needs nothing but the receipt and the anchor.
+    """
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+        Ed25519PrivateKey)
+
+    with open(private_jwk_path, encoding="utf-8") as fh:
+        jwk = json.load(fh)
+    priv = Ed25519PrivateKey.from_private_bytes(_b64u_decode(jwk["d"]))
+    signature = priv.sign(head_hex.encode("ascii"))
+    return {
+        "role": "supplier",
+        "type": "jws-ed25519",
+        "algorithm": "Ed25519",
+        "keyId": jwk["kid"],
+        "publicKey": jwk["x"],          # raw Ed25519 public key, base64url
+        "covers": "head",
+        "signedAt": signed_at,
+        "signer": jwk.get("supplier", ""),
+        "value": _b64u(signature),
+    }
 
 
 def canonical(row):
@@ -163,7 +199,7 @@ def build(report, declaration, capture, generated_at):
         "conformant": report["conformant"],
         "rows": len(chain.rows),
         "head": chain.head,
-        "signature": None,   # draft: unsigned. A declared receipt signs head.
+        "signature": None,   # populated by main() when --sign is given
     }
     return chain, anchor
 
@@ -177,6 +213,9 @@ def main():
     ap.add_argument("--at", default="1970-01-01T00:00:00Z",
                     help="generatedAt stamp; fixed by default so committed "
                          "receipts are reproducible")
+    ap.add_argument("--sign", metavar="PRIVATE_JWK",
+                    help="Ed25519 private-key JWK to sign the receipt head; "
+                         "without it the receipt is an unsigned draft")
     args = ap.parse_args()
 
     with open(args.report, encoding="utf-8") as fh:
@@ -187,6 +226,8 @@ def main():
         capture = json.load(fh)
 
     chain, anchor = build(report, declaration, capture, args.at)
+    if args.sign:
+        anchor["signature"] = sign_head(anchor["head"], args.sign, args.at)
 
     os.makedirs(args.out_dir, exist_ok=True)
     name = declaration["subject"]["name"]
@@ -199,8 +240,10 @@ def main():
         json.dump(anchor, fh, indent=2, ensure_ascii=False)
         fh.write("\n")
 
-    print("{}: {} rows, conformant={}, head {}".format(
-        name, len(chain.rows), anchor["conformant"], anchor["head"][:16]))
+    signed = " SIGNED" if anchor["signature"] else " unsigned(draft)"
+    print("{}: {} rows, conformant={}, head {}{}".format(
+        name, len(chain.rows), anchor["conformant"], anchor["head"][:16],
+        signed))
 
 
 if __name__ == "__main__":
