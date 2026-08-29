@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:saydo:status:schema:0.1.0",
+  "$comment": "saydo/status is the compact verdict an MCP client or agent reads at tool-selection time to gate a tool. It is derived deterministically from a signed receipt and carries a pointer back to it. It is a convenience, never a trust root: the proof is the receipt named in `receipt`, which anyone verifies without trusting SayDo.",
+  "title": "SayDo tool status",
+  "type": "object",
+  "required": ["saydoStatus", "subject", "verdict", "summary", "advice",
+               "checks", "caveat", "receipt", "trust"],
+  "properties": {
+    "saydoStatus": { "type": "string", "const": "0.1.0" },
+    "subject": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "purl": { "type": "string" }
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["warranted", "failing", "draft", "unknown"],
+      "$comment": "warranted: conformant AND signed. failing: a declared behavior was refuted, or a finding was raised. draft: tested but unsigned. unknown: no receipt exists. An agent treats anything but 'warranted' as not-vouched-for."
+    },
+    "conformant": { "type": "boolean" },
+    "summary": {
+      "type": "string",
+      "$comment": "One line, written to be read the same way by a model and a person."
+    },
+    "advice": {
+      "type": "string",
+      "$comment": "A directive an agent can act on. Refusal-first: anything short of 'warranted' advises caution or refusal."
+    },
+    "checks": {
+      "type": "object",
+      "required": ["passed", "failed", "notCovered"],
+      "properties": {
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "notCovered": { "type": "integer", "minimum": 0 },
+        "failedDetail": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "invariant": { "type": "string" },
+              "evidence": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "envelope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "$comment": "The behavioral promises that held, in plain words: 'makes no network calls', 'writes no files', etc. This is what an agent may rely on."
+    },
+    "caveat": {
+      "type": "string",
+      "$comment": "The observation limit, compact. States that behavior was observed, not sandboxed."
+    },
+    "receipt": {
+      "type": "object",
+      "required": ["head"],
+      "properties": {
+        "head": { "type": "string" },
+        "url": { "type": ["string", "null"] },
+        "verify": { "type": "string" }
+      }
+    },
+    "signature": {
+      "type": ["object", "null"],
+      "properties": {
+        "algorithm": { "type": "string" },
+        "keyId": { "type": "string" },
+        "signer": { "type": "string" },
+        "checkedHere": {
+          "type": "boolean",
+          "$comment": "False: the status does not itself verify the signature. Verification happens against the receipt, by the consumer, so the status stays untrusted."
+        }
+      }
+    },
+    "trust": {
+      "type": "string",
+      "$comment": "States plainly that the status is a convenience and the receipt is the evidence."
+    }
+  }
+}

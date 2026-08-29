@@ -153,11 +153,37 @@ def cmd_verify(args):
         os.path.relpath(os.path.join(p["receipts"], name + ".receipt.jsonl"),
                         ROOT)))
     print("  head       {}".format(anchor["head"]))
+    # The model-facing read: the same verdict an agent would gate on.
+    import status as status_mod
+    with open(os.path.join(p["receipts"], name + ".receipt.jsonl"),
+              encoding="utf-8") as fh:
+        st = status_mod.build(fh.readlines(), anchor)
+    print("  status     {}: {}".format(st["verdict"], st["advice"]))
     print("=" * 60)
     print("\ncheck it yourself: open verifier/index.html, paste the receipt "
           "and\nthe anchor ({}). No account, no network."
           .format(os.path.relpath(p["anchor"], ROOT)))
     return 0 if anchor["conformant"] else 1
+
+
+def cmd_status(args):
+    """Print the compact saydo/status an agent reads to gate a tool."""
+    import status as status_mod
+    p = _paths(args.name)
+    rec, anc = (os.path.join(p["receipts"], args.name + ".receipt.jsonl"),
+                p["anchor"])
+    if not (os.path.exists(rec) and os.path.exists(anc)):
+        print(json.dumps({"saydoStatus": "0.1.0",
+                          "subject": {"name": args.name},
+                          "verdict": "unknown",
+                          "advice": "No receipt on record; treat as untrusted. "
+                                    "Run `saydo verify {}` first.".format(
+                                        args.name)}, indent=2))
+        return 0
+    with open(rec, encoding="utf-8") as fh:
+        st = status_mod.build(fh.readlines(), json.load(open(anc, encoding="utf-8")))
+    print(json.dumps(st, indent=2, ensure_ascii=False))
+    return 0
 
 
 def cmd_check(args):
@@ -220,6 +246,10 @@ def main():
     c = sub.add_parser("check")
     c.add_argument("name")
     c.set_defaults(fn=cmd_check)
+
+    st = sub.add_parser("status")
+    st.add_argument("name")
+    st.set_defaults(fn=cmd_status)
 
     s = sub.add_parser("selfcheck")
     s.add_argument("--python")

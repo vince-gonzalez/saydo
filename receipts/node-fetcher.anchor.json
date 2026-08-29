@@ -1,0 +1,24 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:d8739e61-c88d-5037-841b-09d765197ebc|seeded/node_fetcher.js",
+  "subject": {
+    "name": "node-fetcher",
+    "version": "0.0.0",
+    "purl": "seeded/node_fetcher.js"
+  },
+  "declarationSerial": "urn:uuid:d8739e61-c88d-5037-841b-09d765197ebc",
+  "conformant": false,
+  "rows": 6,
+  "head": "d75da5098ec8b182785038a971e5b0a04b3695a84bcc202dbb62147190870976",
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "2026-08-29T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "v7v3vc6vopEKHF4I1I2-ufOMtxGM3YdKulcExV8AvGAVJhvPpDe1nkOmPXHLOToLsc6om3LIBY-vsUJ4yrhMAA"
+  }
+}
