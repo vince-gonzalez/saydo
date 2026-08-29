@@ -1,0 +1,101 @@
+# Behavioral Declaration — specification draft 0.1.0
+
+STATUS: DRAFT. Not published, not submitted, not final. Anything derived from
+this document that goes anywhere public — working-group posts, spec text,
+badges, landing copy — is rewritten by the supplier in the supplier's own
+words first. This file is working material.
+
+Product name provisional (WARRANT / ASSAY); all identifiers carrying the name
+are expected to change once.
+
+## 1. What this is
+
+A behavioral declaration is a machine-readable statement of how a tool is
+permitted to behave, bound by digest to the exact tool definitions it covers,
+testable by a harness, and signable by the supplier.
+
+It extends the provenance layer; it does not replace it. TBOM v1.0.2 (Lovell,
+2026, Zenodo 10.5281/zenodo.18459260) and CTMS 1.0 (Kanellopoulos, 2026)
+establish that tool metadata is what the publisher released. Both state their
+own ceiling: TBOM "cannot verify tool behavior matches descriptions"; CTMS
+"verifies that a tool's claims haven't changed. It does not verify that those
+claims are true." The declaration is the document that makes the second
+question testable: it turns "behaves as described" from prose into a list of
+invariants a harness can demonstrate or refute, run by run.
+
+Interoperability is by construction, not translation:
+
+- `Subject`, `Organization`, `Repository`, and `Signature` mirror the TBOM
+  v1.0.2 definitions.
+- Tool binding uses the TBOM `ToolDigest` computation unchanged: sha256 over
+  the RFC 8785 canonical form of `{name, description, inputSchema}` (plus
+  `outputSchema` / `annotations` where present). The same release yields the
+  same digest values in its TBOM and in its declaration.
+- A declaration attaches to an existing TBOM through the TBOM's own
+  `attestations[]` array (`type: "custom"`, the declaration as evidence).
+  No change to the TBOM schema is required or proposed.
+
+## 2. Document model
+
+Normative schema: `declaration.schema.json`. Field semantics not expressible
+in JSON Schema:
+
+**status.** `draft` or `declared`. A draft is a claim sheet: nothing in it
+has been demonstrated. `declared` requires both of: (a) every invariant has
+at least one passing conformance run against the bound artifact digests,
+(b) a supplier signature over the RFC 8785 canonical form of the document
+with the `signatures` array removed. A verifier treats anything else as a
+draft regardless of what the field says.
+
+**binding.** Every conformance run begins by recomputing the definition
+digests from the live `tools/list` and comparing them to the binding. Any
+mismatch stops the run: drifted definitions are a finding, and behavior of an
+undeclared definition is not tested and not warranted. A live tool absent
+from the binding is likewise a finding (undeclared surface), not a pass.
+
+**invariants.** The unit of meaning. Receipts cite invariants by `id`. An
+invariant an environment cannot check is reported as NOT COVERED, never as
+passed. The declaration is falsifiable by design; a declaration nothing could
+refute warrants nothing.
+
+## 3. Invariant types, 0.1.0
+
+Scope note: `appliesTo: ["*"]` covers the whole server process including
+startup and shutdown, not just the union of tool invocations.
+
+| type | claim | demonstrated by |
+|---|---|---|
+| `no-network` | no network egress during the covered activity | egress monitoring during exercise |
+| `network-allowlist` | egress only to `params.hosts` | egress monitoring; any other host refutes |
+| `no-write` | no filesystem writes | filesystem monitoring |
+| `write-scope` | writes only under `params.paths` (env-var templates) | filesystem monitoring |
+| `read-scope` | reads only: own artifact and runtime files, plus paths named by the arguments listed in `params.pathArgs`, plus `params.alsoAllowed` | filesystem monitoring |
+| `no-subprocess` | no child processes | process monitoring |
+| `deterministic` | identical canonical arguments and identical digests of files named by `params.pathArgs` produce identical results, excluding JSON pointers in `params.volatile` | repeated invocation and comparison |
+| `error-as-value` | malformed or out-of-domain input produces an error in the result payload; the transport never sees an exception or crash | fuzzing and adversarial input |
+| `refusal-tool` | the server exposes `params.tool`: listed in `tools/list`, takes no arguments, performs no I/O, and states what the server cannot answer | invocation under monitoring |
+| `property` | the named semantic check `params.check` holds; `params.statement` is the human-readable claim | an executable check the harness carries |
+
+What the table buys: tool poisoning, capability rug-pulls, and silent
+behavioral drift are all the same event under this model — a conformance run
+whose observations exceed the declaration.
+
+## 4. What a declaration does not claim
+
+It does not claim the tool is useful, correct in its domain, or safe for a
+purpose. It claims the tool's observable behavior stays inside the declared
+envelope, and the envelope is published. A tool may honestly declare a wide
+envelope (`authorecon` declares no egress bound at all for its
+link-resolution tools, because following the record wherever it points is the
+tool's function). The value is that the envelope is stated, signed, and
+continuously checked — not that every envelope is narrow.
+
+## 5. Open questions (for the working-group conversation, in his words)
+
+- Whether `covers` should grow an `annotations` requirement once MCP tool
+  annotations stabilize.
+- Whether an egress observation belongs in the receipt even when no egress
+  invariant is declared (observed-but-unclaimed telemetry).
+- Signature transport: detached JWS vs DSSE envelope; TBOM allows three.
+- Whether `deterministic` needs a seeded-randomness carve-out
+  (`params.seedArg`) before any real generator tool declares it.

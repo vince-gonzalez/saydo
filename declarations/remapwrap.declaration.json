@@ -1,0 +1,191 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:324e7c61-965d-53e0-ae21-23119e20ebed",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "remapwrap",
+    "version": "0.6.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/f-keys"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/remapwrap@0.6.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:f06b4178576d2b45401b3ea907e1da905a843d92bc60b86a61f968696a5b2186",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "check_layout",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:771c9edfb59dc5939475dc45c05a3fcd07b486e9ca981fc3379bca40e1606994",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "build_board",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:0464d863885c2d0338e662bd7e1bf1699fead0e0813be417b63ab055baf77bd0",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "build_soundboard",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:973cd33e3f58605fe43ebc7ce1b1fc997973612cf3d6caea87b9b93985442f1b",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "build_mixer",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:79b6782f7ec0f49c6c5351701ddd2bd43eea5ccd15463bbac487390f81d84a89",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "save_board",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:1d48f3453c7d3f9cae719bc40a11dc0bd3ab13494011cc166891126b3c6a5268",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "writes.none-except-save",
+      "type": "no-write",
+      "appliesTo": [
+        "scope",
+        "check_layout",
+        "build_board",
+        "build_soundboard",
+        "build_mixer"
+      ]
+    },
+    {
+      "id": "save.writes-profiles-only",
+      "type": "write-scope",
+      "appliesTo": [
+        "save_board"
+      ],
+      "params": {
+        "paths": [
+          "${APPDATA}/RemapWrap/profiles"
+        ]
+      },
+      "note": "The one tool that changes a machine, and the one place it is permitted to."
+    },
+    {
+      "id": "soundboard.reads-its-folder",
+      "type": "read-scope",
+      "appliesTo": [
+        "build_soundboard"
+      ],
+      "params": {
+        "pathArgs": [
+          "folder"
+        ]
+      }
+    },
+    {
+      "id": "builders.read-nothing",
+      "type": "read-scope",
+      "appliesTo": [
+        "scope",
+        "check_layout",
+        "build_board",
+        "build_mixer",
+        "save_board"
+      ],
+      "params": {
+        "pathArgs": [],
+        "alsoAllowed": [
+          "${APPDATA}/RemapWrap/profiles"
+        ]
+      }
+    },
+    {
+      "id": "builders.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "check_layout",
+        "build_board",
+        "build_mixer"
+      ],
+      "params": {}
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "save.refuses-broken-layouts",
+      "type": "property",
+      "appliesTo": [
+        "save_board"
+      ],
+      "params": {
+        "check": "remapwrap.refuse-invalid-write",
+        "statement": "A layout that fails validation is never written. The result says written: false and no file appears."
+      }
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "save_board also detects the Microsoft Store app-container redirection and reports written: false rather than a false success. That behavior is only observable inside a sandboxed interpreter, so it is recorded here and not declared as an invariant the ordinary harness environment can demonstrate."
+}

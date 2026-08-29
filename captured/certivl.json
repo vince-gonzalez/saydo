@@ -1,0 +1,109 @@
+{
+  "server": {
+    "name": "certivl",
+    "version": "0.2.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report what certivl can and cannot settle. CALL THIS FIRST when a user asks anything resembling 'is this inequality true', 'is this value positive', 'prove this bound', or 'check this calculation'. It will tell you whether the question is answerable here and what UNDECIDED means. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "scopeDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:8112c4520fb0a5d0e8e21216cb071d0686724e7f4e8f310850736507231903a6",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "decide",
+      "definition": {
+        "name": "decide",
+        "description": "Decide a numeric inequality with certainty. USE THIS INSTEAD OF COMPUTING THE COMPARISON YOURSELF -- near a boundary a floating-point answer is wrong silently, which is the whole reason this exists. Give two expressions and a comparison, one of < <= > >= == !=. Returns TRUE, FALSE or UNDECIDED. UNDECIDED means open at this precision and must be reported as such, never rounded to a side. Expressions use + - * / **, the functions sqrt sin cos tan sec asin atan abs deg, and the constants pi sqrt2 sqrt3.",
+        "inputSchema": {
+          "properties": {
+            "left": {
+              "title": "Left",
+              "type": "string"
+            },
+            "comparison": {
+              "title": "Comparison",
+              "type": "string"
+            },
+            "right": {
+              "title": "Right",
+              "type": "string"
+            },
+            "precision_bits": {
+              "default": 128,
+              "title": "Precision Bits",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "left",
+            "comparison",
+            "right"
+          ],
+          "type": "object",
+          "title": "decideArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "decideDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:f71a9a33d66be05c03592f20c7495969a1fcf704331870950eff876b1ba36703",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "enclose",
+      "definition": {
+        "name": "enclose",
+        "description": "Return a guaranteed enclosure for a numeric expression: an interval with exact rational endpoints that the true value certainly lies inside. Use when the question is 'what is this, and how sure are we' rather than a yes/no comparison. Same expression language as `decide`.",
+        "inputSchema": {
+          "properties": {
+            "expression": {
+              "title": "Expression",
+              "type": "string"
+            }
+          },
+          "required": [
+            "expression"
+          ],
+          "type": "object",
+          "title": "encloseArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "encloseDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:b41da64ef1891d708cc01fe94e76c8f17454457272f5318834ad0bf3d3c118d7",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    }
+  ]
+}

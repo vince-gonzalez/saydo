@@ -1,0 +1,135 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:deb68d6d-9228-54c2-b9fe-05a4f2da37c9",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "loadbearing",
+    "version": "0.2.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/loadbearing"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/loadbearing@0.2.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:5d767f80f1c5b864d9e068a33a775796a1b9f8878ac332b078220c95fbb9a7ab",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "measure_severing",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:209eeebb842624a8707b5b24ca3d5a8f4f0562a8435658317d34e289260a2e84",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "measure_with_witness",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:fd6b596c2e06130c370f9d253143d5a748fd69039ed644e7e31a2b2f4e492b40",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "scope.reads-nothing",
+      "type": "read-scope",
+      "appliesTo": [
+        "scope"
+      ],
+      "params": {
+        "pathArgs": []
+      }
+    },
+    {
+      "id": "measures.read-the-database",
+      "type": "read-scope",
+      "appliesTo": [
+        "measure_severing",
+        "measure_with_witness"
+      ],
+      "params": {
+        "pathArgs": [
+          "database_path"
+        ]
+      },
+      "note": "A measurement reads the named database and nothing else of the user's."
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "severing.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "scope",
+        "measure_severing"
+      ],
+      "params": {
+        "pathArgs": [
+          "database_path"
+        ]
+      },
+      "note": "Same database bytes, same targets, same parameters: same answer. measure_with_witness is excluded until the witness's environment block is classified as volatile or not."
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "measure_severing",
+        "measure_with_witness"
+      ]
+    }
+  ],
+  "canonicalization": "rfc8785"
+}

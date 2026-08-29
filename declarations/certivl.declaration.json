@@ -1,0 +1,139 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "certivl",
+    "version": "0.2.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/certivl"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/certivl@0.2.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:8112c4520fb0a5d0e8e21216cb071d0686724e7f4e8f310850736507231903a6",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "decide",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:f71a9a33d66be05c03592f20c7495969a1fcf704331870950eff876b1ba36703",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "enclose",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:b41da64ef1891d708cc01fe94e76c8f17454457272f5318834ad0bf3d3c118d7",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "reads.none",
+      "type": "read-scope",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "pathArgs": []
+      },
+      "note": "Evaluation is arithmetic over the request. No file is opened."
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "answers.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {}
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "An expression outside the language is refused in the result payload, not by crashing the transport."
+    },
+    {
+      "id": "undecided.on-overlap",
+      "type": "property",
+      "appliesTo": [
+        "decide"
+      ],
+      "params": {
+        "check": "certivl.undecided-on-overlap",
+        "statement": "When the two enclosures overlap and are not both exact and equal, the verdict is UNDECIDED. The side the midpoint fell on is never reported."
+      }
+    },
+    {
+      "id": "decimal.read-exactly",
+      "type": "property",
+      "appliesTo": [
+        "decide",
+        "enclose"
+      ],
+      "params": {
+        "check": "certivl.decimal-literal-exact",
+        "statement": "A decimal literal denotes the decimal it spells: 0.1 + 0.2 == 0.3 decides TRUE."
+      }
+    }
+  ],
+  "canonicalization": "rfc8785"
+}

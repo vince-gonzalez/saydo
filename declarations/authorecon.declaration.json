@@ -1,0 +1,178 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "authorecon",
+    "version": "1.1.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/apriori"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/authorecon@1.1.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:6e8960df2f7d31edbf758206bfc74a1a233d2c0375150e380d10626491bac2d1",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "check_references",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:7fd6e0dac2233c3e4d1f6f4ca8f8a8e3ad415f91f2e12920ccc68b20afea2522",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "check_retractions",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:6bb271fffaf0287f7f06ec6d72d146cd768b21549bf8907d01350abf4c303e63",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "check_venues",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:dbd930c6c7f595762c5267ec4fdf0a8576117eaa27b1eb6814b9ed7d00ff3e73",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "check_self_citation",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:8b38bda89098788c82ed0fc5912a02661028a85bf19055a41f4db2c8dfd7ba5d",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "lint_deposit",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:66f64f9f12ede8c61dbf86f41f5ce3c949abc44a440053832bd8bdd15338aa47",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "scan_document",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:4c8b2341e6e9970ba5727463047428c9abfc6fac94f84f3165029ad0bd0e0f5e",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    },
+    {
+      "id": "scope.offline",
+      "type": "no-network",
+      "appliesTo": [
+        "scope"
+      ]
+    },
+    {
+      "id": "scan.offline",
+      "type": "no-network",
+      "appliesTo": [
+        "scan_document"
+      ],
+      "note": "The document scan is local. Nothing read from the document leaves the machine."
+    },
+    {
+      "id": "scan.reads-its-argument",
+      "type": "read-scope",
+      "appliesTo": [
+        "scan_document"
+      ],
+      "params": {
+        "pathArgs": [
+          "path"
+        ]
+      }
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "egress.reference-apis",
+      "type": "network-allowlist",
+      "appliesTo": [
+        "check_references"
+      ],
+      "params": {
+        "hosts": [
+          "api.crossref.org",
+          "api.datacite.org",
+          "api.openalex.org",
+          "eutils.ncbi.nlm.nih.gov",
+          "openlibrary.org",
+          "www.ebi.ac.uk"
+        ]
+      }
+    },
+    {
+      "id": "egress.record-apis",
+      "type": "network-allowlist",
+      "appliesTo": [
+        "check_retractions",
+        "check_venues",
+        "check_self_citation"
+      ],
+      "params": {
+        "hosts": [
+          "api.openalex.org",
+          "pub.orcid.org"
+        ]
+      }
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "No egress bound is declared for lint_deposit: its host set has not been established from the released source, and a bound that might be exceeded is worse than none. The link-checking paths in this package follow DOIs to whatever host currently serves the work; that is what a DOI is for, and it is why no server-wide allowlist appears here. No error-as-value invariant is declared: several tools let exceptions reach the transport."
+}

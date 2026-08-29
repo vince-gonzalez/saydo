@@ -1,0 +1,102 @@
+{
+  "server": {
+    "name": "mmforge",
+    "version": "0.2.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report what mmforge can and cannot answer, and the two ways its numbers get misreported. CALL THIS FIRST when a user asks anything resembling 'could this library drop the axiom of choice', 'how much of set.mm uses choice', 'what would it take to remove this axiom', or 'how many theorems would that free'. Takes no arguments and reads nothing.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "scopeDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:7f5ba21c34cb2497539c7cd5f71a0fb178f0ecc078e0691ad94657948578403e",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "analyse_necessity",
+      "definition": {
+        "name": "analyse_necessity",
+        "description": "Find which proved statements transitively reach the named axioms, and where the reaching starts. USE THIS INSTEAD OF ANSWERING FROM IMPRESSION -- 'how much of the library uses choice' is a question about a graph, not a matter of opinion. Takes a path to a Metamath database (.mm) and one or more axiom labels such as ax-ac. Any figure returned is a lower bound if it describes a repair; see scope().",
+        "inputSchema": {
+          "properties": {
+            "database_path": {
+              "title": "Database Path",
+              "type": "string"
+            },
+            "axioms": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Axioms",
+              "type": "array"
+            }
+          },
+          "required": [
+            "database_path",
+            "axioms"
+          ],
+          "type": "object",
+          "title": "analyse_necessityArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "analyse_necessityDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:f3899b4e670b5cd732256e6fed645a0ea927cc32e6e3c04ea51062806d31b183",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "census_guards",
+      "definition": {
+        "name": "census_guards",
+        "description": "Census every `$j usage 'X' avoids 'A';` directive a Metamath database declares about itself. Use to find what the library CLAIMS to avoid, which is a different thing from what it actually avoids -- comparing the two is the point. Takes a path to a .mm file.",
+        "inputSchema": {
+          "properties": {
+            "database_path": {
+              "title": "Database Path",
+              "type": "string"
+            }
+          },
+          "required": [
+            "database_path"
+          ],
+          "type": "object",
+          "title": "census_guardsArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "census_guardsDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:4b47c098128c133488a8003623a720f7c2c83892d89c8329a946c8130d5e6802",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    }
+  ]
+}

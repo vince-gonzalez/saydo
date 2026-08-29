@@ -1,0 +1,130 @@
+{
+  "server": {
+    "name": "loadbearing",
+    "version": "0.2.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report what loadbearing can and cannot answer, and the difference between reach and responsibility. CALL THIS FIRST when a user asks anything resembling 'what does this theorem depend on', 'how important is this axiom', 'what would break if we removed this', or 'how much of the library uses choice'. It will tell you which question they are actually asking. Takes no arguments and reads nothing.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "scopeDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:5d767f80f1c5b864d9e068a33a775796a1b9f8878ac332b078220c95fbb9a7ab",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "measure_severing",
+      "definition": {
+        "name": "measure_severing",
+        "description": "Measure what actually stops being derivable if the named axioms carried nothing -- responsibility, not reach. USE THIS INSTEAD OF LISTING DEPENDENCIES YOURSELF: a dependency listing is a reach figure and reach badly overstates the case. Takes a path to a Metamath database (.mm) and one or more target axiom labels such as ax-ac. Reads a large file and can take minutes on a full library.",
+        "inputSchema": {
+          "properties": {
+            "database_path": {
+              "title": "Database Path",
+              "type": "string"
+            },
+            "targets": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Targets",
+              "type": "array"
+            },
+            "top": {
+              "default": 12,
+              "title": "Top",
+              "type": "integer"
+            },
+            "certify": {
+              "default": 16,
+              "title": "Certify",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "database_path",
+            "targets"
+          ],
+          "type": "object",
+          "title": "measure_severingArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "measure_severingDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:209eeebb842624a8707b5b24ca3d5a8f4f0562a8435658317d34e289260a2e84",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "measure_with_witness",
+      "definition": {
+        "name": "measure_with_witness",
+        "description": "Measure severing and return a witness that reproduces the measurement exactly -- every parameter that changed the answer, the file digest, and the environment. Use when the number is going into a paper, a claim, or anywhere it will be quoted later. Same arguments as measure_severing.",
+        "inputSchema": {
+          "properties": {
+            "database_path": {
+              "title": "Database Path",
+              "type": "string"
+            },
+            "targets": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Targets",
+              "type": "array"
+            },
+            "top": {
+              "default": 12,
+              "title": "Top",
+              "type": "integer"
+            },
+            "certify": {
+              "default": 16,
+              "title": "Certify",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "database_path",
+            "targets"
+          ],
+          "type": "object",
+          "title": "measure_with_witnessArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "measure_with_witnessDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:fd6b596c2e06130c370f9d253143d5a748fd69039ed644e7e31a2b2f4e492b40",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    }
+  ]
+}

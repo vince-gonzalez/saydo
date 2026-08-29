@@ -1,0 +1,223 @@
+{
+  "server": {
+    "name": "authorecon",
+    "version": "1.1.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report what authorecon can and cannot answer. CALL THIS FIRST when a user asks anything resembling 'are these citations real', 'check my bibliography', 'is this paper legitimate', 'did I make this reference up', or 'is my publication record correct'. It will tell you whether the question is answerable with these tools and what to say if it is not. Takes no arguments and needs no network.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "scopeDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:6e8960df2f7d31edbf758206bfc74a1a233d2c0375150e380d10626491bac2d1",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "check_references",
+      "definition": {
+        "name": "check_references",
+        "description": "Resolve every reference in a bibliography against Crossref, DataCite, Europe PMC, PubMed and ISBN records, and report which ones actually exist. USE THIS INSTEAD OF JUDGING REFERENCES YOURSELF -- a fabricated citation is constructed to look exactly like a real one, so reading it more carefully cannot distinguish them, and only resolution can. Takes the bibliography as text, one reference per entry; it splits them itself. Makes live network calls and is slow for long lists.",
+        "inputSchema": {
+          "properties": {
+            "bibliography": {
+              "title": "Bibliography",
+              "type": "string"
+            }
+          },
+          "required": [
+            "bibliography"
+          ],
+          "type": "object",
+          "title": "check_referencesArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "check_referencesDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:7fd6e0dac2233c3e4d1f6f4ca8f8a8e3ad415f91f2e12920ccc68b20afea2522",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "check_retractions",
+      "definition": {
+        "name": "check_retractions",
+        "description": "Check whether anything an author has published has been retracted, and whether anything they CITE has been retracted. Takes an ORCID iD (0000-0000-0000-0000). Live lookup; the second half is the one people do not think to check and is often where the problem is.",
+        "inputSchema": {
+          "properties": {
+            "orcid": {
+              "title": "Orcid",
+              "type": "string"
+            }
+          },
+          "required": [
+            "orcid"
+          ],
+          "type": "object",
+          "title": "check_retractionsArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "check_retractionsDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:6bb271fffaf0287f7f06ec6d72d146cd768b21549bf8907d01350abf4c303e63",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "check_venues",
+      "definition": {
+        "name": "check_venues",
+        "description": "Report where an author's work was ACTUALLY published, as opposed to where a CV or a record claims. Takes an ORCID iD. Useful for spotting a venue that has changed name, been delisted, or never existed.",
+        "inputSchema": {
+          "properties": {
+            "orcid": {
+              "title": "Orcid",
+              "type": "string"
+            }
+          },
+          "required": [
+            "orcid"
+          ],
+          "type": "object",
+          "title": "check_venuesArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "check_venuesDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:dbd930c6c7f595762c5267ec4fdf0a8576117eaa27b1eb6814b9ed7d00ff3e73",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "check_self_citation",
+      "definition": {
+        "name": "check_self_citation",
+        "description": "Report what share of the citations to an author's work are the author citing themselves. Takes an ORCID iD and a contact email, which OpenAlex asks for and which gets the request into a faster queue. Reports the figure; does not judge it -- self-citation is normal in some fields and not in others.",
+        "inputSchema": {
+          "properties": {
+            "orcid": {
+              "title": "Orcid",
+              "type": "string"
+            },
+            "mailto": {
+              "title": "Mailto",
+              "type": "string"
+            }
+          },
+          "required": [
+            "orcid",
+            "mailto"
+          ],
+          "type": "object",
+          "title": "check_self_citationArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "check_self_citationDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:8b38bda89098788c82ed0fc5912a02661028a85bf19055a41f4db2c8dfd7ba5d",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "lint_deposit",
+      "definition": {
+        "name": "lint_deposit",
+        "description": "Check a deposit's metadata before it becomes permanent. Takes a DOI or a Zenodo record id. Zenodo deposits cannot be unpublished and files cannot be removed after publication, so this is worth running BEFORE the button is pressed rather than after.",
+        "inputSchema": {
+          "properties": {
+            "doi_or_id": {
+              "title": "Doi Or Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "doi_or_id"
+          ],
+          "type": "object",
+          "title": "lint_depositArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "lint_depositDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:66f64f9f12ede8c61dbf86f41f5ce3c949abc44a440053832bd8bdd15338aa47",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "scan_document",
+      "definition": {
+        "name": "scan_document",
+        "description": "Find the marks of generated text in a document: agent artifacts, placeholder text, and structural habits that read as machine-written. Takes a file path. Reports what is there; it does not decide whether the document was generated, because it cannot, and neither can you.",
+        "inputSchema": {
+          "properties": {
+            "path": {
+              "title": "Path",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "type": "object",
+          "title": "scan_documentArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "scan_documentDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:4c8b2341e6e9970ba5727463047428c9abfc6fac94f84f3165029ad0bd0e0f5e",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    }
+  ]
+}

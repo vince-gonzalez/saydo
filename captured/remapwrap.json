@@ -1,0 +1,212 @@
+{
+  "server": {
+    "name": "remapwrap",
+    "version": "0.6.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report what remapwrap can and cannot do, the control types, and the commands that actually run. CALL THIS FIRST when a user asks for a board, a soundboard, a stream deck, a communication board, or an adapted control surface. Takes no arguments and writes nothing.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "scopeDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:f06b4178576d2b45401b3ea907e1da905a843d92bc60b86a61f968696a5b2186",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "check_layout",
+      "definition": {
+        "name": "check_layout",
+        "description": "Check whether a layout would actually work, and say why not in plain sentences. ALWAYS RUN THIS on any layout before returning it or saving it -- a broken layout looks exactly like a working one, which is the entire reason this exists. Takes the layout as a JSON object or a JSON string.",
+        "inputSchema": {
+          "properties": {
+            "layout": {
+              "title": "Layout"
+            }
+          },
+          "required": [
+            "layout"
+          ],
+          "type": "object",
+          "title": "check_layoutArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "check_layoutDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:771c9edfb59dc5939475dc45c05a3fcd07b486e9ca981fc3379bca40e1606994",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "build_board",
+      "definition": {
+        "name": "build_board",
+        "description": "Build a board of keys from a list of {label, command, arg} entries, for example {label: 'Yes', command: 'speak.text', arg: 'Yes'} to say it aloud, or {label: 'Copy', command: 'win.keystroke', arg: 'ctrl+c'}. There is no 'text' or 'action' field: speaking (speak.text) and typing into the PC (win.text) are different and are not guessed. laid out automatically in phone proportions. The general builder: use it for a communication board (speak.text with the phrase in arg), a shortcut deck (win.keystroke), or anything else. Call scope() for the commands that run. Every board is checked before it is returned. For a symbol board give each entry a label as well as a picture -- a key with no label is silent to a screen reader.",
+        "inputSchema": {
+          "properties": {
+            "entries": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "title": "Entries",
+              "type": "array"
+            },
+            "name": {
+              "default": "Generated",
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "entries"
+          ],
+          "type": "object",
+          "title": "build_boardArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "build_boardDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:0464d863885c2d0338e662bd7e1bf1699fead0e0813be417b63ab055baf77bd0",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "build_soundboard",
+      "definition": {
+        "name": "build_soundboard",
+        "description": "Build a soundboard: one pad per sound file in a folder. Takes the folder path. Labels come from the filenames. Checked before it is returned.",
+        "inputSchema": {
+          "properties": {
+            "folder": {
+              "title": "Folder",
+              "type": "string"
+            }
+          },
+          "required": [
+            "folder"
+          ],
+          "type": "object",
+          "title": "build_soundboardArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "build_soundboardDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:973cd33e3f58605fe43ebc7ce1b1fc997973612cf3d6caea87b9b93985442f1b",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "build_mixer",
+      "definition": {
+        "name": "build_mixer",
+        "description": "Build an audio mixer: a slider per named application, plus the master and the microphone. Applications are named as Windows names them, so 'Discord' rather than 'Discord Voice'. Checked before it is returned.",
+        "inputSchema": {
+          "properties": {
+            "applications": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Applications",
+              "type": "array"
+            },
+            "master": {
+              "default": true,
+              "title": "Master",
+              "type": "boolean"
+            },
+            "mic": {
+              "default": true,
+              "title": "Mic",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "applications"
+          ],
+          "type": "object",
+          "title": "build_mixerArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "build_mixerDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:79b6782f7ec0f49c6c5351701ddd2bd43eea5ccd15463bbac487390f81d84a89",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "save_board",
+      "definition": {
+        "name": "save_board",
+        "description": "Save a profile into the RemapWrap profiles folder, where the running application picks it up and it appears on the phone. THIS CHANGES A REAL DEVICE -- say what was written and where. The layout is checked first and a layout with problems is REFUSED rather than written. Give it a profile (from build_board) or a plain board, and a name.",
+        "inputSchema": {
+          "properties": {
+            "profile": {
+              "title": "Profile"
+            },
+            "name": {
+              "default": "",
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "profile"
+          ],
+          "type": "object",
+          "title": "save_boardArguments"
+        },
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "save_boardDictOutput"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:1d48f3453c7d3f9cae719bc40a11dc0bd3ab13494011cc166891126b3c6a5268",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    }
+  ]
+}

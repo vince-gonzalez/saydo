@@ -1,0 +1,134 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:63044401-47a6-5c35-9e52-1b80dbebd3d1",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mmforge",
+    "version": "0.2.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/mmforge"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/mmforge@0.2.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:7f5ba21c34cb2497539c7cd5f71a0fb178f0ecc078e0691ad94657948578403e",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "analyse_necessity",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:f3899b4e670b5cd732256e6fed645a0ea927cc32e6e3c04ea51062806d31b183",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "census_guards",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:4b47c098128c133488a8003623a720f7c2c83892d89c8329a946c8130d5e6802",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "scope.reads-nothing",
+      "type": "read-scope",
+      "appliesTo": [
+        "scope"
+      ],
+      "params": {
+        "pathArgs": []
+      }
+    },
+    {
+      "id": "analyses.read-the-database",
+      "type": "read-scope",
+      "appliesTo": [
+        "analyse_necessity",
+        "census_guards"
+      ],
+      "params": {
+        "pathArgs": [
+          "database_path"
+        ]
+      }
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "analysis.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "scope",
+        "analyse_necessity",
+        "census_guards"
+      ],
+      "params": {
+        "pathArgs": [
+          "database_path"
+        ]
+      }
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "analyse_necessity",
+        "census_guards"
+      ]
+    }
+  ],
+  "canonicalization": "rfc8785"
+}

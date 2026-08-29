@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:warrant:declaration:schema:0.1.0",
+  "$comment": "Product name is provisional; the urn changes with it. Structural definitions (Subject, Organization, Repository, Signature, ToolDigest) mirror TBOM v1.0.2 (Lovell, Zenodo 10.5281/zenodo.18459260) so a declaration binds to a TBOM without translation. This document is an extension of that work, not a replacement for it: TBOM answers whether tool metadata is what the publisher released; a declaration states how the tool is permitted to BEHAVE, so a harness can test the claim.",
+  "title": "WARRANT Behavioral Declaration",
+  "type": "object",
+  "required": [
+    "declarationVersion",
+    "serialNumber",
+    "createdAt",
+    "status",
+    "subject",
+    "binding",
+    "invariants",
+    "canonicalization"
+  ],
+  "properties": {
+    "declarationVersion": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "serialNumber": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "declared"],
+      "$comment": "draft: invariants not yet demonstrated against the artifact by a conformance run, or the declaration is unsigned. A draft MUST NOT back a warrant receipt. declared: every invariant has at least one passing conformance run against the bound artifact digests, and a supplier signature is present."
+    },
+    "subject": {
+      "$ref": "#/$defs/Subject"
+    },
+    "binding": {
+      "$ref": "#/$defs/Binding"
+    },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Invariant"
+      },
+      "minItems": 1
+    },
+    "canonicalization": {
+      "type": "string",
+      "enum": ["rfc8785"]
+    },
+    "notes": {
+      "type": "string",
+      "$comment": "Non-normative. Nothing in here is tested and nothing in here is warranted."
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Signature"
+      },
+      "$comment": "Optional at the schema level so a draft validates. Normatively: status 'declared' requires a supplier signature over the RFC 8785 canonical form of the document minus this array."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Organization": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "contact": { "type": "string" },
+        "identity": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Repository": {
+      "type": "object",
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "commit": { "type": "string", "pattern": "^[a-fA-F0-9]{40}$" },
+        "tag": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "required": ["type", "identifier"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["pypi", "npm", "mcpb", "container", "binary", "source", "other"]
+        },
+        "identifier": {
+          "type": "string",
+          "$comment": "For pypi: the purl, e.g. pkg:pypi/loadbearing@0.2.0."
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-fA-F0-9]{64}$",
+          "$comment": "Digest of the released artifact file where one exists (e.g. the sdist or wheel). Optional in a draft; required before status 'declared'."
+        }
+      },
+      "additionalProperties": false
+    },
+    "Subject": {
+      "type": "object",
+      "required": ["kind", "name", "version", "supplier", "artifacts"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["mcp-server", "tool-pack", "other"]
+        },
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "supplier": { "$ref": "#/$defs/Organization" },
+        "repository": { "$ref": "#/$defs/Repository" },
+        "artifacts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Artifact" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "ToolDigest": {
+      "type": "object",
+      "required": ["algorithm", "value", "canonicalization", "covers"],
+      "properties": {
+        "algorithm": { "type": "string", "enum": ["sha256"] },
+        "value": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" },
+        "canonicalization": { "type": "string", "enum": ["rfc8785"] },
+        "covers": {
+          "type": "string",
+          "pattern": "^\\{name,description,inputSchema(,outputSchema)?(,annotations)?\\}$"
+        }
+      },
+      "additionalProperties": false,
+      "$comment": "Identical in form and computation to TBOM v1.0.2 ToolDigest, so the same digest value appears in a TBOM for the same release."
+    },
+    "BoundTool": {
+      "type": "object",
+      "required": ["name", "definitionDigest"],
+      "properties": {
+        "name": { "type": "string" },
+        "definitionDigest": { "$ref": "#/$defs/ToolDigest" }
+      },
+      "additionalProperties": false
+    },
+    "Binding": {
+      "type": "object",
+      "required": ["tools"],
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/BoundTool" },
+          "minItems": 1
+        },
+        "tbom": {
+          "type": "object",
+          "required": ["serialNumber"],
+          "properties": {
+            "serialNumber": { "type": "string" },
+            "digest": { "type": "string", "pattern": "^sha256:[a-fA-F0-9]{64}$" }
+          },
+          "additionalProperties": false,
+          "$comment": "Present when a TBOM exists for the same release. The declaration is then attachable to that TBOM as an attestations[] entry of type 'custom' with this document as evidence; no change to the TBOM schema is required."
+        }
+      },
+      "additionalProperties": false,
+      "$comment": "Every conformance run first verifies that the live tools/list definitions hash to these digests. A mismatch is a drift finding and stops the run; behavior of an undeclared definition is not tested, and not warranted."
+    },
+    "Invariant": {
+      "type": "object",
+      "required": ["id", "type", "appliesTo"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]{1,63}$",
+          "$comment": "Unique within the declaration. Receipts cite invariants by this id."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "no-network",
+            "network-allowlist",
+            "no-write",
+            "write-scope",
+            "read-scope",
+            "no-subprocess",
+            "deterministic",
+            "error-as-value",
+            "refusal-tool",
+            "property"
+          ]
+        },
+        "appliesTo": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "$comment": "Tool names from binding.tools, or the single element '*' for the whole server including startup and shutdown."
+        },
+        "params": {
+          "type": "object",
+          "$comment": "Shape depends on type; normative shapes are in the spec text. Examples: network-allowlist {hosts: [...]}; write-scope {paths: [...]}; read-scope {pathArgs: [...], alsoAllowed: [...]}; deterministic {pathArgs: [...], volatile: [...]}; refusal-tool {tool: '...'}; property {check: '...', statement: '...'}."
+        },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "Signature": {
+      "type": "object",
+      "required": ["role", "type", "algorithm", "keyId", "value"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["supplier", "registry", "enterprise"]
+        },
+        "type": { "type": "string", "enum": ["jws", "dsse", "sigstore"] },
+        "algorithm": {
+          "type": "string",
+          "enum": ["Ed25519", "ECDSA-P256", "ECDSA-P384"]
+        },
+        "keyId": { "type": "string", "format": "uri" },
+        "signedAt": { "type": "string", "format": "date-time" },
+        "signer": { "$ref": "#/$defs/Organization" },
+        "value": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
