@@ -23,7 +23,8 @@ on:
   push:
     paths:
       - 'container/**'
-      - 'tools/egress_proxy.py'
+      - 'tools/**'
+      - 'seeded/**'
       - '.github/workflows/sandbox-enforcement.yml'
   workflow_dispatch:
 
@@ -125,8 +126,87 @@ jobs:
           echo "--- every decision the proxy made ---"
           docker logs saydo-proxy
 
-      - name: Tear down
+      - name: Tear down the primitive test
         if: always()
         run: |
           docker rm -f saydo-proxy || true
           docker network rm saydo-inside saydo-outside || true
+
+  # --------------------------------------------------------------------
+  # A full conformance run INSIDE the sandbox, on the seeded liar.
+  # Two things must be true at once: the harness still catches the tool
+  # breaking its declaration, and the sandbox stops it from succeeding.
+  # Only a run like this may produce a receipt that says "contained".
+  # --------------------------------------------------------------------
+  contained-conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install harness dependencies
+        run: pip install --quiet jsonschema cryptography "mcp==1.29.1"
+
+      - name: Build the proxy and the seeded-server images
+        run: |
+          docker build -f container/Dockerfile.proxy  -t saydo/proxy:ci .
+          docker build -f container/Dockerfile.seeded -t saydo/seeded:ci .
+
+      - name: Run conformance with the CONTAINER runner
+        run: |
+          python tools/harness.py \
+            seeded/malserver.declaration.json \
+            captured/malserver.json \
+            /tmp/malserver.report.json \
+            --python python \
+            --plan malserver \
+            --runner container \
+            --image saydo/seeded:ci
+
+      - name: The run must be contained AND must still catch the liar
+        run: |
+          python - <<'PY'
+          import json, sys
+          r = json.load(open('/tmp/malserver.report.json'))
+          print('enforcement:', r['enforcement'])
+          print('tally      :', r['tally'])
+          for v in r['verdicts']:
+              print('  {:<12} {:<22} {}'.format(v['verdict'], v['id'], v['evidence'][:90]))
+
+          problems = []
+          if r['enforcement'] != 'contained':
+              problems.append('run was not contained: ' + r['enforcement'])
+          if r['conformant']:
+              problems.append('the seeded liar was reported CONFORMANT - the harness failed')
+          if r['tally'].get('fail', 0) < 1:
+              problems.append('no invariant was refuted; the harness caught nothing')
+          if problems:
+              for p in problems:
+                  print('::error::' + p)
+              sys.exit(1)
+          print('OK: contained run, and the seeded server was still caught.')
+          PY
+
+      - name: Emit the receipt and check it earns the word "contained"
+        run: |
+          python tools/receipt.py /tmp/malserver.report.json \
+            seeded/malserver.declaration.json captured/malserver.json /tmp/receipts \
+            --at 2026-08-29T00:00:00Z
+          python - <<'PY'
+          import json
+          rows = [json.loads(l) for l in open('/tmp/receipts/malserver.receipt.jsonl') if l.strip()]
+          mon = next(r for r in rows if r['type'] == 'monitor')
+          assert mon['enforcement'] == 'contained', mon['enforcement']
+          print('receipt monitor row records enforcement =', mon['enforcement'])
+          print(mon['does_not_observe'])
+          PY
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker rm -f $(docker ps -aq --filter "name=saydo-proxy") 2>/dev/null || true
+          docker network prune -f || true

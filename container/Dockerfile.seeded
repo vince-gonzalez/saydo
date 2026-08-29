@@ -1,0 +1,29 @@
+# The seeded non-conformant server, containerised.
+#
+# This is the verify-the-verifier case run under enforcement. malserver.py
+# declares a clean envelope and then breaks it on purpose: it opens a socket,
+# writes outside its scope, spawns a child, returns a different answer each
+# call, and raises instead of returning an error value.
+#
+# On a host SayDo can only WATCH it do those things. In this image, inside the
+# sandbox, the egress has nowhere to go and the writes have nowhere to land.
+# So the run should show both properties at once: the harness still catches
+# the tool lying, AND the sandbox stops it. A receipt from this run is the
+# first that may honestly say "contained".
+
+FROM python:3.12-slim
+
+RUN useradd --create-home --uid 10001 saydo
+
+ARG MCP_SPEC=mcp==1.29.1
+RUN pip install --no-cache-dir "$MCP_SPEC"
+
+COPY seeded/malserver.py /app/malserver.py
+
+ENV SAYDO_SERVER_SPEC=seeded/malserver.py
+
+USER saydo
+WORKDIR /scratch
+
+ENTRYPOINT []
+CMD ["python", "-u", "/app/malserver.py"]

@@ -97,15 +97,19 @@ class Run:
     """One launch of the server, its call windows, and its monitor events."""
 
     def __init__(self, name, plan, server_python, monitor_log,
-                 egress_log=None):
+                 egress_log=None, runner=None):
         self.name = name
         self.windows = []   # (tool, t0, t1, outcome)
         self.events = []
         self.egress_log = egress_log
+        self.runner = runner
         self._launch(plan, server_python, monitor_log)
 
     def _command(self, plan, server_python):
-        return _launch(plan, server_python)
+        base = _launch(plan, server_python)
+        if self.runner:
+            return self.runner.argv(plan, server_python, base)
+        return base
 
     def _launch(self, plan, server_python, monitor_log):
         open(monitor_log, "w").close()
@@ -117,8 +121,12 @@ class Run:
         self.appdata = appdata
         timeout = plan.get("call_timeout", 60)
 
+        # A containerised server gets its environment inside the container, so
+        # the audit-hook injection only applies to a host process.
+        inject_hook = not (self.runner
+                           and self.runner.enforcement == "contained")
         session = Session(self._command(plan, server_python), env=env,
-                          monitor_log=monitor_log)
+                          monitor_log=monitor_log if inject_hook else None)
         try:
             init = session.initialize()
             if init.kind != "result":
@@ -131,12 +139,14 @@ class Run:
             self._run_chain(session, plan, timeout)
         finally:
             session.close()
-            time.sleep(0.1)   # let the proxy flush the tunnel's CONNECT line
+            time.sleep(0.3)   # let the proxy flush the tunnel's CONNECT line
             self.events = _read_events(monitor_log)
-            if self.egress_log:
-                # Merge the boundary-proxy egress into the same event stream;
-                # both are {t, event, host}, so attribution by call window is
-                # identical.
+            # Merge the boundary-proxy egress into the same event stream; both
+            # are {t, event, host}, so attribution by call window is identical
+            # whether the proxy was a local listener or a container.
+            if self.runner:
+                self.events += self.runner.collect_egress()
+            elif self.egress_log:
                 self.events += _read_events(self.egress_log)
 
     def _run_chain(self, session, plan, timeout):
@@ -701,8 +711,19 @@ def _launch(plan, server_python):
     return [server_python, "-c", plan["launch"]]
 
 
+#: The runner in force for the current run_conformance() call. The auxiliary
+#: passes (fuzz, determinism, properties) launch their own instances, and they
+#: must go through the same runner as the main pass -- otherwise a "contained"
+#: verdict would rest partly on unconfined runs. Runs are sequential, so a
+#: single module-level value is sufficient and is always cleared in a finally.
+_ACTIVE_RUNNER = None
+
+
 def _cmd(plan, server_python):
-    return _launch(plan, server_python)
+    base = _launch(plan, server_python)
+    if _ACTIVE_RUNNER:
+        return _ACTIVE_RUNNER.argv(plan, server_python, base)
+    return base
 
 
 def _canon(value):
@@ -734,26 +755,43 @@ MONITOR_DESC = (
     "through either. Full enforcement needs a network-isolated container host.")
 
 
-def run_conformance(name, plan, declaration, capture, server_python):
+def _declared_hosts(declaration):
+    """Every host the declaration says the tool may reach. Used as the proxy
+    allowlist when the runner can actually enforce one."""
+    hosts = set()
+    for inv in declaration.get("invariants", []):
+        if inv.get("type") == "network-allowlist":
+            hosts.update((inv.get("params") or {}).get("hosts", []))
+    return sorted(hosts)
+
+
+def run_conformance(name, plan, declaration, capture, server_python,
+                    runner=None):
     """Exercise one server behind the boundary proxy and judge it. Returns a
     report dict. This is the in-process entry the CLI and the sweep both use."""
+    global _ACTIVE_RUNNER
     plans_mod.write_fixtures()
     log = os.path.join(tempfile.gettempdir(), "saydo-monitor-{}.log".format(name))
     egress_log = os.path.join(tempfile.gettempdir(),
                               "saydo-egress-{}.log".format(name))
 
-    from egress_proxy import EgressProxy
-    open(egress_log, "w").close()
-    proxy = EgressProxy(egress_log).start()
-    os.environ["HTTP_PROXY"] = proxy.address
-    os.environ["HTTPS_PROXY"] = proxy.address
-    os.environ["http_proxy"] = proxy.address
-    os.environ["https_proxy"] = proxy.address
-    os.environ["SAYDO_EGRESS_LOG"] = egress_log
-    os.environ["NODE_USE_ENV_PROXY"] = "1"
+    if runner is None:
+        import runner as runner_mod
+        runner = runner_mod.make("local")
+    ok, why = runner.available()
+    if not ok:
+        # Refuse rather than quietly falling back to a weaker runner: a run
+        # that silently downgraded from containment to observation would make
+        # the receipt's enforcement claim false.
+        raise SystemExit("runner unavailable: " + why)
+
+    proxy_address = runner.setup(egress_log, allow=_declared_hosts(declaration))
+    os.environ.update(runner.env(proxy_address, None, egress_log))
+    _ACTIVE_RUNNER = runner
 
     try:
-        main_run = Run(name, plan, server_python, log, egress_log=egress_log)
+        main_run = Run(name, plan, server_python, log, egress_log=egress_log,
+                       runner=runner)
         appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
         ctx = {
             "declaration": declaration,
@@ -764,7 +802,8 @@ def run_conformance(name, plan, declaration, capture, server_python):
         }
         ctx["property_results"] = run_properties(plan, server_python, log, ctx)
     finally:
-        proxy.stop()
+        _ACTIVE_RUNNER = None
+        runner.teardown()
 
     verdicts, findings = judge(declaration, capture, main_run, ctx)
     tally = {}
@@ -776,7 +815,11 @@ def run_conformance(name, plan, declaration, capture, server_python):
         "subject": declaration["subject"],
         "declaration_serial": declaration["serialNumber"],
         "harness_version": "0.1.0",
-        "monitor": MONITOR_DESC,
+        # The enforcement level is a property of how this run actually
+        # happened, carried from the runner so no downstream artifact can
+        # claim containment for a run that was merely observed.
+        "enforcement": runner.enforcement,
+        "monitor": runner.describe(),
         "conformant": conformant,
         "tally": tally,
         "verdicts": verdicts,
@@ -792,6 +835,11 @@ def main():
     ap.add_argument("--python", required=True,
                     help="interpreter that runs the server under test")
     ap.add_argument("--plan", help="plan name (default: server name)")
+    ap.add_argument("--runner", default="local", choices=["local", "container"],
+                    help="where the server runs. 'local' observes; 'container' "
+                         "enforces (needs Docker on a Linux host)")
+    ap.add_argument("--image", help="container image for --runner container")
+    ap.add_argument("--runtime", help="container runtime, e.g. runsc for gVisor")
     args = ap.parse_args()
 
     plans_mod.write_fixtures()
@@ -802,7 +850,17 @@ def main():
 
     name = args.plan or declaration["subject"]["name"]
     plan = plans_mod.PLANS[name]
-    report = run_conformance(name, plan, declaration, capture, args.python)
+    import runner as runner_mod
+    if args.runner == "container":
+        if not args.image:
+            raise SystemExit("--runner container needs --image")
+        the_runner = runner_mod.make("container", image=args.image,
+                                     runtime=args.runtime)
+    else:
+        the_runner = runner_mod.make("local")
+
+    report = run_conformance(name, plan, declaration, capture, args.python,
+                             runner=the_runner)
     verdicts, findings = report["verdicts"], report["findings"]
     conformant, tally = report["conformant"], report["tally"]
     with open(args.report, "w", encoding="utf-8", newline="\n") as fh:

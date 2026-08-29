@@ -19,7 +19,8 @@
   },
   "declaration_serial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
   "harness_version": "0.1.0",
-  "monitor": "boundary egress proxy (any language) + cpython audit hook (python, in-runtime). Egress destinations are observed at the proxy; filesystem/subprocess via the audit hook. Not a sandbox: a raw socket to a bare IP ignoring proxy env, or a native syscall, is not compelled through either. Full enforcement needs a network-isolated container host.",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
   "conformant": true,
   "tally": {
     "pass": 9

@@ -138,6 +138,7 @@ def build(report, declaration, capture, generated_at):
                     "purl": purl,
                     "supplier": subject["supplier"]["name"]},
         "harness": {"version": report["harness_version"],
+                    "enforcement": report.get("enforcement", "observed"),
                     "monitor": report["monitor"]},
         "generatedAt": generated_at,
     })
@@ -151,19 +152,42 @@ def build(report, declaration, capture, generated_at):
                   for t in capture["tools"]],
     })
 
-    chain.add({
+    # What the monitor could actually promise depends on how the run happened,
+    # so the row is written from the run's enforcement level rather than from a
+    # fixed string. A reader can tell containment from observation here.
+    enforcement = report.get("enforcement", "observed")
+    monitor_row = {
         "type": "monitor",
-        "method": "cpython-audit-hook",
-        "observes": ["filesystem open (read/write intent)",
-                     "socket connect/getaddrinfo/bind/sendto",
-                     "subprocess and os exec/spawn",
-                     "filesystem-mutating os and shutil calls"],
-        "does_not_observe": (
+        "enforcement": enforcement,
+        "description": report["monitor"],
+    }
+    if enforcement == "contained":
+        monitor_row["observes"] = [
+            "egress at the proxy, which is the only route out of the sandbox",
+            "filesystem writes confined to the scratch mount",
+            "processes confined to the container's pid namespace",
+        ]
+        monitor_row["does_not_observe"] = (
+            "Containment is enforced by the kernel boundary, so coverage does "
+            "not depend on the tool's language or its cooperation. It is still "
+            "not a proof of safety: a tool may do anything it likes WITHIN the "
+            "declared envelope, and this record says only that it stayed "
+            "inside it.")
+    else:
+        monitor_row["observes"] = [
+            "filesystem open (read/write intent)",
+            "socket connect/getaddrinfo/bind/sendto",
+            "subprocess and os exec/spawn",
+            "filesystem-mutating os and shutil calls",
+            "egress destinations at the proxy, for clients that use it",
+        ]
+        monitor_row["does_not_observe"] = (
             "activity below the Python runtime: a native extension or a "
-            "direct ctypes syscall is not seen. This is drift-and-accident "
-            "evidence and refutation of false declarations by ordinary code. "
-            "It is not a sandbox."),
-    })
+            "direct ctypes syscall is not seen, and a client that ignores "
+            "proxy configuration is not compelled through the proxy. This is "
+            "drift-and-accident evidence and refutation of false declarations "
+            "by ordinary code. It is NOT containment.")
+    chain.add(monitor_row)
 
     for v in report["verdicts"]:
         chain.add({

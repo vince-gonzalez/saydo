@@ -121,9 +121,16 @@ def build(receipt_lines, anchor, receipt_url=None):
                    "failedDetail": [{"invariant": f["invariant"],
                                      "evidence": f["evidence"]} for f in failed]},
         "envelope": envelope,
-        "caveat": ("Behavior was observed, not sandboxed. A tool built to "
-                   "evade observation may act unseen; the proof is the receipt, "
-                   "not this summary."),
+        "enforcement": monitor.get("enforcement", "observed"),
+        "caveat": (
+            "Behaviour was enforced at a sandbox boundary, so coverage did not "
+            "depend on the tool cooperating. This still bounds behaviour to the "
+            "declared envelope; it is not a proof of safety. The proof is the "
+            "receipt, not this summary."
+            if monitor.get("enforcement") == "contained" else
+            "Behaviour was observed, not sandboxed. A tool built to evade "
+            "observation may act unseen; the proof is the receipt, not this "
+            "summary."),
         "receipt": {"head": anchor.get("head"),
                     "url": receipt_url,
                     "verify": "Recompute the chain and signature in a browser; "

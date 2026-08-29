@@ -23,19 +23,42 @@ until a run actually used ContainerRunner -- see `Runner.enforcement`.
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
+import time
 
 
 class Runner:
-    """Base: turns a plan into the argv the MCP client should spawn."""
+    """Base: owns where the server runs AND where its egress is watched.
 
-    #: What this runner can actually promise about the run.
+    The proxy has to belong to the runner rather than to the harness, because
+    where the proxy sits is exactly what separates observing from enforcing.
+    Locally it is an in-process listener the tool may ignore; in a container it
+    is the only neighbour the tool has. Same lifecycle either way:
+
+        setup(egress_log, allow) -> proxy address to advertise to the server
+        argv(...) / env(...)     -> how to launch the server
+        collect_egress()         -> the egress events the run produced
+        teardown()
+    """
+
+    #: What this runner can actually promise about the run. Carried into the
+    #: report and the receipt, so a claim can never outrun the mechanism.
     enforcement = "none"
 
     def available(self):
         return True, ""
+
+    def setup(self, egress_log, allow=None):
+        raise NotImplementedError
+
+    def collect_egress(self):
+        raise NotImplementedError
+
+    def teardown(self):
+        pass
 
     def argv(self, plan, server_python, launch_argv):
         raise NotImplementedError
@@ -51,6 +74,30 @@ class LocalRunner(Runner):
     """Host process. Observation only; this is the honest default today."""
 
     enforcement = "observed"
+
+    def __init__(self):
+        self._proxy = None
+        self._egress_log = None
+
+    def setup(self, egress_log, allow=None):
+        # Deliberately started WITHOUT an allowlist even when one is declared:
+        # on a host the tool can route around this proxy entirely, so refusing
+        # here would produce the appearance of enforcement without the fact of
+        # it. Locally the proxy reports; only the container enforces.
+        from egress_proxy import EgressProxy
+        self._egress_log = egress_log
+        open(egress_log, "w").close()
+        self._proxy = EgressProxy(egress_log).start()
+        return self._proxy.address
+
+    def collect_egress(self):
+        from harness import _read_events
+        return _read_events(self._egress_log) if self._egress_log else []
+
+    def teardown(self):
+        if self._proxy:
+            self._proxy.stop()
+            self._proxy = None
 
     def argv(self, plan, server_python, launch_argv):
         return list(launch_argv)
@@ -95,14 +142,75 @@ class ContainerRunner(Runner):
 
     enforcement = "contained"
 
-    def __init__(self, image, runtime=None, network="saydo-none",
-                 scratch="/scratch", memory="512m", pids=256):
+    def __init__(self, image, runtime=None, network="saydo-inside",
+                 outside="saydo-outside", proxy_image="saydo/proxy:ci",
+                 scratch="/scratch", memory="512m", pids=256, tag=""):
         self.image = image
         self.runtime = runtime          # "runsc" for gVisor, None for default
-        self.network = network
+        self.network = network + tag
+        self.outside = outside + tag
+        self.proxy_image = proxy_image
+        self.proxy_name = "saydo-proxy" + tag
         self.scratch = scratch
         self.memory = memory
         self.pids = pids
+        self._up = False
+
+    # -- lifecycle ---------------------------------------------------------
+
+    def _docker(self, *args, **kw):
+        return subprocess.run(["docker", *args], capture_output=True,
+                              text=True, timeout=kw.get("timeout", 120))
+
+    def setup(self, egress_log, allow=None):
+        """Stand up the two networks and the proxy, then hand back the address
+        the server should use. The address is a network alias, not a host port:
+        inside `network` the proxy is simply the only thing there."""
+        self._docker("network", "create", "--internal", self.network)
+        self._docker("network", "create", self.outside)
+
+        cmd = ["run", "-d", "--name", self.proxy_name,
+               "--network", self.network,
+               "--network-alias", "saydo-proxy"]
+        if allow:
+            # Here an allowlist is a real policy: the tool has no other route,
+            # so a refusal at the proxy is a refusal in fact.
+            cmd += ["-e", "SAYDO_ALLOW=" + ",".join(sorted(allow))]
+        cmd += [self.proxy_image]
+        out = self._docker(*cmd)
+        if out.returncode != 0:
+            raise RuntimeError("could not start the proxy container: "
+                               + (out.stderr or "").strip())
+        # Only the proxy touches the outside world.
+        self._docker("network", "connect", self.outside, self.proxy_name)
+        self._up = True
+        time.sleep(2)
+        self._proxy_addr = "http://saydo-proxy:8888"
+        return self._proxy_addr
+
+    def collect_egress(self):
+        """The proxy's decisions. It echoes each one to stdout, so the
+        container log is the evidence and no volume is needed."""
+        if not self._up:
+            return []
+        out = self._docker("logs", self.proxy_name)
+        events = []
+        for line in (out.stdout or "").splitlines():
+            line = line.strip()
+            if line.startswith("{"):
+                try:
+                    events.append(json.loads(line))
+                except ValueError:
+                    pass
+        return events
+
+    def teardown(self):
+        if not self._up:
+            return
+        self._docker("rm", "-f", self.proxy_name)
+        self._docker("network", "rm", self.network)
+        self._docker("network", "rm", self.outside)
+        self._up = False
 
     def available(self):
         if not shutil.which("docker"):
@@ -127,6 +235,9 @@ class ContainerRunner(Runner):
         return True, ""
 
     def argv(self, plan, server_python, launch_argv):
+        # The server's environment has to be set INSIDE the container, so the
+        # proxy variables are -e flags here rather than host process env.
+        addr = getattr(self, "_proxy_addr", "http://saydo-proxy:8888")
         cmd = ["docker", "run", "--rm", "-i",
                "--network", self.network,
                "--read-only",
@@ -135,23 +246,29 @@ class ContainerRunner(Runner):
                "--security-opt", "no-new-privileges",
                "--pids-limit", str(self.pids),
                "--memory", self.memory,
-               "--workdir", self.scratch]
+               "--workdir", self.scratch,
+               "-e", "HTTP_PROXY=" + addr, "-e", "HTTPS_PROXY=" + addr,
+               "-e", "http_proxy=" + addr, "-e", "https_proxy=" + addr,
+               "-e", "NODE_USE_ENV_PROXY=1"]
         if self.runtime:
             cmd += ["--runtime", self.runtime]
         for k, v in (plan.get("container_env") or {}).items():
             cmd += ["-e", "{}={}".format(k, v)]
         cmd += [self.image]
-        cmd += list(plan.get("container_argv") or launch_argv)
+        # A plan may name the in-container command explicitly. An empty list
+        # means "use the image's own CMD", which is distinct from absent -- so
+        # test for presence rather than truthiness. The host launch argv is
+        # only a fallback, since host paths rarely exist inside the image.
+        if "container_argv" in plan:
+            cmd += list(plan["container_argv"])
+        else:
+            cmd += list(launch_argv)
         return cmd
 
     def env(self, proxy_address, monitor_boot_dir, egress_log):
-        # Inside the container the proxy is reached by its network alias, not
-        # by the host loopback address the local runner uses.
-        alias = os.environ.get("SAYDO_PROXY_ALIAS", "saydo-proxy:8888")
-        addr = "http://" + alias
-        return {"HTTP_PROXY": addr, "HTTPS_PROXY": addr,
-                "http_proxy": addr, "https_proxy": addr,
-                "NODE_USE_ENV_PROXY": "1"}
+        # Nothing is needed on the host side: the docker CLI is just a pipe,
+        # and the server's own environment travels as -e flags in argv().
+        return {}
 
     def describe(self):
         return ("container ({}{}): only network route is the SayDo proxy, "

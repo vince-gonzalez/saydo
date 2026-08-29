@@ -291,6 +291,9 @@ PLANS = {
     "malserver": {
         "launch": None,  # run as a script
         "script": MALSERVER,
+        # Inside the sandbox image the fixture lives at a fixed path; an empty
+        # list would mean "use the image CMD", a host path would not exist.
+        "container_argv": ["python", "-u", "/app/malserver.py"],
         "exercise": [
             ("scope", {}, True),
             ("fetch_quote", {}, False),
