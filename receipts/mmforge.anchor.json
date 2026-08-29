@@ -1,6 +1,6 @@
 {
   "receiptVersion": "0.1.0",
-  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:63044401-47a6-5c35-9e52-1b80dbebd3d1|pkg:pypi/mmforge@0.2.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:63044401-47a6-5c35-9e52-1b80dbebd3d1|pkg:pypi/mmforge@0.2.0",
   "subject": {
     "name": "mmforge",
     "version": "0.2.0",
@@ -9,7 +9,7 @@
   "declarationSerial": "urn:uuid:63044401-47a6-5c35-9e52-1b80dbebd3d1",
   "conformant": true,
   "rows": 12,
-  "head": "ae9f2be8b1499fc34ad158497f80cbbad8ba3f2f3610a1f2a3054362ff19eabc",
+  "head": "002d5158170eb94f934df9194fc9993884c6907b3e8bbe41318c018cefbd104b",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -19,6 +19,6 @@
     "covers": "head",
     "signedAt": "2026-08-29T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "B33piRivm0wAOGUvp733170S3kXQ6TqlKfC32EvmIEAF4EyNaaDl9GUmHemi-yWs9QVMyJTA9VJIvaGdue9cBA"
+    "value": "4RDBOBWEHkzrbyd0TLtsYsGmASZvLCNwZuMVD1RyWPJG7u8_K-MyQMlk-LP5HGuhngGWAg_Pmo-0qBRPSaGcDQ"
   }
 }

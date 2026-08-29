@@ -68,7 +68,7 @@ class Session:
         if env:
             full_env.update(env)
         if monitor_log:
-            full_env["WARRANT_MONITOR_LOG"] = monitor_log
+            full_env["SayDo_MONITOR_LOG"] = monitor_log
             boot = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 "monitor_boot")
             prior = full_env.get("PYTHONPATH")
@@ -143,7 +143,7 @@ class Session:
         out = self.request("initialize", {
             "protocolVersion": "2025-06-18",
             "capabilities": {},
-            "clientInfo": {"name": "warrant-harness", "version": "0.1.0"},
+            "clientInfo": {"name": "saydo-harness", "version": "0.1.0"},
         }, timeout)
         if out.kind == "result":
             try:

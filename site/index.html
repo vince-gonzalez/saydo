@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WARRANT</title>
+<title>SayDo</title>
 <style>
   :root {
     --bg: #f6f7f9; --panel: #ffffff; --ink: #14181d; --muted: #4f5a65;
@@ -71,12 +71,12 @@
 <div class="wrap">
 
   <header>
-    <div class="mark">F-Keys &middot; WARRANT</div>
+    <div class="mark">F-Keys &middot; SayDo</div>
     <h1>Prove a tool behaves as it says.</h1>
     <p class="thesis">
       Signing and provenance prove a tool's code is what the publisher
       released. They do not prove the tool behaves as its description
-      promises. WARRANT is the layer that tests that second claim: a
+      promises. SayDo is the layer that tests that second claim: a
       signed contract per tool, a harness that checks the tool against it,
       and a hash-chained receipt anyone verifies without trusting us.
     </p>
@@ -98,7 +98,7 @@
     are true.
   </p>
   <p>
-    WARRANT does not replace those standards. It extends them: the declaration
+    SayDo does not replace those standards. It extends them: the declaration
     binds to the same tool-definition digests a Tool Bill of Materials records,
     and attaches to one without changing its schema.
   </p>
@@ -127,11 +127,11 @@
 
   <h2>Run it</h2>
   <p>
-    Install one of the covered servers, then put it under warrant. The command
+    Install one of the covered servers, then put it under SayDo. The command
     captures the tool definitions, exercises the server, and writes a receipt.
   </p>
-  <pre><span class="cmt"># one MCP server, one warrant, one receipt</span>
-warrant verify certivl
+  <pre><span class="cmt"># one server, one check, one receipt</span>
+saydo verify certivl
 
   certivl   CONFORMANT
   tally     {'pass': 9}
@@ -139,10 +139,10 @@ warrant verify certivl
   head      353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a</pre>
   <p>
     A harness that only ever passes is worth nothing, so it ships with a server
-    built to fail. <code>warrant selfcheck</code> runs it and requires the
+    built to fail. <code>saydo selfcheck</code> runs it and requires the
     harness to catch every violation:
   </p>
-  <pre>warrant selfcheck
+  <pre>saydo selfcheck
 
   malserver   NOT CONFORMANT   {'pass': 1, 'fail': 5}
     network.none      FAIL  egress: fetch_quote-&gt;socket.connect

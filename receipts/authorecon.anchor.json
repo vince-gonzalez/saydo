@@ -1,6 +1,6 @@
 {
   "receiptVersion": "0.1.0",
-  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8|pkg:pypi/authorecon@1.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8|pkg:pypi/authorecon@1.1.0",
   "subject": {
     "name": "authorecon",
     "version": "1.1.0",
@@ -9,7 +9,7 @@
   "declarationSerial": "urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8",
   "conformant": true,
   "rows": 12,
-  "head": "f00341efcab66dbd40c6e8dc36544bc071d573c8d414a729769d44b69f232f8a",
+  "head": "e2015eafc8de06e3e7ebc7038d3ebf841206bdc21dbac97e45db0bb925e1bed2",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -19,6 +19,6 @@
     "covers": "head",
     "signedAt": "2026-08-29T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "30W_bW7OCrbtZmcrRUqtAdkWHSoWmS5sIaXJkxCl8hYeCgE-Vyuh4g2EfHxtgZXpFI8FeQ647cjpjzfAlC1DDQ"
+    "value": "JdGQbz9NW_qvaCP08t1dPtiPt04K98spOyoVkJe6rbM4umuC9IenrKhR9Kux7IJ7KiKW0Tx6kldkKG2rRCU2Cw"
   }
 }

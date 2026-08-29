@@ -1,4 +1,4 @@
-"""Validate WARRANT declarations, and prove the validation can fail.
+"""Validate SayDo declarations, and prove the validation can fail.
 
 Checks, per declaration:
 

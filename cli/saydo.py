@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""warrant -- put a tool under warrant and check the result.
+"""saydo -- put one tool under SayDo and check the result.
 
 One command wraps the pipeline that the tools/ scripts perform separately:
 capture the live tool definitions, exercise the server under the conformance
 harness, and emit a hash-chained receipt. A stranger with one of the covered
 servers installed runs
 
-    warrant verify certivl
+    saydo verify certivl
 
 and gets reports/certivl.report.json, receipts/certivl.receipt.jsonl, and an
 anchor whose head they check in verifier/index.html without trusting us.
@@ -100,7 +100,7 @@ def cmd_list(args):
         has = "declaration" if os.path.exists(decl) else "NO DECLARATION"
         tag = "  (seeded non-conformant fixture)" if name == "malserver" else ""
         print("  {:<14} {}{}".format(name, has, tag))
-    print("\nverify one with:  warrant verify <name>")
+    print("\nverify one with:  saydo verify <name>")
 
 
 def cmd_verify(args):
@@ -109,13 +109,13 @@ def cmd_verify(args):
     p = _paths(name)
     declaration = _declaration_for(name)
     if not os.path.exists(declaration):
-        raise SystemExit("no declaration for {!r}; try `warrant list`".format(name))
+        raise SystemExit("no declaration for {!r}; try `saydo list`".format(name))
     launch = _launch_argv(name, python)
     if not launch:
         raise SystemExit("no exercise plan for {!r}; the harness needs one "
                          "to know how to drive it".format(name))
 
-    print("warrant verify {}  (interpreter: {})".format(name, python))
+    print("saydo verify {}  (interpreter: {})".format(name, python))
 
     print("\n[1/3] capture live tool definitions")
     _run([python, os.path.join(TOOLS, "capture_tools.py"),
@@ -200,7 +200,7 @@ def cmd_selfcheck(args):
 
 
 def main():
-    ap = argparse.ArgumentParser(prog="warrant", description=__doc__,
+    ap = argparse.ArgumentParser(prog="saydo", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
 

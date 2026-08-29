@@ -1,6 +1,6 @@
 {
   "receiptVersion": "0.1.0",
-  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
   "subject": {
     "name": "certivl",
     "version": "0.2.0",
@@ -9,7 +9,7 @@
   "declarationSerial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
   "conformant": true,
   "rows": 13,
-  "head": "353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a",
+  "head": "145adfe7904f84d099d68b26ccbda367f7b4463b24b3feba3ff73cecf0561de2",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -19,6 +19,6 @@
     "covers": "head",
     "signedAt": "2026-08-29T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "qVcGL6bebCVK4TtpItuoglgK4VkRSlK7XXjDv8OhZOIZh27gi1cuyqhvMDUVJAAcAhghGdYEqhe2Sv-LGzFlCA"
+    "value": "jK5YROw60yduuaLkH4AHHhNkawnM6ElQkgNo2Ngt52QAnMmadNXWbkGhoxtQC3TaRSx_BxzUJV9Zx_6QyciWAQ"
   }
 }

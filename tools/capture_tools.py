@@ -70,7 +70,7 @@ def capture(command):
         proc.stdin.write(_rpc(1, "initialize", {
             "protocolVersion": PROTOCOL,
             "capabilities": {},
-            "clientInfo": {"name": "warrant-capture", "version": "0.1.0"},
+            "clientInfo": {"name": "saydo-capture", "version": "0.1.0"},
         }))
         proc.stdin.flush()
         init = _read_response(proc.stdout, 1)

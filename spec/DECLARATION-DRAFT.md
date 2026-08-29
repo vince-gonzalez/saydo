@@ -5,7 +5,7 @@ this document that goes anywhere public — working-group posts, spec text,
 badges, landing copy — is rewritten by the supplier in the supplier's own
 words first. This file is working material.
 
-Product name provisional (WARRANT / ASSAY); all identifiers carrying the name
+Product name provisional (SayDo / ASSAY); all identifiers carrying the name
 are expected to change once.
 
 ## 1. What this is

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WARRANT receipt verifier</title>
+<title>SayDo receipt verifier</title>
 <style>
   :root {
     --bg: #f6f7f9; --panel: #ffffff; --ink: #14181d; --muted: #55606b;
@@ -74,9 +74,9 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>WARRANT receipt verifier</h1>
+  <h1>SayDo receipt verifier</h1>
   <p class="lede">
-    A WARRANT receipt is a hash-chained record of a conformance run. This page
+    A SayDo receipt is a hash-chained record of a conformance run. This page
     recomputes the whole chain from its genesis anchor, entirely in your
     browser &mdash; no request leaves this page, no account, no trust in the
     issuer. Change one byte of a receipt and the walk fails at that row. The
@@ -153,7 +153,7 @@ function deriveGenesis(firstRow) {
   // The genesis anchor is not stored in the ledger; it is reconstructable
   // from the opening row, but that is self-asserted. When an anchor is
   // supplied, its genesis and head are the trust root and win.
-  return "WARRANT-RECEIPT/0.1.0|" + firstRow.declarationSerial +
+  return "SAYDO-RECEIPT/0.1.0|" + firstRow.declarationSerial +
          "|" + firstRow.subject.purl;
 }
 
@@ -366,24 +366,24 @@ window.addEventListener("load", function () {
 </script>
 
 <script type="application/jsonl" id="sample-ledger">
-{"declarationSerial":"urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66","declarationStatus":"draft","declarationVersion":"0.1.0","generatedAt":"2026-08-29T00:00:00Z","harness":{"monitor":"cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox","version":"0.1.0"},"prev_hash":"9d26264d95d8ef97ac3c6708882fcb1487a3ef5a69ad0829bdaf3765d9b5ce28","receiptVersion":"0.1.0","row_hash":"5ae499348076efb4d9538f8db3996255a3f06e653cb351b7606d4be5de938cdd","seq":1,"subject":{"name":"certivl","purl":"pkg:pypi/certivl@0.2.0","supplier":"F-Keys Creative LLC","version":"0.2.0"},"type":"receipt-open"}
-{"prev_hash":"5ae499348076efb4d9538f8db3996255a3f06e653cb351b7606d4be5de938cdd","protocolVersion":"2025-06-18","row_hash":"37c4314558bc8a1d9cb0cd80ef01580d123e365665e0cfff5797f72d63e539ec","seq":2,"tools":[{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:8112c4520fb0a5d0e8e21216cb071d0686724e7f4e8f310850736507231903a6","name":"scope"},{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:f71a9a33d66be05c03592f20c7495969a1fcf704331870950eff876b1ba36703","name":"decide"},{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:b41da64ef1891d708cc01fe94e76c8f17454457272f5318834ad0bf3d3c118d7","name":"enclose"}],"type":"capture"}
-{"does_not_observe":"activity below the Python runtime: a native extension or a direct ctypes syscall is not seen. This is drift-and-accident evidence and refutation of false declarations by ordinary code. It is not a sandbox.","method":"cpython-audit-hook","observes":["filesystem open (read/write intent)","socket connect/getaddrinfo/bind/sendto","subprocess and os exec/spawn","filesystem-mutating os and shutil calls"],"prev_hash":"37c4314558bc8a1d9cb0cd80ef01580d123e365665e0cfff5797f72d63e539ec","row_hash":"59cee14fb0f6aba5c2fc21bf0f4ba4589d509c3afcd832c730b804ccc49633d5","seq":3,"type":"monitor"}
-{"appliesTo":["*"],"evidence":"scope listed=True answered=True did_no_io=True","invariant":"refusal.scope","invariantType":"refusal-tool","prev_hash":"59cee14fb0f6aba5c2fc21bf0f4ba4589d509c3afcd832c730b804ccc49633d5","row_hash":"ecbe3f1a9a627eb97490088490ba4c9f63b20097a73666551ad17f04ed2a90b4","seq":4,"type":"verdict","verdict":"pass"}
-{"appliesTo":["*"],"evidence":"no hosts resolved across 4 call window(s)","invariant":"network.none","invariantType":"no-network","prev_hash":"ecbe3f1a9a627eb97490088490ba4c9f63b20097a73666551ad17f04ed2a90b4","row_hash":"385a408cb8a2e6bad8f0050eb4d152c257e8f029e768b085a5ef7ebc95ffc45a","seq":5,"type":"verdict","verdict":"pass"}
-{"appliesTo":["*"],"evidence":"no write observed","invariant":"writes.none","invariantType":"no-write","prev_hash":"385a408cb8a2e6bad8f0050eb4d152c257e8f029e768b085a5ef7ebc95ffc45a","row_hash":"40d43e59e7274ea059bfaafad7d716d058e80fab58dd6861e5b0a3f23909a56a","seq":6,"type":"verdict","verdict":"pass"}
-{"appliesTo":["*"],"evidence":"no out-of-scope read observed","invariant":"reads.none","invariantType":"read-scope","prev_hash":"40d43e59e7274ea059bfaafad7d716d058e80fab58dd6861e5b0a3f23909a56a","row_hash":"8113b068e7f05a93556ad18f95f0f8a944a377ef00fb6410684b08adb4b9b1cf","seq":7,"type":"verdict","verdict":"pass"}
-{"appliesTo":["*"],"evidence":"no subprocess observed","invariant":"subprocess.none","invariantType":"no-subprocess","prev_hash":"8113b068e7f05a93556ad18f95f0f8a944a377ef00fb6410684b08adb4b9b1cf","row_hash":"7032546c3bba3036fc952a7bfd4d515a243c81362155e50457b60331626e9ff4","seq":8,"type":"verdict","verdict":"pass"}
-{"appliesTo":["*"],"evidence":"identical across two same-instance and one fresh call: decide, enclose, scope","invariant":"answers.deterministic","invariantType":"deterministic","prev_hash":"7032546c3bba3036fc952a7bfd4d515a243c81362155e50457b60331626e9ff4","row_hash":"b24a8e15e4c9c9d9276ccdec6b2243b5cb3e62b5e5009b927b9a05104ff777d8","seq":9,"type":"verdict","verdict":"pass"}
-{"appliesTo":["*"],"evidence":"6 hostile inputs each returned an error value, no raise, crash, or hang","invariant":"errors.are-values","invariantType":"error-as-value","prev_hash":"b24a8e15e4c9c9d9276ccdec6b2243b5cb3e62b5e5009b927b9a05104ff777d8","row_hash":"578e024e1b5c461501cd5a2bb3117408d2df9fa82ea27baadda8be63a1e40b93","seq":10,"type":"verdict","verdict":"pass"}
-{"appliesTo":["decide"],"evidence":"decide(pi == pi) -> UNDECIDED, expected UNDECIDED; decide(sqrt2 * sqrt2 == 2) -> UNDECIDED, expected UNDECIDED; decide(1 < 2) -> TRUE, expected TRUE","invariant":"undecided.on-overlap","invariantType":"property","prev_hash":"578e024e1b5c461501cd5a2bb3117408d2df9fa82ea27baadda8be63a1e40b93","row_hash":"802b5a38f6149b75da89e4576b646fa787f4fb0d759ca46e279435efe3625fa9","seq":11,"type":"verdict","verdict":"pass"}
-{"appliesTo":["decide","enclose"],"evidence":"decide(0.1 + 0.2 == 0.3) -> TRUE, expected TRUE (the decimal literal, not the nearest double)","invariant":"decimal.read-exactly","invariantType":"property","prev_hash":"802b5a38f6149b75da89e4576b646fa787f4fb0d759ca46e279435efe3625fa9","row_hash":"5d755397c58f8e42704f677d5cae70b11797a8f5fded7e8479ee5bb1f08d3a7a","seq":12,"type":"verdict","verdict":"pass"}
-{"conformant":true,"prev_hash":"5d755397c58f8e42704f677d5cae70b11797a8f5fded7e8479ee5bb1f08d3a7a","rowCount":13,"row_hash":"353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a","seq":13,"tally":{"pass":9},"type":"receipt-close"}
+{"declarationSerial":"urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66","declarationStatus":"draft","declarationVersion":"0.1.0","generatedAt":"2026-08-29T00:00:00Z","harness":{"monitor":"cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox","version":"0.1.0"},"prev_hash":"31b446b87a387b3df234ab84951a1426c14af528dbe5758b03af8c9de14b7a33","receiptVersion":"0.1.0","row_hash":"0814197a658dfe2f44566590ab4483b51b06e73a42064ef1ceb0a305dd7a3202","seq":1,"subject":{"name":"certivl","purl":"pkg:pypi/certivl@0.2.0","supplier":"F-Keys Creative LLC","version":"0.2.0"},"type":"receipt-open"}
+{"prev_hash":"0814197a658dfe2f44566590ab4483b51b06e73a42064ef1ceb0a305dd7a3202","protocolVersion":"2025-06-18","row_hash":"f8c2b4e1480ffc8d34e2594e9b3227adcfee3dd60a4444587ecf4495dcfdd71a","seq":2,"tools":[{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:8112c4520fb0a5d0e8e21216cb071d0686724e7f4e8f310850736507231903a6","name":"scope"},{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:f71a9a33d66be05c03592f20c7495969a1fcf704331870950eff876b1ba36703","name":"decide"},{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:b41da64ef1891d708cc01fe94e76c8f17454457272f5318834ad0bf3d3c118d7","name":"enclose"}],"type":"capture"}
+{"does_not_observe":"activity below the Python runtime: a native extension or a direct ctypes syscall is not seen. This is drift-and-accident evidence and refutation of false declarations by ordinary code. It is not a sandbox.","method":"cpython-audit-hook","observes":["filesystem open (read/write intent)","socket connect/getaddrinfo/bind/sendto","subprocess and os exec/spawn","filesystem-mutating os and shutil calls"],"prev_hash":"f8c2b4e1480ffc8d34e2594e9b3227adcfee3dd60a4444587ecf4495dcfdd71a","row_hash":"59065fc6672059996400a1ec4f03eeb24f53ec010a42aaf338c698993442191f","seq":3,"type":"monitor"}
+{"appliesTo":["*"],"evidence":"scope listed=True answered=True did_no_io=True","invariant":"refusal.scope","invariantType":"refusal-tool","prev_hash":"59065fc6672059996400a1ec4f03eeb24f53ec010a42aaf338c698993442191f","row_hash":"4a1a6b785ba854c87065e7eeb36395fe03fc38daee30556a63fa4a06c23fbc74","seq":4,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no hosts resolved across 4 call window(s)","invariant":"network.none","invariantType":"no-network","prev_hash":"4a1a6b785ba854c87065e7eeb36395fe03fc38daee30556a63fa4a06c23fbc74","row_hash":"2f7814247d4084bf599110e4b52612f591108e7243c08b42d7cb8ccca7f51aec","seq":5,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no write observed","invariant":"writes.none","invariantType":"no-write","prev_hash":"2f7814247d4084bf599110e4b52612f591108e7243c08b42d7cb8ccca7f51aec","row_hash":"cb6b9ee84a9fcd8a0d984b07f02712208b50d55c6907a9d9c8e31dff79dec3ff","seq":6,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no out-of-scope read observed","invariant":"reads.none","invariantType":"read-scope","prev_hash":"cb6b9ee84a9fcd8a0d984b07f02712208b50d55c6907a9d9c8e31dff79dec3ff","row_hash":"62c81ee8782b168233b4ff38ab7eb482538283eb9f33ffd826a1cbdf76ad20e3","seq":7,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no subprocess observed","invariant":"subprocess.none","invariantType":"no-subprocess","prev_hash":"62c81ee8782b168233b4ff38ab7eb482538283eb9f33ffd826a1cbdf76ad20e3","row_hash":"aec16f3d0d8bbe2e7940d4025bf3ab353bd619a9b17dc88d813818be88054991","seq":8,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"identical across two same-instance and one fresh call: decide, enclose, scope","invariant":"answers.deterministic","invariantType":"deterministic","prev_hash":"aec16f3d0d8bbe2e7940d4025bf3ab353bd619a9b17dc88d813818be88054991","row_hash":"cac75a7102ea86165946cdd97d56c5afabcf54fbdf3743ea1fc87e358bf28fcc","seq":9,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"6 hostile inputs each returned an error value, no raise, crash, or hang","invariant":"errors.are-values","invariantType":"error-as-value","prev_hash":"cac75a7102ea86165946cdd97d56c5afabcf54fbdf3743ea1fc87e358bf28fcc","row_hash":"a6f7b871a8af2a0e40f3497ae58885bc54cc2e7e462d8a74b371b85002b1bfe1","seq":10,"type":"verdict","verdict":"pass"}
+{"appliesTo":["decide"],"evidence":"decide(pi == pi) -> UNDECIDED, expected UNDECIDED; decide(sqrt2 * sqrt2 == 2) -> UNDECIDED, expected UNDECIDED; decide(1 < 2) -> TRUE, expected TRUE","invariant":"undecided.on-overlap","invariantType":"property","prev_hash":"a6f7b871a8af2a0e40f3497ae58885bc54cc2e7e462d8a74b371b85002b1bfe1","row_hash":"d13f107cf83c1cc5bc8e40972d98381bcb409c60426f7fb38063f002dc0f2a32","seq":11,"type":"verdict","verdict":"pass"}
+{"appliesTo":["decide","enclose"],"evidence":"decide(0.1 + 0.2 == 0.3) -> TRUE, expected TRUE (the decimal literal, not the nearest double)","invariant":"decimal.read-exactly","invariantType":"property","prev_hash":"d13f107cf83c1cc5bc8e40972d98381bcb409c60426f7fb38063f002dc0f2a32","row_hash":"8b34d6fb1a78c38feecbb0bf8e40f97166e9036bc3d00bf6a400d35641c69071","seq":12,"type":"verdict","verdict":"pass"}
+{"conformant":true,"prev_hash":"8b34d6fb1a78c38feecbb0bf8e40f97166e9036bc3d00bf6a400d35641c69071","rowCount":13,"row_hash":"145adfe7904f84d099d68b26ccbda367f7b4463b24b3feba3ff73cecf0561de2","seq":13,"tally":{"pass":9},"type":"receipt-close"}
 </script>
 <script type="application/json" id="sample-anchor">
 {
   "receiptVersion": "0.1.0",
-  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
   "subject": {
     "name": "certivl",
     "version": "0.2.0",
@@ -392,7 +392,7 @@ window.addEventListener("load", function () {
   "declarationSerial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
   "conformant": true,
   "rows": 13,
-  "head": "353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a",
+  "head": "145adfe7904f84d099d68b26ccbda367f7b4463b24b3feba3ff73cecf0561de2",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -402,7 +402,7 @@ window.addEventListener("load", function () {
     "covers": "head",
     "signedAt": "2026-08-29T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "qVcGL6bebCVK4TtpItuoglgK4VkRSlK7XXjDv8OhZOIZh27gi1cuyqhvMDUVJAAcAhghGdYEqhe2Sv-LGzFlCA"
+    "value": "jK5YROw60yduuaLkH4AHHhNkawnM6ElQkgNo2Ngt52QAnMmadNXWbkGhoxtQC3TaRSx_BxzUJV9Zx_6QyciWAQ"
   }
 }
 </script>

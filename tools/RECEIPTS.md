@@ -1,4 +1,4 @@
-# WARRANT receipts — how a conformance run becomes a receipt anyone can check
+# SayDo receipts — how a conformance run becomes a receipt anyone can check
 
 A receipt turns a conformance report into a record a stranger verifies without
 an account and without trusting the issuer. It is a hash-chained JSONL ledger
@@ -15,12 +15,12 @@ plus a genesis anchor, built with THE RECORD engine unchanged.
 
 These are the exact rules THE RECORD's `verify_chain.py` enforces. That
 verifier, unmodified except its GENESIS constant (which is the per-receipt
-anchor, not part of the algorithm), verifies a WARRANT receipt and reproduces
+anchor, not part of the algorithm), verifies a SayDo receipt and reproduces
 its head. The reuse is real, not a reimplementation of the same idea.
 
 ## The genesis anchor binds the chain to what it attests
 
-    GENESIS = "WARRANT-RECEIPT/0.1.0|<declaration serial>|<subject purl>"
+    GENESIS = "SAYDO-RECEIPT/0.1.0|<declaration serial>|<subject purl>"
 
 A receipt for `certivl@0.2.0` under one declaration cannot be spliced onto
 another subject's chain: the head would not reproduce under the other's

@@ -1,5 +1,5 @@
 [project]
-name = "warrant-tools"
+name = "saydo-tools"
 version = "0.1.0"
 description = "Behavioral-conformance warranty layer for MCP tools (reference tooling)"
 requires-python = ">=3.11"
@@ -9,12 +9,12 @@ license = "Apache-2.0"
 # declaration validation.
 dependencies = ["jsonschema>=4"]
 
-# The CLI runs as `python cli/warrant.py <cmd>`. A console-script entry point
+# The CLI runs as `python cli/saydo.py <cmd>`. A console-script entry point
 # is deferred until the package layout is finalized, rather than declared here
 # before it resolves.
 
 [project.optional-dependencies]
-# The five covered servers, so `warrant verify <name>` has something to run.
+# The five covered servers, so `saydo verify <name>` has something to run.
 dogfood = [
   "authorecon[mcp]==1.1.0",
   "certivl[mcp]==0.2.0",

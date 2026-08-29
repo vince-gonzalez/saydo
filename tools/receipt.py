@@ -1,4 +1,4 @@
-"""Turn a conformance report into a hash-chained WARRANT receipt.
+"""Turn a conformance report into a hash-chained SayDo receipt.
 
 The receipt is a JSONL ledger built with THE RECORD engine, verbatim:
 
@@ -10,8 +10,8 @@ The receipt is a JSONL ledger built with THE RECORD engine, verbatim:
     seq            = 1, 2, 3, ...                                   # monotonic
 
 These are the exact rules THE RECORD's verify_chain.py enforces, so that
-verifier -- and the browser verifier shipped here -- validate a WARRANT
-receipt without modification. Nothing about the receipt is WARRANT-specific
+verifier -- and the browser verifier shipped here -- validate a SayDo
+receipt without modification. Nothing about the receipt is SayDo-specific
 at the chain level; the behavioral content lives in the rows.
 
 The genesis anchor binds the chain to what it attests: it names the
@@ -19,7 +19,7 @@ declaration serial and the subject artifact, so a receipt for one tool cannot
 be spliced onto another's chain -- the head hash would not reproduce under
 the other's genesis.
 
-    GENESIS = "WARRANT-RECEIPT/0.1.0|<declaration serial>|<subject purl>"
+    GENESIS = "SAYDO-RECEIPT/0.1.0|<declaration serial>|<subject purl>"
 
 The head (the last row's row_hash) is the receipt's identity. In a draft
 receipt it is unsigned; a declared receipt carries a supplier signature over
@@ -124,7 +124,7 @@ class Chain:
 def build(report, declaration, capture, generated_at):
     subject = declaration["subject"]
     purl = subject["artifacts"][0]["identifier"]
-    genesis = "WARRANT-RECEIPT/0.1.0|{}|{}".format(
+    genesis = "SAYDO-RECEIPT/0.1.0|{}|{}".format(
         declaration["serialNumber"], purl)
     chain = Chain(genesis)
 

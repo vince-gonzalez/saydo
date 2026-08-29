@@ -1,6 +1,6 @@
 {
   "receiptVersion": "0.1.0",
-  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef|seeded/malserver.py",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef|seeded/malserver.py",
   "subject": {
     "name": "malserver",
     "version": "0.0.0",
@@ -9,7 +9,7 @@
   "declarationSerial": "urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef",
   "conformant": false,
   "rows": 10,
-  "head": "e07d936f925fa41d7c69c182a084b84dc9644666fe4614bc41ffd65398f34d22",
+  "head": "36d231e6df066fc9061551e02b1f4b96ae1c44ba34ca129179f6dafaf9f8acc7",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -19,6 +19,6 @@
     "covers": "head",
     "signedAt": "2026-08-29T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "6ZUhP57VJMfSI2mzpvYdj1ntIPqFaMgNOSY2C8RXXi8fqyr2LB77yo4L0_V0DN_6Nl-Y1UAuOjHaNq3mBiJZDg"
+    "value": "jOrPXfpiZB1033KFVsqOf2XWCQzL44dV3UdFTY8gIoeIGigR61Uw8Algi0JzzxDPDIa62Xc45e7H5_Xg_8N-Dw"
   }
 }

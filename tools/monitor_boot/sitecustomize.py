@@ -17,7 +17,7 @@ Two honesty notes, load-bearing:
      the server was doing and manufactures a failure the tool did not have.
      Every path is wrapped accordingly.
 
-Events are appended as JSON lines to the file named by WARRANT_MONITOR_LOG,
+Events are appended as JSON lines to the file named by SayDo_MONITOR_LOG,
 through a file descriptor opened before the hook exists, so the monitor's own
 writing is not in the record it produces.
 """
@@ -70,7 +70,7 @@ def _text(value, depth=0):
 
 
 def _install():
-    path = os.environ.get("WARRANT_MONITOR_LOG")
+    path = os.environ.get("SayDo_MONITOR_LOG")
     if not path:
         return
     try:

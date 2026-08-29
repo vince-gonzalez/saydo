@@ -102,7 +102,7 @@ class Run:
         env = {}
         appdata = None
         if plan.get("appdata_sandbox"):
-            appdata = tempfile.mkdtemp(prefix="warrant-appdata-")
+            appdata = tempfile.mkdtemp(prefix="saydo-appdata-")
             env["APPDATA"] = appdata
         self.appdata = appdata
         timeout = plan.get("call_timeout", 60)
@@ -606,7 +606,7 @@ def _capture_payloads(plan, det_tools, server_python, monitor_log, repeat=1):
     open(monitor_log, "w").close()
     env = {}
     if plan.get("appdata_sandbox"):
-        env["APPDATA"] = tempfile.mkdtemp(prefix="warrant-det-")
+        env["APPDATA"] = tempfile.mkdtemp(prefix="saydo-det-")
     session = Session(_cmd(plan, server_python), env=env,
                       monitor_log=monitor_log)
     out = {}
@@ -706,11 +706,11 @@ def main():
     name = args.plan or declaration["subject"]["name"]
     plan = plans_mod.PLANS[name]
     log = os.path.join(tempfile.gettempdir(),
-                       "warrant-monitor-{}.log".format(name))
+                       "saydo-monitor-{}.log".format(name))
 
     main_run = Run(name, plan, args.python, log)
 
-    appdata = main_run.appdata or tempfile.mkdtemp(prefix="warrant-prop-")
+    appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
     ctx = {
         "declaration": declaration,
         "appdata": appdata,
