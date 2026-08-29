@@ -1,0 +1,22 @@
+WARRANT (name provisional)
+Copyright 2026 F-Keys Creative LLC
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Scope of this licence:
+  Covered  — the behavioral-declaration schema and spec text (spec/), the
+             reference tooling (tools/), the browser verifier (verifier/),
+             and the seeded conformance fixture (seeded/).
+  NOT covered — signed public artifacts (declarations, badges, spec text, or
+             landing copy the supplier signs) are published in the supplier's
+             own words and are not placed under this or any licence by this
+             file. The captured tool definitions, declarations, reports, and
+             receipts under captured/, declarations/, reports/, and receipts/
+             describe third- and first-party released packages and are records
+             of measurement, not licensed works.
+
+The receipt hash chain reuses the construction of THE RECORD
+(github.com/vince-gonzalez/the-record): canonical JSON per RFC-8785-style
+serialization, row_hash = sha256(prev_hash + canonical_row), fixed genesis
+anchor. THE RECORD carries no stated licence; only its construction is reused
+here, reimplemented in this repository.

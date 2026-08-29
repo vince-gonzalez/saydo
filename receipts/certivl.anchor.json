@@ -1,0 +1,14 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
+  "subject": {
+    "name": "certivl",
+    "version": "0.2.0",
+    "purl": "pkg:pypi/certivl@0.2.0"
+  },
+  "declarationSerial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
+  "conformant": true,
+  "rows": 13,
+  "head": "353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a",
+  "signature": null
+}

@@ -1,0 +1,14 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:63044401-47a6-5c35-9e52-1b80dbebd3d1|pkg:pypi/mmforge@0.2.0",
+  "subject": {
+    "name": "mmforge",
+    "version": "0.2.0",
+    "purl": "pkg:pypi/mmforge@0.2.0"
+  },
+  "declarationSerial": "urn:uuid:63044401-47a6-5c35-9e52-1b80dbebd3d1",
+  "conformant": true,
+  "rows": 12,
+  "head": "ae9f2be8b1499fc34ad158497f80cbbad8ba3f2f3610a1f2a3054362ff19eabc",
+  "signature": null
+}

@@ -1,0 +1,14 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:324e7c61-965d-53e0-ae21-23119e20ebed|pkg:pypi/remapwrap@0.6.0",
+  "subject": {
+    "name": "remapwrap",
+    "version": "0.6.0",
+    "purl": "pkg:pypi/remapwrap@0.6.0"
+  },
+  "declarationSerial": "urn:uuid:324e7c61-965d-53e0-ae21-23119e20ebed",
+  "conformant": true,
+  "rows": 14,
+  "head": "7ad92f69c70a85fa1f1aeae27393bf55173337375f944c43f8d03a7179286b4b",
+  "signature": null
+}

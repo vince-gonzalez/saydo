@@ -1,0 +1,14 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8|pkg:pypi/authorecon@1.1.0",
+  "subject": {
+    "name": "authorecon",
+    "version": "1.1.0",
+    "purl": "pkg:pypi/authorecon@1.1.0"
+  },
+  "declarationSerial": "urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8",
+  "conformant": true,
+  "rows": 12,
+  "head": "f00341efcab66dbd40c6e8dc36544bc071d573c8d414a729769d44b69f232f8a",
+  "signature": null
+}

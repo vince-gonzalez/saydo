@@ -5,7 +5,13 @@ A harness proves the tool obeys the contract. Every run emits a hash-chained
 receipt an auditor verifies without trusting anybody.
 
 Working repository. Nothing here is published, and nothing here is a claim of
-conformance: every declaration currently carries `status: "draft"`.
+conformance: every declaration currently carries `status: "draft"` and every
+receipt is unsigned.
+
+Licence: the open layers — the declaration schema and spec text (`spec/`), the
+reference tooling (`tools/`), the browser verifier (`verifier/`), and the
+seeded fixture (`seeded/`) — are Apache-2.0 (see LICENSE, NOTICE). Signed
+public artifacts are not placed under any licence by this repository.
 
 ## Layout
 
@@ -20,6 +26,11 @@ conformance: every declaration currently carries `status: "draft"`.
     tools/gen_declarations.py      builds the five declarations from captures
     tools/decl_check.py            validates declarations; `selfcheck` proves
                                    the validation can fail
+    tools/harness.py               conformance harness (see tools/HARNESS.md)
+    tools/receipt.py               report -> hash-chained receipt (RECEIPTS.md)
+    verifier/index.html            self-contained browser verifier, no network
+    receipts/                      one receipt + anchor per server
+    reports/                       one conformance report per server
 
 ## Reproduce
 

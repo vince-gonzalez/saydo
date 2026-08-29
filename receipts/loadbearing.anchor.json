@@ -1,0 +1,14 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:deb68d6d-9228-54c2-b9fe-05a4f2da37c9|pkg:pypi/loadbearing@0.2.0",
+  "subject": {
+    "name": "loadbearing",
+    "version": "0.2.0",
+    "purl": "pkg:pypi/loadbearing@0.2.0"
+  },
+  "declarationSerial": "urn:uuid:deb68d6d-9228-54c2-b9fe-05a4f2da37c9",
+  "conformant": true,
+  "rows": 12,
+  "head": "45eaa2ed4b18e583061f466ed74eab40a8e9db1ba568c39fc9f7b062d05b6c81",
+  "signature": null
+}

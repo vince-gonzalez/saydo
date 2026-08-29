@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WARRANT receipt verifier</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #14181d; --muted: #55606b;
+    --line: #d9dee4; --pass: #0f7a3d; --fail: #b21f2d; --none: #8a5a00;
+    --accent: #1f4e79; --code: #eef1f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1116; --panel: #161b22; --ink: #e6edf3; --muted: #9aa7b3;
+      --line: #2a313a; --pass: #3fb950; --fail: #f06a75; --none: #d7a53d;
+      --accent: #6cb0f0; --code: #0b0f14;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+  h1 { font-size: 21px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .lede { color: var(--muted); margin: 0 0 22px; font-size: 15px; }
+  .lede code { background: var(--code); padding: 1px 5px; border-radius: 4px;
+               font-size: 13px; }
+  .panel { background: var(--panel); border: 1px solid var(--line);
+           border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+  label { display: block; font-weight: 600; font-size: 13px; margin: 0 0 6px;
+          color: var(--muted); }
+  textarea { width: 100%; min-height: 92px; resize: vertical;
+             background: var(--code); color: var(--ink);
+             border: 1px solid var(--line); border-radius: 8px; padding: 10px;
+             font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas,
+                   monospace; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
+  .controls { display: flex; gap: 10px; align-items: center;
+              margin-top: 14px; flex-wrap: wrap; }
+  button { font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+           border: 1px solid var(--accent); background: var(--accent);
+           color: #fff; border-radius: 8px; padding: 9px 18px; }
+  button.ghost { background: transparent; color: var(--accent); }
+  .banner { display: none; border-radius: 10px; padding: 16px 18px;
+            margin-bottom: 18px; font-size: 16px; font-weight: 600;
+            border: 1px solid; }
+  .banner .sub { display: block; font-weight: 400; font-size: 13px;
+                 margin-top: 5px; word-break: break-all; }
+  .banner.ok { color: var(--pass); border-color: var(--pass);
+               background: color-mix(in srgb, var(--pass) 9%, transparent); }
+  .banner.bad { color: var(--fail); border-color: var(--fail);
+                background: color-mix(in srgb, var(--fail) 9%, transparent); }
+  .meta { font-size: 14px; margin-bottom: 14px; }
+  .meta dt { color: var(--muted); font-size: 12px; }
+  .meta dd { margin: 0 0 8px; word-break: break-all; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
+           vertical-align: top; }
+  th { font-size: 12px; color: var(--muted); text-transform: uppercase;
+       letter-spacing: 0.04em; }
+  .v { font-weight: 700; font-size: 12px; white-space: nowrap; }
+  .v.pass { color: var(--pass); } .v.fail { color: var(--fail); }
+  .v.notcov { color: var(--none); }
+  .ev { color: var(--muted); }
+  .inv { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; }
+  .foot { color: var(--muted); font-size: 12.5px; margin-top: 26px;
+          border-top: 1px solid var(--line); padding-top: 14px; }
+  .scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WARRANT receipt verifier</h1>
+  <p class="lede">
+    A WARRANT receipt is a hash-chained record of a conformance run. This page
+    recomputes the whole chain from its genesis anchor, entirely in your
+    browser &mdash; no request leaves this page, no account, no trust in the
+    issuer. Change one byte of a receipt and the walk fails at that row. The
+    chain rule is <code>row_hash = sha256(prev_hash + canonical_row)</code>.
+  </p>
+
+  <div id="banner" class="banner"></div>
+
+  <div id="report"></div>
+
+  <div class="panel">
+    <div class="row2">
+      <div>
+        <label for="ledger">Receipt (JSONL, one row per line)</label>
+        <textarea id="ledger" spellcheck="false"></textarea>
+      </div>
+      <div>
+        <label for="anchor">Anchor (JSON, optional but recommended)</label>
+        <textarea id="anchor" spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="verify">Verify</button>
+      <button id="sample" class="ghost">Load the sample</button>
+      <span id="hint" class="ev" style="font-size:13px"></span>
+    </div>
+  </div>
+
+  <p class="foot">
+    The receipt records what a monitor observed during the run. That monitor
+    watches the Python runtime, not the kernel: it catches drift, accidents,
+    and false declarations made by ordinary code, and it is not a sandbox.
+    Read a green result as &ldquo;this run's observations stayed inside the
+    declared envelope,&rdquo; not as a proof of safety. &middot; F-Keys
+  </p>
+</div>
+
+<script>
+// Canonicalization that matches, byte for byte, the Python used to build the
+// receipt: json.dumps(sort_keys=True, ensure_ascii=False, separators=(",",":")).
+// Keys sorted, no spaces, non-ASCII left literal, strings escaped by the same
+// rules JSON.stringify applies to a lone string. Receipt rows carry only
+// strings, integers, and nested objects/arrays, so this is exact.
+function canonical(v) {
+  if (v === null) return "null";
+  var t = typeof v;
+  if (t === "boolean") return v ? "true" : "false";
+  if (t === "number") {
+    if (!Number.isInteger(v)) throw new Error("non-integer in receipt row");
+    return String(v);
+  }
+  if (t === "string") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(canonical).join(",") + "]";
+  if (t === "object") {
+    var keys = Object.keys(v).sort();
+    return "{" + keys.map(function (k) {
+      return JSON.stringify(k) + ":" + canonical(v[k]);
+    }).join(",") + "}";
+  }
+  throw new Error("unserializable value in receipt row");
+}
+
+function toHex(buf) {
+  var b = new Uint8Array(buf), s = "";
+  for (var i = 0; i < b.length; i++) s += b[i].toString(16).padStart(2, "0");
+  return s;
+}
+async function sha256hex(text) {
+  var data = new TextEncoder().encode(text);
+  return toHex(await crypto.subtle.digest("SHA-256", data));
+}
+
+function deriveGenesis(firstRow) {
+  // The genesis anchor is not stored in the ledger; it is reconstructable
+  // from the opening row, but that is self-asserted. When an anchor is
+  // supplied, its genesis and head are the trust root and win.
+  return "WARRANT-RECEIPT/0.1.0|" + firstRow.declarationSerial +
+         "|" + firstRow.subject.purl;
+}
+
+async function verify(ledgerText, anchorText) {
+  var lines = ledgerText.split(/\r?\n/).filter(function (l) { return l.trim(); });
+  if (!lines.length) throw new Error("no receipt rows");
+  var rows = lines.map(function (l, i) {
+    try { return JSON.parse(l); }
+    catch (e) { throw new Error("row " + (i + 1) + " is not JSON"); }
+  });
+
+  var anchor = null;
+  if (anchorText && anchorText.trim()) {
+    try { anchor = JSON.parse(anchorText); }
+    catch (e) { throw new Error("anchor is not JSON"); }
+  }
+  var genesis = anchor ? anchor.genesis : deriveGenesis(rows[0]);
+
+  var prev = await sha256hex(genesis);
+  for (var n = 0; n < rows.length; n++) {
+    var row = rows[n];
+    if (row.seq !== n + 1)
+      return fail(n + 1, "sequence is " + row.seq + ", expected " + (n + 1));
+    if (row.prev_hash !== prev)
+      return fail(n + 1, "prev_hash does not match the running head");
+    var body = {};
+    for (var k in row) if (k !== "prev_hash" && k !== "row_hash") body[k] = row[k];
+    var expect = await sha256hex(prev + canonical(body));
+    if (row.row_hash !== expect)
+      return fail(n + 1, "row_hash does not match its own contents (edited row)");
+    prev = row.row_hash;
+  }
+
+  var result = { ok: true, head: prev, rows: rows, genesis: genesis,
+                 anchorGiven: !!anchor, anchorHead: anchor ? anchor.head : null };
+  if (anchor && anchor.head !== prev) {
+    result.ok = false;
+    result.headMismatch = true;
+  }
+  return result;
+
+  function fail(rowNo, why) {
+    return { ok: false, atRow: rowNo, why: why, rows: rows, genesis: genesis };
+  }
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c];
+  });
+}
+
+function render(result) {
+  var banner = document.getElementById("banner");
+  var report = document.getElementById("report");
+  banner.style.display = "block";
+  var open = result.rows.find(function (r) { return r.type === "receipt-open"; });
+  var close = result.rows.find(function (r) { return r.type === "receipt-close"; });
+  var verdicts = result.rows.filter(function (r) { return r.type === "verdict"; });
+  var findings = result.rows.filter(function (r) { return r.type === "finding"; });
+
+  if (!result.ok) {
+    banner.className = "banner bad";
+    if (result.headMismatch) {
+      banner.innerHTML = "Chain is internally valid, but its head does not " +
+        "match the anchor." +
+        "<span class='sub'>computed " + esc(result.head) +
+        "<br>anchor&nbsp;&nbsp; " + esc(result.anchorHead) + "</span>";
+    } else {
+      banner.innerHTML = "Receipt FAILED verification at row " + result.atRow +
+        ".<span class='sub'>" + esc(result.why) + "</span>";
+    }
+  } else {
+    banner.className = "banner ok";
+    var conf = close && close.conformant;
+    banner.innerHTML = "Chain verified: " + result.rows.length + " rows." +
+      (result.anchorGiven ? " Head matches the anchor." :
+        " Genesis derived from the receipt (no anchor supplied).") +
+      "<span class='sub'>head " + esc(result.head) + "</span>";
+  }
+
+  var html = "";
+  if (open) {
+    html += "<div class='panel meta'><dl>";
+    html += "<dt>Subject</dt><dd>" + esc(open.subject.name) + " " +
+            esc(open.subject.version) + " &middot; " + esc(open.subject.purl) +
+            "</dd>";
+    html += "<dt>Supplier</dt><dd>" + esc(open.subject.supplier) + "</dd>";
+    html += "<dt>Declaration</dt><dd>" + esc(open.declarationSerial) +
+            " (" + esc(open.declarationStatus) + ")</dd>";
+    if (close)
+      html += "<dt>Result</dt><dd>" + (close.conformant ?
+        "conformant" : "NOT conformant") + " &middot; " +
+        esc(JSON.stringify(close.tally)) + "</dd>";
+    html += "</dl></div>";
+  }
+
+  if (verdicts.length) {
+    html += "<div class='panel scroll'><table><thead><tr><th>Invariant</th>" +
+            "<th>Verdict</th><th>Evidence</th></tr></thead><tbody>";
+    verdicts.forEach(function (v) {
+      var cls = v.verdict === "pass" ? "pass" :
+                v.verdict === "fail" ? "fail" : "notcov";
+      var label = v.verdict === "not-covered" ? "not covered" : v.verdict;
+      html += "<tr><td class='inv'>" + esc(v.invariant) +
+              "<br><span class='ev'>" + esc(v.invariantType) + "</span></td>" +
+              "<td class='v " + cls + "'>" + esc(label) + "</td>" +
+              "<td class='ev'>" + esc(v.evidence) + "</td></tr>";
+    });
+    html += "</tbody></table></div>";
+  }
+
+  if (findings.length) {
+    html += "<div class='panel'><label>Findings</label>";
+    findings.forEach(function (f) {
+      html += "<div><span class='v fail'>" + esc(f.kind) + "</span> &middot; " +
+              esc(f.tool) + " &mdash; <span class='ev'>" + esc(f.detail) +
+              "</span></div>";
+    });
+    html += "</div>";
+  }
+  report.innerHTML = html;
+}
+
+document.getElementById("verify").addEventListener("click", function () {
+  var hint = document.getElementById("hint");
+  hint.textContent = "verifying…";
+  verify(document.getElementById("ledger").value,
+         document.getElementById("anchor").value)
+    .then(function (r) { render(r); hint.textContent = ""; })
+    .catch(function (e) {
+      hint.textContent = "";
+      var b = document.getElementById("banner");
+      b.style.display = "block"; b.className = "banner bad";
+      b.innerHTML = "Could not read the receipt.<span class='sub'>" +
+                    esc(e.message) + "</span>";
+      document.getElementById("report").innerHTML = "";
+    });
+});
+
+function loadSample() {
+  document.getElementById("ledger").value =
+    document.getElementById("sample-ledger").textContent.trim();
+  document.getElementById("anchor").value =
+    document.getElementById("sample-anchor").textContent.trim();
+}
+document.getElementById("sample").addEventListener("click", loadSample);
+
+// Verify the embedded sample once the whole document (including the sample
+// data blocks below this script) has parsed, so the page proves itself with
+// no input.
+window.addEventListener("load", function () {
+  loadSample();
+  document.getElementById("verify").click();
+});
+</script>
+
+<script type="application/jsonl" id="sample-ledger">
+{"declarationSerial":"urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66","declarationStatus":"draft","declarationVersion":"0.1.0","generatedAt":"2026-08-29T00:00:00Z","harness":{"monitor":"cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox","version":"0.1.0"},"prev_hash":"9d26264d95d8ef97ac3c6708882fcb1487a3ef5a69ad0829bdaf3765d9b5ce28","receiptVersion":"0.1.0","row_hash":"5ae499348076efb4d9538f8db3996255a3f06e653cb351b7606d4be5de938cdd","seq":1,"subject":{"name":"certivl","purl":"pkg:pypi/certivl@0.2.0","supplier":"F-Keys Creative LLC","version":"0.2.0"},"type":"receipt-open"}
+{"prev_hash":"5ae499348076efb4d9538f8db3996255a3f06e653cb351b7606d4be5de938cdd","protocolVersion":"2025-06-18","row_hash":"37c4314558bc8a1d9cb0cd80ef01580d123e365665e0cfff5797f72d63e539ec","seq":2,"tools":[{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:8112c4520fb0a5d0e8e21216cb071d0686724e7f4e8f310850736507231903a6","name":"scope"},{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:f71a9a33d66be05c03592f20c7495969a1fcf704331870950eff876b1ba36703","name":"decide"},{"covers":"{name,description,inputSchema,outputSchema}","definitionDigest":"sha256:b41da64ef1891d708cc01fe94e76c8f17454457272f5318834ad0bf3d3c118d7","name":"enclose"}],"type":"capture"}
+{"does_not_observe":"activity below the Python runtime: a native extension or a direct ctypes syscall is not seen. This is drift-and-accident evidence and refutation of false declarations by ordinary code. It is not a sandbox.","method":"cpython-audit-hook","observes":["filesystem open (read/write intent)","socket connect/getaddrinfo/bind/sendto","subprocess and os exec/spawn","filesystem-mutating os and shutil calls"],"prev_hash":"37c4314558bc8a1d9cb0cd80ef01580d123e365665e0cfff5797f72d63e539ec","row_hash":"59cee14fb0f6aba5c2fc21bf0f4ba4589d509c3afcd832c730b804ccc49633d5","seq":3,"type":"monitor"}
+{"appliesTo":["*"],"evidence":"scope listed=True answered=True did_no_io=True","invariant":"refusal.scope","invariantType":"refusal-tool","prev_hash":"59cee14fb0f6aba5c2fc21bf0f4ba4589d509c3afcd832c730b804ccc49633d5","row_hash":"ecbe3f1a9a627eb97490088490ba4c9f63b20097a73666551ad17f04ed2a90b4","seq":4,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no hosts resolved across 4 call window(s)","invariant":"network.none","invariantType":"no-network","prev_hash":"ecbe3f1a9a627eb97490088490ba4c9f63b20097a73666551ad17f04ed2a90b4","row_hash":"385a408cb8a2e6bad8f0050eb4d152c257e8f029e768b085a5ef7ebc95ffc45a","seq":5,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no write observed","invariant":"writes.none","invariantType":"no-write","prev_hash":"385a408cb8a2e6bad8f0050eb4d152c257e8f029e768b085a5ef7ebc95ffc45a","row_hash":"40d43e59e7274ea059bfaafad7d716d058e80fab58dd6861e5b0a3f23909a56a","seq":6,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no out-of-scope read observed","invariant":"reads.none","invariantType":"read-scope","prev_hash":"40d43e59e7274ea059bfaafad7d716d058e80fab58dd6861e5b0a3f23909a56a","row_hash":"8113b068e7f05a93556ad18f95f0f8a944a377ef00fb6410684b08adb4b9b1cf","seq":7,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"no subprocess observed","invariant":"subprocess.none","invariantType":"no-subprocess","prev_hash":"8113b068e7f05a93556ad18f95f0f8a944a377ef00fb6410684b08adb4b9b1cf","row_hash":"7032546c3bba3036fc952a7bfd4d515a243c81362155e50457b60331626e9ff4","seq":8,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"identical across two same-instance and one fresh call: decide, enclose, scope","invariant":"answers.deterministic","invariantType":"deterministic","prev_hash":"7032546c3bba3036fc952a7bfd4d515a243c81362155e50457b60331626e9ff4","row_hash":"b24a8e15e4c9c9d9276ccdec6b2243b5cb3e62b5e5009b927b9a05104ff777d8","seq":9,"type":"verdict","verdict":"pass"}
+{"appliesTo":["*"],"evidence":"6 hostile inputs each returned an error value, no raise, crash, or hang","invariant":"errors.are-values","invariantType":"error-as-value","prev_hash":"b24a8e15e4c9c9d9276ccdec6b2243b5cb3e62b5e5009b927b9a05104ff777d8","row_hash":"578e024e1b5c461501cd5a2bb3117408d2df9fa82ea27baadda8be63a1e40b93","seq":10,"type":"verdict","verdict":"pass"}
+{"appliesTo":["decide"],"evidence":"decide(pi == pi) -> UNDECIDED, expected UNDECIDED; decide(sqrt2 * sqrt2 == 2) -> UNDECIDED, expected UNDECIDED; decide(1 < 2) -> TRUE, expected TRUE","invariant":"undecided.on-overlap","invariantType":"property","prev_hash":"578e024e1b5c461501cd5a2bb3117408d2df9fa82ea27baadda8be63a1e40b93","row_hash":"802b5a38f6149b75da89e4576b646fa787f4fb0d759ca46e279435efe3625fa9","seq":11,"type":"verdict","verdict":"pass"}
+{"appliesTo":["decide","enclose"],"evidence":"decide(0.1 + 0.2 == 0.3) -> TRUE, expected TRUE (the decimal literal, not the nearest double)","invariant":"decimal.read-exactly","invariantType":"property","prev_hash":"802b5a38f6149b75da89e4576b646fa787f4fb0d759ca46e279435efe3625fa9","row_hash":"5d755397c58f8e42704f677d5cae70b11797a8f5fded7e8479ee5bb1f08d3a7a","seq":12,"type":"verdict","verdict":"pass"}
+{"conformant":true,"prev_hash":"5d755397c58f8e42704f677d5cae70b11797a8f5fded7e8479ee5bb1f08d3a7a","rowCount":13,"row_hash":"353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a","seq":13,"tally":{"pass":9},"type":"receipt-close"}
+</script>
+<script type="application/json" id="sample-anchor">
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "WARRANT-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
+  "subject": {
+    "name": "certivl",
+    "version": "0.2.0",
+    "purl": "pkg:pypi/certivl@0.2.0"
+  },
+  "declarationSerial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
+  "conformant": true,
+  "rows": 13,
+  "head": "353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a",
+  "signature": null
+}
+</script>
+</body>
+</html>
