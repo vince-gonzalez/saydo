@@ -274,6 +274,19 @@ PLANS = {
         ],
         "skip_fuzz": True,   # fuzzed URLs would be live requests to junk hosts
     },
+    # A Node MCP server (Phase-1 fixture). The Python audit hook cannot see it
+    # at all; only the boundary egress proxy can. Its 'grab' tool fetches a
+    # URL, so a no-network declaration on it must be caught by the proxy.
+    "node-fetcher": {
+        "script": os.path.join(os.path.dirname(HERE), "seeded",
+                               "node_fetcher.js"),
+        "call_timeout": 30,
+        "exercise": [
+            ("scope", {}, True),
+            ("grab", {"url": "https://example.com/"}, False),
+        ],
+        "skip_fuzz": True,
+    },
     "malserver": {
         "launch": None,  # run as a script
         "script": MALSERVER,

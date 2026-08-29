@@ -73,11 +73,19 @@ def _resolved_host(event):
         args = event.get("args") or []
         host = args[0] if args else None
         return host if isinstance(host, str) else None
+    if event["event"] == "proxy.connect":
+        # The boundary proxy records the real destination host of an HTTP or
+        # HTTPS connection, whatever language made it. This is the primary
+        # egress signal: once the server is launched behind the proxy, its
+        # own DNS resolves the proxy (loopback), so the in-runtime hook no
+        # longer sees the real host -- the proxy does.
+        host = event.get("host")
+        return host if isinstance(host, str) else None
     return None
 
 
 NET_EVENTS = {"socket.connect", "socket.getaddrinfo", "socket.bind",
-              "socket.sendto"}
+              "socket.sendto", "proxy.connect"}
 PROC_EVENTS = {"subprocess.Popen", "os.system", "os.exec", "os.spawn",
                "os.posix_spawn"}
 WRITE_EVENTS = {"os.remove", "os.rename", "os.mkdir", "os.rmdir",
@@ -88,10 +96,12 @@ WRITE_EVENTS = {"os.remove", "os.rename", "os.mkdir", "os.rmdir",
 class Run:
     """One launch of the server, its call windows, and its monitor events."""
 
-    def __init__(self, name, plan, server_python, monitor_log):
+    def __init__(self, name, plan, server_python, monitor_log,
+                 egress_log=None):
         self.name = name
         self.windows = []   # (tool, t0, t1, outcome)
         self.events = []
+        self.egress_log = egress_log
         self._launch(plan, server_python, monitor_log)
 
     def _command(self, plan, server_python):
@@ -121,8 +131,13 @@ class Run:
             self._run_chain(session, plan, timeout)
         finally:
             session.close()
-            time.sleep(0.05)
+            time.sleep(0.1)   # let the proxy flush the tunnel's CONNECT line
             self.events = _read_events(monitor_log)
+            if self.egress_log:
+                # Merge the boundary-proxy egress into the same event stream;
+                # both are {t, event, host}, so attribution by call window is
+                # identical.
+                self.events += _read_events(self.egress_log)
 
     def _run_chain(self, session, plan, timeout):
         produced = {tool: out for tool, _t0, _t1, out in self.windows}
@@ -276,18 +291,30 @@ def judge(declaration, capture, run, ctx):
                     if ev["event"] not in NET_EVENTS:
                         continue
                     host = _resolved_host(ev)
+                    # The loopback route to the boundary proxy is the monitored
+                    # path, not egress; the proxy.connect event carries the real
+                    # destination for anything that went through it.
+                    if host and _loopback(host):
+                        continue
+                    if ev["event"] == "socket.connect" and _connect_loopback(ev):
+                        continue
                     if host:
                         observed.add(host)
                     if vtype == "no-network":
-                        # Any network activity at all refutes the claim.
+                        # Any egress at all refutes the claim. A named host
+                        # (from the proxy or a direct resolve) or an
+                        # unnameable raw connect both count.
                         hits.append((tool, host or ev["event"]))
-                    elif ev["event"] == "socket.getaddrinfo":
-                        # Allowlist is about the NAME the code asked to
-                        # resolve. connect/sendto carry only the resolved IP
-                        # and are downstream of an allowed resolve, so they
-                        # are not judged here.
-                        if host and host not in allowed and not _loopback(host):
+                    else:
+                        # Allowlist judges by the destination NAME, which comes
+                        # from the proxy (any language) or a direct getaddrinfo.
+                        if host and host not in allowed:
                             hits.append((tool, host))
+                        elif not host and ev["event"] in (
+                                "socket.connect", "socket.sendto"):
+                            # A raw egress we cannot name is not provably within
+                            # the allowlist, so it is a finding, not a pass.
+                            hits.append((tool, "unnamed raw " + ev["event"]))
             windows = sum(1 for t in tools for _ in run.outcomes_for(t))
             if not window_ran(tools):
                 row["verdict"] = "not-covered"
@@ -376,7 +403,16 @@ def judge(declaration, capture, run, ctx):
 
 
 def _loopback(host):
-    return host in ("127.0.0.1", "::1", "localhost")
+    return host in ("127.0.0.1", "::1", "localhost") or \
+        (isinstance(host, str) and host.startswith("127."))
+
+
+def _connect_loopback(ev):
+    """A socket.connect whose address is loopback (e.g. the boundary proxy)."""
+    args = ev.get("args") or []
+    addr = args[1] if len(args) > 1 else (args[0] if args else None)
+    ip = addr[0] if isinstance(addr, list) and addr else addr
+    return isinstance(ip, str) and _loopback(ip)
 
 
 def _binary_verdict(ran, hits, label):
@@ -707,18 +743,39 @@ def main():
     plan = plans_mod.PLANS[name]
     log = os.path.join(tempfile.gettempdir(),
                        "saydo-monitor-{}.log".format(name))
+    egress_log = os.path.join(tempfile.gettempdir(),
+                              "saydo-egress-{}.log".format(name))
 
-    main_run = Run(name, plan, args.python, log)
+    # The boundary egress monitor: launch the server behind a logging proxy so
+    # its network destinations are observed outside the runtime, in any
+    # language. The audit hook stays on as a second, in-runtime signal.
+    from egress_proxy import EgressProxy
+    open(egress_log, "w").close()
+    proxy = EgressProxy(egress_log).start()
+    os.environ["HTTP_PROXY"] = proxy.address
+    os.environ["HTTPS_PROXY"] = proxy.address
+    os.environ["http_proxy"] = proxy.address
+    os.environ["https_proxy"] = proxy.address
+    os.environ["SAYDO_EGRESS_LOG"] = egress_log
+    # Node's built-in fetch ignores proxy env unless asked; this opts it in
+    # where the runtime supports it. On a container host the proxy is the only
+    # route and no cooperation is needed; here we observe the cooperative path.
+    os.environ["NODE_USE_ENV_PROXY"] = "1"
 
-    appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
-    ctx = {
-        "declaration": declaration,
-        "appdata": appdata,
-        "runtime_roots": _runtime_roots(args.python),
-        "fuzz_outcomes": run_fuzz(name, plan, capture, args.python, log),
-        "determinism": run_determinism(name, plan, args.python, log),
-    }
-    ctx["property_results"] = run_properties(plan, args.python, log, ctx)
+    try:
+        main_run = Run(name, plan, args.python, log, egress_log=egress_log)
+
+        appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
+        ctx = {
+            "declaration": declaration,
+            "appdata": appdata,
+            "runtime_roots": _runtime_roots(args.python),
+            "fuzz_outcomes": run_fuzz(name, plan, capture, args.python, log),
+            "determinism": run_determinism(name, plan, args.python, log),
+        }
+        ctx["property_results"] = run_properties(plan, args.python, log, ctx)
+    finally:
+        proxy.stop()
 
     verdicts, findings = judge(declaration, capture, main_run, ctx)
 
@@ -733,8 +790,12 @@ def main():
         "subject": declaration["subject"],
         "declaration_serial": declaration["serialNumber"],
         "harness_version": "0.1.0",
-        "monitor": "cpython-audit-hook; observes the Python runtime, not the "
-                   "kernel; not a sandbox",
+        "monitor": "boundary egress proxy (any language) + cpython audit hook "
+                   "(python, in-runtime). Egress destinations are observed at "
+                   "the proxy; filesystem/subprocess via the audit hook. Not a "
+                   "sandbox: a raw socket to a bare IP ignoring proxy env, or "
+                   "a native syscall, is not compelled through either. Full "
+                   "enforcement needs a network-isolated container host.",
         "conformant": conformant,
         "tally": tally,
         "verdicts": verdicts,

@@ -1,0 +1,63 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:d8739e61-c88d-5037-841b-09d765197ebc",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "node-fetcher",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC (Phase-1 Node fixture)"
+    },
+    "artifacts": [
+      {
+        "type": "source",
+        "identifier": "seeded/node_fetcher.js"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:2531b97ffd9448fc90d6a63aef13c46d6e5625e087fd3cc1e3053b8b21164ad0",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "grab",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:cd1f03f16da3130ee5ead0001c44a170b00c77e8240d4737ba1325b917185191",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Node fixture. Claims no-network but 'grab' fetches a URL. The Python audit hook cannot see a Node process; only the boundary egress proxy can. This declaration exists to prove the proxy catches Node egress."
+}

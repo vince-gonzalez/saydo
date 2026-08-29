@@ -1,0 +1,16 @@
+{
+  "name": "saydo",
+  "version": "1.0.0",
+  "description": "A tool declares, in a signed machine-readable contract, exactly what it does. A harness proves the tool obeys the contract. Every run emits a hash-chained receipt an auditor verifies without trusting anybody.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "undici": "^7.29.0"
+  }
+}

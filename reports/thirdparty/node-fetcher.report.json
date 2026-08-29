@@ -1,0 +1,45 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "node-fetcher",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC (Phase-1 Node fixture)"
+    },
+    "artifacts": [
+      {
+        "type": "source",
+        "identifier": "seeded/node_fetcher.js"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:d8739e61-c88d-5037-841b-09d765197ebc",
+  "harness_version": "0.1.0",
+  "monitor": "boundary egress proxy (any language) + cpython audit hook (python, in-runtime). Egress destinations are observed at the proxy; filesystem/subprocess via the audit hook. Not a sandbox: a raw socket to a bare IP ignoring proxy env, or a native syscall, is not compelled through either. Full enforcement needs a network-isolated container host.",
+  "conformant": false,
+  "tally": {
+    "fail": 1,
+    "pass": 1
+  },
+  "verdicts": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "egress: grab->example.com"
+    },
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    }
+  ],
+  "findings": []
+}

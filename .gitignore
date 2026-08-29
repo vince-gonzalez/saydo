@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 keys/*.private.jwk
+
+node_modules/
+package-lock.json

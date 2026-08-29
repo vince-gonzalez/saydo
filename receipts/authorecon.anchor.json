@@ -9,7 +9,7 @@
   "declarationSerial": "urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8",
   "conformant": true,
   "rows": 12,
-  "head": "e2015eafc8de06e3e7ebc7038d3ebf841206bdc21dbac97e45db0bb925e1bed2",
+  "head": "f252c59524c190f77aefbf5456f6c3eecc7e842ca1095cfa4decf98ef47af09c",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -19,6 +19,6 @@
     "covers": "head",
     "signedAt": "2026-08-29T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "JdGQbz9NW_qvaCP08t1dPtiPt04K98spOyoVkJe6rbM4umuC9IenrKhR9Kux7IJ7KiKW0Tx6kldkKG2rRCU2Cw"
+    "value": "jdBQ0l_aKd8rtqALNUjVTRvFNLTHLMv1NlTAJ9dJ2DJuwSNL-i0rXTehW462GQPuS2eh-Maq-rMqoLDSGiRXBg"
   }
 }
