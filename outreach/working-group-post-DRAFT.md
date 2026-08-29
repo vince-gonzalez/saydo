@@ -1,9 +1,9 @@
 # DRAFT — behavioral-conformance extension, for the TBOM/CTMS thread
 
-STATUS: DRAFT IN CLAUDE'S WORDS, FOR VINCE TO REWRITE AND SIGN.
-Nothing here is posted. The wording is a starting point; replace it with your
-own before it goes anywhere. Fill or cut the two bracketed items: the repo link
-(only if you decide to make it public) and your name/handle. No AI attribution.
+STATUS: DRAFT — placeholder wording, to be rewritten in the author's voice and
+signed before it goes anywhere. Nothing here is posted. Fill or cut the two
+bracketed items: the repo link (only if the repo is made public) and the
+name/handle.
 
 Target: modelcontextprotocol discussion #2189 (TBOM), and/or George
 Kanellopoulos's CTMS repo. Register: plain, technical, first person, builder —
