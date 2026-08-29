@@ -51,9 +51,37 @@ This is not fixable by a better hook. It is fixed by **enforcement**: run the
 server in a network namespace whose only route is the proxy, and a filesystem
 mount it cannot escape. Then cooperation is irrelevant — there is no other
 way out — and the observation becomes language-agnostic and complete. That
-requires a container host (Linux namespaces / seccomp), which is the
-deployment target for the hosted service and is not available on the current
-Windows build.
+requires a Linux container host, which the Windows development machine is not.
+
+## That fix is now demonstrated, not merely proposed (2026-08-29)
+
+The enforcement claim is tested on every relevant push by
+`.github/workflows/sandbox-enforcement.yml`, on a Linux runner with Docker,
+because the claim is exactly the kind that should not be taken on trust.
+
+The architecture: `saydo-inside` is an `--internal` Docker network, so a
+container on it has no route off-host; `saydo-outside` is a normal bridge and
+**only the proxy** is attached to it. The server's single reachable neighbour
+is therefore the proxy, and the proxy is the single thing that can reach the
+internet.
+
+Results, from run 33280078992:
+
+| case | expected | observed |
+|---|---|---|
+| non-cooperative client (Node `fetch`, **no** proxy config) | blocked | `BLOCKED Error: getaddrinfo EAI_AGAIN example.com` |
+| cooperative client → allowlisted host | allowed | `STATUS 200` |
+| cooperative client → host outside the allowlist | refused | `403 Forbidden` from the proxy |
+
+The first row is the point. That is the *same* code path measured above
+returning 200 on a host; inside the sandbox it cannot even resolve DNS. The
+gap closes without the tool's cooperation, so it closes for every language.
+
+**What this does and does not license.** It proves the mechanism works on
+Linux. It does **not** retroactively make any existing receipt "contained":
+every receipt in this repository was produced by the local runner, which
+observes. `Runner.enforcement` carries the level from the run into the
+receipt, so a receipt may only say contained when the run actually was.
 
 ## The hardening roadmap this implies (in order)
 
