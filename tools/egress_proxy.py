@@ -53,9 +53,14 @@ class EgressProxy:
     container -- which is why the runner, not the proxy, decides.
     """
 
-    def __init__(self, log_path, host="127.0.0.1", port=0, allow=None):
+    def __init__(self, log_path, host="127.0.0.1", port=0, allow=None,
+                 echo=False):
         self.log_path = log_path
         self.allow = set(allow) if allow is not None else None
+        # When the proxy runs in its own container the log file is not
+        # reachable from outside, so every decision is also written to stdout
+        # where `docker logs` captures it as evidence.
+        self.echo = echo
         self._log_fd = os.open(log_path, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
         self._log_lock = threading.Lock()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -90,9 +95,13 @@ class EgressProxy:
     def _emit(self, host, port, scheme, method, event="proxy.connect"):
         row = {"t": time.time(), "event": event,
                "host": host, "port": port, "scheme": scheme, "method": method}
-        line = (json.dumps(row) + "\n").encode("utf-8", "replace")
+        text = json.dumps(row)
+        line = (text + "\n").encode("utf-8", "replace")
         with self._log_lock:
             os.write(self._log_fd, line)
+            if self.echo:
+                sys.stdout.write(text + "\n")
+                sys.stdout.flush()
 
     def _permitted(self, host):
         """True when the destination may be forwarded. Observe-only mode
@@ -218,10 +227,29 @@ def _pipe(a, b):
 
 
 def main():
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+    argv = sys.argv[1:]
+    port = 0
+    bind = "127.0.0.1"
+    if argv and argv[0].isdigit():
+        port = int(argv[0])
+        argv = argv[1:]
+    if "--bind" in argv:
+        bind = argv[argv.index("--bind") + 1]
+
     log = os.environ.get("SAYDO_EGRESS_LOG", "egress.log")
-    proxy = EgressProxy(log, port=port).start()
-    print("egress proxy on {} -> {}".format(proxy.address, log))
+    # SAYDO_ALLOW switches the proxy from observing to REFUSING. It is set by
+    # whoever knows the run is genuinely confined -- the container runner --
+    # never by the proxy itself.
+    raw = os.environ.get("SAYDO_ALLOW")
+    allow = ([h.strip() for h in raw.split(",") if h.strip()]
+             if raw is not None else None)
+
+    proxy = EgressProxy(log, host=bind, port=port, allow=allow,
+                        echo=True).start()
+    mode = ("ENFORCING, allow=" + ",".join(sorted(allow))) if allow is not None \
+        else "observe-only"
+    print("saydo egress proxy on {} [{}] -> {}".format(
+        proxy.address, mode, log), flush=True)
     try:
         while True:
             time.sleep(1)

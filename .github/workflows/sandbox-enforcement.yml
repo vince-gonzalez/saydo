@@ -1,0 +1,132 @@
+# Prove, on real Linux, that SayDo's container sandbox ENFORCES rather than
+# observes.
+#
+# SANDBOX.md records a measured gap: on a host, a client that ignores proxy
+# configuration -- Node's built-in fetch does exactly this -- escapes
+# observation entirely. The claim is that a container whose only route out is
+# the SayDo proxy closes that gap without needing the tool's cooperation.
+#
+# This workflow tests that claim instead of asserting it. It is the
+# verify-the-verifier discipline applied to the sandbox: every case must come
+# out the stated way, and the job fails loudly if any of them does not.
+#
+#   A  non-cooperative client (Node fetch, NO proxy config)  -> BLOCKED
+#      This is the exact case that succeeds on a host. It must fail here.
+#   B  cooperative client -> allowlisted host                -> ALLOWED
+#   C  cooperative client -> host outside the allowlist      -> REFUSED (403)
+#
+# A alone is the point: enforcement does not depend on the tool being polite.
+
+name: sandbox enforcement
+
+on:
+  push:
+    paths:
+      - 'container/**'
+      - 'tools/egress_proxy.py'
+      - '.github/workflows/sandbox-enforcement.yml'
+  workflow_dispatch:
+
+jobs:
+  enforcement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Environment
+        run: |
+          uname -a
+          docker --version
+          docker info --format 'server: {{.ServerVersion}}'
+
+      - name: Build the proxy image
+        run: docker build -f container/Dockerfile.proxy -t saydo/proxy:ci .
+
+      - name: Create the two networks
+        run: |
+          # saydo-inside has NO route off-host: a container on it can reach
+          # only its neighbours. saydo-outside is a normal bridge, and only
+          # the proxy is attached to it. That asymmetry is the enforcement.
+          docker network create --internal saydo-inside
+          docker network create saydo-outside
+          docker network inspect saydo-inside  --format 'inside  internal={{.Internal}}'
+          docker network inspect saydo-outside --format 'outside internal={{.Internal}}'
+
+      - name: Start the proxy on both networks, allowlisting example.com only
+        run: |
+          docker run -d --name saydo-proxy \
+            --network saydo-inside --network-alias saydo-proxy \
+            -e SAYDO_ALLOW=example.com \
+            saydo/proxy:ci
+          docker network connect saydo-outside saydo-proxy
+          sleep 3
+          docker logs saydo-proxy
+
+      - name: Pull test images before isolation matters
+        run: |
+          docker pull node:22-slim
+          docker pull python:3.12-slim
+
+      # ------------------------------------------------------------------
+      # A. The case that escapes on a host. Node's fetch ignores proxy env,
+      #    so nothing here is cooperating. On the host this reaches the
+      #    internet; inside saydo-inside there is no route, so it must fail.
+      # ------------------------------------------------------------------
+      - name: 'A: non-cooperative client must be BLOCKED'
+        run: |
+          set +e
+          OUT=$(docker run --rm --network saydo-inside node:22-slim \
+            node -e "fetch('https://example.com/').then(r=>{console.log('REACHED '+r.status)}).catch(e=>{console.log('BLOCKED '+e.cause)})" 2>&1)
+          set -e
+          echo "$OUT"
+          if echo "$OUT" | grep -q "REACHED"; then
+            echo "::error::ENFORCEMENT FAILED - a non-cooperative client reached the internet from inside the sandbox"
+            exit 1
+          fi
+          echo "OK: the client that escapes on a host could not get out here."
+
+      # ------------------------------------------------------------------
+      # B and C. A cooperative client, to show the proxy is a working route
+      #    and that the allowlist is a policy rather than a report.
+      # ------------------------------------------------------------------
+      - name: 'B: allowlisted host through the proxy must be ALLOWED'
+        run: |
+          set +e
+          OUT=$(docker run --rm --network saydo-inside \
+            -e HTTPS_PROXY=http://saydo-proxy:8888 \
+            python:3.12-slim \
+            python -c "import urllib.request;print('STATUS', urllib.request.urlopen('https://example.com/', timeout=25).status)" 2>&1)
+          set -e
+          echo "$OUT"
+          echo "$OUT" | grep -q "STATUS 200" || {
+            echo "::error::allowlisted host did not get through the proxy"; exit 1; }
+          echo "OK: allowlisted egress works through the proxy."
+
+      - name: 'C: non-allowlisted host must be REFUSED by the proxy'
+        run: |
+          set +e
+          OUT=$(docker run --rm --network saydo-inside \
+            -e HTTPS_PROXY=http://saydo-proxy:8888 \
+            python:3.12-slim \
+            python -c "import urllib.request;print('REACHED', urllib.request.urlopen('https://example.org/', timeout=25).status)" 2>&1)
+          set -e
+          echo "$OUT"
+          if echo "$OUT" | grep -q "REACHED"; then
+            echo "::error::a host outside the allowlist was NOT refused"; exit 1; fi
+          echo "$OUT" | grep -qi "403" || {
+            echo "::error::refusal did not come from the proxy as a 403"; exit 1; }
+          echo "OK: non-allowlisted egress refused by the proxy."
+
+      - name: Proxy decision log (the evidence)
+        if: always()
+        run: |
+          echo "--- every decision the proxy made ---"
+          docker logs saydo-proxy
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker rm -f saydo-proxy || true
+          docker network rm saydo-inside saydo-outside || true

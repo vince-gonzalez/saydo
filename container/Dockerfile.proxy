@@ -1,0 +1,31 @@
+# The SayDo egress proxy, containerised so it can BE the only route out.
+#
+# Enforcement needs the proxy to sit on the network the server-under-test can
+# reach, while the server itself sits on a network with no route off-host.
+# Two networks make that true rather than hoped for:
+#
+#   saydo-inside   --internal (no route off-host). The server lives here.
+#                  The proxy is also attached here, as "saydo-proxy".
+#   saydo-outside  a normal bridge. ONLY the proxy is attached here.
+#
+# So the server's single reachable neighbour is the proxy, and the proxy is
+# the single thing that can reach the internet. A tool that ignores proxy
+# environment variables does not get out -- it has nowhere to go.
+
+FROM python:3.12-slim
+
+RUN useradd --create-home --uid 10001 saydo
+
+# Build from the repository root: docker build -f container/Dockerfile.proxy .
+WORKDIR /app
+COPY tools/egress_proxy.py /app/egress_proxy.py
+
+USER saydo
+
+# Listen on all interfaces inside the container so the server container can
+# reach it by network alias. SAYDO_ALLOW, when set, is a comma-separated
+# allowlist and switches the proxy from observing to REFUSING.
+ENV SAYDO_EGRESS_LOG=/tmp/egress.log
+EXPOSE 8888
+
+CMD ["python", "-u", "/app/egress_proxy.py", "8888", "--bind", "0.0.0.0"]
