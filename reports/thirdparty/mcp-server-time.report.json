@@ -1,0 +1,66 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mcp-server-time",
+    "version": "2026.8.18",
+    "supplier": {
+      "name": "modelcontextprotocol/servers",
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "repository": {
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/mcp-server-time@2026.8.18"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:8323ec98-a046-58e2-8020-156970b59b81",
+  "harness_version": "0.1.0",
+  "monitor": "cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox",
+  "conformant": true,
+  "tally": {
+    "pass": 4
+  },
+  "verdicts": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 2 call window(s)"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed"
+    },
+    {
+      "id": "convert.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "convert_time"
+      ],
+      "verdict": "pass",
+      "evidence": "identical across two same-instance and one fresh call: convert_time"
+    }
+  ],
+  "findings": []
+}

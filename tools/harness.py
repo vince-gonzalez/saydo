@@ -95,9 +95,7 @@ class Run:
         self._launch(plan, server_python, monitor_log)
 
     def _command(self, plan, server_python):
-        if plan.get("script"):
-            return [server_python, plan["script"]]
-        return [server_python, "-c", plan["launch"]]
+        return _launch(plan, server_python)
 
     def _launch(self, plan, server_python, monitor_log):
         open(monitor_log, "w").close()
@@ -392,6 +390,18 @@ def _binary_verdict(ran, hits, label):
 
 
 _DIR_EVENTS = {"os.mkdir", "os.rmdir"}
+_NULL_DEVICES = {"nul", "con", "/dev/null", "/dev/zero"}
+
+
+def _is_null_device(path):
+    """A write to the null device persists nothing and is not a filesystem
+    write. subprocess.DEVNULL opens 'nul' on Windows, so counting it would
+    misfire on any tool that redirects a child's output to the bit bucket."""
+    if not isinstance(path, str):
+        return False
+    p = path.replace("\\", "/").lower()
+    base = p.rsplit("/", 1)[-1]
+    return p in _NULL_DEVICES or base in _NULL_DEVICES or p.endswith("/nul")
 
 
 def _write_hits(run, tools, ctx):
@@ -401,12 +411,13 @@ def _write_hits(run, tools, ctx):
         for ev in run.events_for(tool):
             if ev["event"] == "open" and ev.get("intent") == "write":
                 path = ev.get("path")
-                if isinstance(path, str):   # an fd open is framework internal
-                    hits.append((tool, path, False))
+                if isinstance(path, str) and not _is_null_device(path):
+                    hits.append((tool, path, False))   # fd opens are internal
             elif ev["event"] in WRITE_EVENTS:
                 args = ev.get("args") or []
                 path = args[0] if args else ev["event"]
-                hits.append((tool, path, ev["event"] in _DIR_EVENTS))
+                if not _is_null_device(path):
+                    hits.append((tool, path, ev["event"] in _DIR_EVENTS))
     return hits
 
 
@@ -641,10 +652,18 @@ def _declared_property_checks(declaration):
             if inv["type"] == "property" and (inv.get("params") or {}).get("check")]
 
 
-def _cmd(plan, server_python):
+def _launch(plan, server_python):
+    """The argv that starts the server under test, for any plan shape:
+    an installed module (-m), a script path, or a python -c launch string."""
+    if plan.get("module"):
+        return [server_python, "-m", plan["module"]]
     if plan.get("script"):
         return [server_python, plan["script"]]
     return [server_python, "-c", plan["launch"]]
+
+
+def _cmd(plan, server_python):
+    return _launch(plan, server_python)
 
 
 def _canon(value):

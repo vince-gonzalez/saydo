@@ -249,6 +249,31 @@ PLANS = {
              "extra": {"name": "HarnessBoard"}},
         ],
     },
+    # --- third-party servers (NOT written by F-Keys) -------------------------
+    # The generalization test: real Python MCP servers off PyPI, launched as
+    # installed modules, driven by real arguments. mcp-server-time is pure
+    # computation (should conform to a no-network/no-write envelope);
+    # mcp-server-fetch reaches the internet by design (a no-network claim on
+    # it must be caught).
+    "mcp-server-time": {
+        "module": "mcp_server_time",
+        "exercise": [
+            # get_current_time reads the wall clock, so it is deliberately not
+            # marked deterministic. convert_time is pure and is.
+            ("get_current_time", {"timezone": "America/New_York"}, False),
+            ("convert_time", {"source_timezone": "America/New_York",
+                              "time": "14:30",
+                              "target_timezone": "Europe/London"}, True),
+        ],
+    },
+    "mcp-server-fetch": {
+        "module": "mcp_server_fetch",
+        "call_timeout": 60,
+        "exercise": [
+            ("fetch", {"url": "https://example.com/", "max_length": 500}, False),
+        ],
+        "skip_fuzz": True,   # fuzzed URLs would be live requests to junk hosts
+    },
     "malserver": {
         "launch": None,  # run as a script
         "script": MALSERVER,

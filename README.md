@@ -58,6 +58,13 @@ The individual steps also run standalone:
 
 Digests bind to the released PyPI artifacts, not to any working tree.
 
+The server under test runs under its own interpreter, named by `--python`.
+Servers built for different MCP SDK generations must therefore live in
+separate environments: the five F-Keys servers need mcp 2.x, while the
+third-party servers under `declarations/thirdparty/` need mcp 1.x. Point
+`--python` at the venv that has the server installed; do not mix SDK
+generations in one environment.
+
 ## Prior art this builds on
 
 - TBOM v1.0.2, Jason M. Lovell, 2026 — 10.5281/zenodo.18459260

@@ -1,0 +1,79 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:8323ec98-a046-58e2-8020-156970b59b81",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mcp-server-time",
+    "version": "2026.8.18",
+    "supplier": {
+      "name": "modelcontextprotocol/servers",
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "repository": {
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/mcp-server-time@2026.8.18"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "get_current_time",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:b9b46e76c409c48fc8a58eec1f8fd319a2b8c440a40439fd8de1385100993ba8",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "convert_time",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:04fd622b4f3efe7be57b346f7f942e97609c2f014256950c67a811f503b7bd8b",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "convert.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "convert_time"
+      ],
+      "params": {},
+      "note": "convert_time is pure timezone arithmetic. get_current_time reads the wall clock and is deliberately NOT claimed deterministic."
+    }
+  ],
+  "canonicalization": "rfc8785"
+}

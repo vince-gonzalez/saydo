@@ -1,0 +1,55 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:d0670761-ba4f-53cc-a966-62301f6326b7",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mcp-server-fetch",
+    "version": "2026.8.18",
+    "supplier": {
+      "name": "modelcontextprotocol/servers",
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "repository": {
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/mcp-server-fetch@2026.8.18"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "fetch",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:fe1e2fdaac56b133fb09efde4bd0d856f340f41f8e0deff6d0d63a664ad045c8",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "No network invariant is declared: fetching arbitrary URLs is this tool's function, so its egress is unbounded by design and the envelope says so rather than pretending otherwise."
+}

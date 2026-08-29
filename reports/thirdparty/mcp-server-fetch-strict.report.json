@@ -1,0 +1,49 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mcp-server-fetch",
+    "version": "2026.8.18",
+    "supplier": {
+      "name": "modelcontextprotocol/servers",
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "repository": {
+      "url": "https://github.com/modelcontextprotocol/servers"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/mcp-server-fetch@2026.8.18"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:3f5a5277-3c4c-533f-b316-6c139a929280",
+  "harness_version": "0.1.0",
+  "monitor": "cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox",
+  "conformant": false,
+  "tally": {
+    "fail": 1,
+    "pass": 1
+  },
+  "verdicts": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "egress: fetch->example.com"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    }
+  ],
+  "findings": []
+}
