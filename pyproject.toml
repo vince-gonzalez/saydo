@@ -1,0 +1,31 @@
+[project]
+name = "warrant-tools"
+version = "0.1.0"
+description = "Behavioral-conformance warranty layer for MCP tools (reference tooling)"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+# Runtime dependency is the MCP SDK for the servers under test; the harness
+# and receipt engine use only the standard library. jsonschema is needed for
+# declaration validation.
+dependencies = ["jsonschema>=4"]
+
+# The CLI runs as `python cli/warrant.py <cmd>`. A console-script entry point
+# is deferred until the package layout is finalized, rather than declared here
+# before it resolves.
+
+[project.optional-dependencies]
+# The five covered servers, so `warrant verify <name>` has something to run.
+dogfood = [
+  "authorecon[mcp]==1.1.0",
+  "certivl[mcp]==0.2.0",
+  "loadbearing[mcp,formal]==0.2.0",
+  "mmforge[mcp]==0.2.0",
+  "remapwrap[mcp]==0.6.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+# Not published. This exists so the CLI can be installed locally
+# (`pip install -e .`) and so the dependency set is recorded in one place.

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WARRANT</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #14181d; --muted: #4f5a65;
+    --line: #d9dee4; --accent: #1f4e79; --code: #eef1f4; --codeink: #1a2430;
+    --pass: #0f7a3d; --fail: #b21f2d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1116; --panel: #161b22; --ink: #e6edf3; --muted: #9aa7b3;
+      --line: #2a313a; --accent: #6cb0f0; --code: #0b0f14; --codeink: #cdd6e0;
+      --pass: #3fb950; --fail: #f06a75;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 22px 90px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 26px;
+           margin-bottom: 34px; }
+  .mark { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+          color: var(--muted); margin-bottom: 12px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 14px;
+       letter-spacing: -0.02em; }
+  .prov { font-size: 13px; color: var(--muted); }
+  .thesis { font-size: 18px; line-height: 1.55; margin: 0; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em;
+       color: var(--muted); margin: 40px 0 12px; }
+  p { margin: 0 0 16px; }
+  a { color: var(--accent); }
+  .q { border-left: 3px solid var(--line); padding: 2px 0 2px 16px;
+       color: var(--muted); font-size: 15px; margin: 0 0 16px; }
+  .layers { border: 1px solid var(--line); border-radius: 10px;
+            overflow: hidden; background: var(--panel); }
+  .layer { display: grid; grid-template-columns: 132px 1fr; gap: 16px;
+           padding: 15px 18px; border-bottom: 1px solid var(--line);
+           font-size: 15px; }
+  .layer:last-child { border-bottom: 0; }
+  .layer b { font-size: 14px; }
+  @media (max-width: 520px) {
+    .layer { grid-template-columns: 1fr; gap: 4px; }
+  }
+  pre { background: var(--code); color: var(--codeink); border: 1px solid var(--line);
+        border-radius: 8px; padding: 14px 16px; overflow-x: auto;
+        font: 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        margin: 0 0 16px; }
+  .cmt { color: var(--muted); }
+  .box { background: var(--panel); border: 1px solid var(--line);
+         border-radius: 10px; padding: 18px 20px; margin: 0 0 16px; }
+  .box h3 { margin: 0 0 8px; font-size: 15px; }
+  ul { margin: 0 0 16px; padding-left: 20px; }
+  li { margin: 0 0 7px; }
+  .yes { color: var(--pass); font-weight: 600; }
+  .no { color: var(--fail); font-weight: 600; }
+  footer { border-top: 1px solid var(--line); margin-top: 44px; padding-top: 18px;
+           font-size: 13px; color: var(--muted); }
+  .status { display: inline-block; font-size: 12px; font-weight: 600;
+            color: var(--muted); border: 1px solid var(--line);
+            border-radius: 20px; padding: 3px 11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="mark">F-Keys &middot; WARRANT</div>
+    <h1>Prove a tool behaves as it says.</h1>
+    <p class="thesis">
+      Signing and provenance prove a tool's code is what the publisher
+      released. They do not prove the tool behaves as its description
+      promises. WARRANT is the layer that tests that second claim: a
+      signed contract per tool, a harness that checks the tool against it,
+      and a hash-chained receipt anyone verifies without trusting us.
+    </p>
+    <p class="prov" style="margin-top:14px">
+      <span class="status">Working proof of concept</span>
+      &nbsp; Name provisional. Declarations are drafts; receipts are unsigned.
+    </p>
+  </header>
+
+  <h2>The gap</h2>
+  <p>
+    Tool poisoning, capability rug-pulls, and silent behavioral drift are one
+    problem: the distance between what a tool declares and what it does. The
+    provenance standards say so themselves.
+  </p>
+  <p class="q">
+    TBOM states it &ldquo;cannot verify tool behavior matches descriptions.&rdquo;
+    CTMS states it verifies that a tool's claims have not changed, not that they
+    are true.
+  </p>
+  <p>
+    WARRANT does not replace those standards. It extends them: the declaration
+    binds to the same tool-definition digests a Tool Bill of Materials records,
+    and attaches to one without changing its schema.
+  </p>
+
+  <h2>Four layers</h2>
+  <div class="layers">
+    <div class="layer"><b>Declaration</b>
+      <span>A signed, machine-readable contract per tool: the behavior it is
+      permitted to show &mdash; no network, writes only here, deterministic,
+      returns errors as values. Ten invariant types in the current draft.</span></div>
+    <div class="layer"><b>Conformance</b>
+      <span>A harness exercises the tool under observation &mdash; valid calls,
+      adversarial input, egress and filesystem monitoring &mdash; and reports
+      pass, fail, or not-covered per invariant. It cannot prove an invariant it
+      did not exercise, and it says so rather than passing it.</span></div>
+    <div class="layer"><b>Receipt</b>
+      <span>Every run emits a hash-chained record: one row per verdict, chained
+      by <code>row_hash = sha256(prev + row)</code>. Edit one row and the chain
+      breaks at it. An auditor re-verifies it in a browser, no account, no
+      request to us.</span></div>
+    <div class="layer"><b>Trust mark</b>
+      <span>A &ldquo;Warranted&rdquo; badge served from the registry, linking to
+      the full findings rather than a bare grade, with expiry and revocation.
+      Not built yet.</span></div>
+  </div>
+
+  <h2>Run it</h2>
+  <p>
+    Install one of the covered servers, then put it under warrant. The command
+    captures the tool definitions, exercises the server, and writes a receipt.
+  </p>
+  <pre><span class="cmt"># one MCP server, one warrant, one receipt</span>
+warrant verify certivl
+
+  certivl   CONFORMANT
+  tally     {'pass': 9}
+  receipt   receipts/certivl.receipt.jsonl
+  head      353e94cd497115aa49e10ab76874ab7bd9645feda12322a66785f0a961d3a19a</pre>
+  <p>
+    A harness that only ever passes is worth nothing, so it ships with a server
+    built to fail. <code>warrant selfcheck</code> runs it and requires the
+    harness to catch every violation:
+  </p>
+  <pre>warrant selfcheck
+
+  malserver   NOT CONFORMANT   {'pass': 1, 'fail': 5}
+    network.none      FAIL  egress: fetch_quote-&gt;socket.connect
+    writes.none       FAIL  write outside scope
+    subprocess.none   FAIL  run_helper spawned a child
+    roll.deterministic FAIL same input, different output
+    errors.are-values FAIL  raised instead of returning an error
+  seeded server caught: YES</pre>
+
+  <h2>Check it without us</h2>
+  <p>
+    The receipt is the point. Anyone recomputes the chain from its genesis
+    anchor in a browser page that makes no network request and holds no
+    account. A changed verdict, a deleted row, or a receipt re-anchored to a
+    false head are each rejected and named. The verifier reuses the hash-chain
+    engine from THE RECORD, unchanged.
+  </p>
+
+  <h2>What a green receipt does and does not say</h2>
+  <div class="box">
+    <p style="margin:0 0 10px"><span class="yes">It says:</span> this run's
+    observed behavior stayed inside the declared envelope, and the record has
+    not been altered since.</p>
+    <p style="margin:0"><span class="no">It does not say:</span> the tool is
+    safe, correct, or good. The monitor watches the language runtime, not the
+    kernel &mdash; it catches drift, accidents, and false declarations made by
+    ordinary code, and it is not a sandbox. The receipt states that limit in
+    its own text.</p>
+  </div>
+
+  <h2>Built on, and citing</h2>
+  <p>
+    The provenance layer this extends is open and unratified, and the right
+    place to contribute rather than compete: the Tool Bill of Materials
+    (Jason&nbsp;M.&nbsp;Lovell) and the Canonical Tool Manifest Specification
+    (George&nbsp;Kanellopoulos). The behavioral-conformance seam &mdash;
+    continuous conformance to a declared contract, with independently
+    verifiable receipts &mdash; was surveyed open on 2026-08-29 against the
+    gateway, ledger, and badge tools then shipping. The survey is dated because
+    the space moves weekly.
+  </p>
+
+  <h2>What is free</h2>
+  <p>
+    The declaration schema, the reference harness, the CLI, and the browser
+    verifier are open under Apache&nbsp;2.0. The current proof of concept was
+    dogfooded on five live F-Keys MCP servers. Nothing here is paid, and
+    nothing here is published as a claim of conformance.
+  </p>
+
+  <footer>
+    F-Keys Creative LLC &middot; &copy; 2026 &middot;
+    <a href="https://www.f-keys.com">www.f-keys.com</a><br>
+    Draft page. Copy pending the owner's wording pass; nothing on it is a
+    public claim yet.
+  </footer>
+
+</div>
+</body>
+</html>

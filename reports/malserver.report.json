@@ -47,7 +47,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: run_helper:nul; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\m4mxyfcz; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\m4mxyfcz; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+      "evidence": "write: run_helper:nul; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\dqkl8hw8; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\dqkl8hw8; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
     },
     {
       "id": "subprocess.none",
