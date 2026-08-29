@@ -69,14 +69,26 @@ def _text(value, depth=0):
         return "<unrenderable>"
 
 
+#: Marks a monitor event on stderr. Inside a container there is no shared
+#: filesystem to write a log to, and a bind mount would punch a hole in the
+#: isolation being tested. stderr is a pipe the harness already owns, so
+#: events ride out on it, prefixed so the tool's own stderr is never mistaken
+#: for evidence.
+STDERR_PREFIX = "@@SAYDO@@ "
+
+
 def _install():
-    path = os.environ.get("SayDo_MONITOR_LOG")
-    if not path:
+    path = os.environ.get("SAYDO_MONITOR_LOG")
+    to_stderr = os.environ.get("SAYDO_MONITOR_STDERR") == "1"
+    if not path and not to_stderr:
         return
-    try:
-        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
-    except OSError:
-        return
+    fd = -1
+    if path:
+        try:
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
+        except OSError:
+            if not to_stderr:
+                return
 
     state = {"busy": False}
 
@@ -108,7 +120,12 @@ def _install():
                 row["intent"] = intent
             else:
                 row["args"] = [_text(a) for a in args[:4]]
-            os.write(fd, (json.dumps(row) + "\n").encode("utf-8", "replace"))
+            text = json.dumps(row)
+            if fd >= 0:
+                os.write(fd, (text + "\n").encode("utf-8", "replace"))
+            if to_stderr:
+                os.write(2, (STDERR_PREFIX + text + "\n")
+                         .encode("utf-8", "replace"))
         except Exception:
             pass
         finally:

@@ -249,7 +249,11 @@ class ContainerRunner(Runner):
                "--workdir", self.scratch,
                "-e", "HTTP_PROXY=" + addr, "-e", "HTTPS_PROXY=" + addr,
                "-e", "http_proxy=" + addr, "-e", "https_proxy=" + addr,
-               "-e", "NODE_USE_ENV_PROXY=1"]
+               "-e", "NODE_USE_ENV_PROXY=1",
+               # The audit hook still runs inside the sandbox and reports over
+               # stderr, so an attempt the boundary blocked is still recorded.
+               # The image places it on PYTHONPATH.
+               "-e", "SAYDO_MONITOR_STDERR=1"]
         if self.runtime:
             cmd += ["--runtime", self.runtime]
         for k, v in (plan.get("container_env") or {}).items():

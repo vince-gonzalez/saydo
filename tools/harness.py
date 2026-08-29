@@ -121,12 +121,17 @@ class Run:
         self.appdata = appdata
         timeout = plan.get("call_timeout", 60)
 
-        # A containerised server gets its environment inside the container, so
-        # the audit-hook injection only applies to a host process.
-        inject_hook = not (self.runner
-                           and self.runner.enforcement == "contained")
+        # A containerised server cannot write to a host log path, so its audit
+        # hook is enabled inside the image and reports over stderr instead.
+        # The hook stays ON either way: enforcement stops a tool from
+        # succeeding, but only the hook shows that it TRIED. Silence would not
+        # distinguish "never attempted" from "attempted and was prevented",
+        # and the second is the more interesting fact about a tool.
+        containerised = bool(self.runner
+                             and self.runner.enforcement == "contained")
         session = Session(self._command(plan, server_python), env=env,
-                          monitor_log=monitor_log if inject_hook else None)
+                          monitor_log=None if containerised else monitor_log)
+        self._session = session
         try:
             init = session.initialize()
             if init.kind != "result":
@@ -141,6 +146,8 @@ class Run:
             session.close()
             time.sleep(0.3)   # let the proxy flush the tunnel's CONNECT line
             self.events = _read_events(monitor_log)
+            # In-container hook events arrive over stderr rather than a file.
+            self.events += list(getattr(session, "monitor_events", []))
             # Merge the boundary-proxy egress into the same event stream; both
             # are {t, event, host}, so attribution by call window is identical
             # whether the proxy was a local listener or a container.

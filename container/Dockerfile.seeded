@@ -15,10 +15,18 @@ FROM python:3.12-slim
 
 RUN useradd --create-home --uid 10001 saydo
 
-ARG MCP_SPEC=mcp==1.29.1
+# malserver.py is written against the 2.x MCP API (mcp.server.MCPServer), the
+# same generation the F-Keys servers use. Pinning 1.x here previously meant the
+# server could not import and never started, which the harness correctly
+# reported as "no call window" -- and which a too-weak CI assertion let pass.
+ARG MCP_SPEC=mcp==2.1.1
 RUN pip install --no-cache-dir "$MCP_SPEC"
 
 COPY seeded/malserver.py /app/malserver.py
+# The audit hook travels with the image and is activated by
+# SAYDO_MONITOR_STDERR, so a blocked attempt is still recorded as an attempt.
+COPY tools/monitor_boot /saydo/monitor_boot
+ENV PYTHONPATH=/saydo/monitor_boot
 
 ENV SAYDO_SERVER_SPEC=seeded/malserver.py
 

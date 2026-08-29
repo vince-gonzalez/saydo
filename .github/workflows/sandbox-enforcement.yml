@@ -177,13 +177,38 @@ jobs:
           for v in r['verdicts']:
               print('  {:<12} {:<22} {}'.format(v['verdict'], v['id'], v['evidence'][:90]))
 
+          # These assertions were previously too weak: a server that failed to
+          # start satisfied "not conformant" and ">=1 fail" and the job went
+          # green while proving nothing. A dead server must fail this gate.
+          by_id = {v['id']: v for v in r['verdicts']}
           problems = []
           if r['enforcement'] != 'contained':
               problems.append('run was not contained: ' + r['enforcement'])
           if r['conformant']:
               problems.append('the seeded liar was reported CONFORMANT - the harness failed')
-          if r['tally'].get('fail', 0) < 1:
-              problems.append('no invariant was refuted; the harness caught nothing')
+
+          # The server must actually have served. Its refusal tool answering
+          # is the cheapest proof that the session did real work.
+          scope = by_id.get('refusal.scope', {})
+          if scope.get('verdict') != 'pass':
+              problems.append('the server did not serve: refusal.scope = '
+                              + str(scope.get('verdict')) + ' :: '
+                              + str(scope.get('evidence')))
+
+          # "no call window" anywhere means tools were never exercised.
+          dead = [v['id'] for v in r['verdicts']
+                  if 'no call window' in (v.get('evidence') or '')]
+          if dead:
+              problems.append('tools were never exercised: ' + ', '.join(dead))
+
+          # The seeded server breaks these on purpose. Under containment the
+          # ATTEMPT must still be visible even though the boundary stops it.
+          for must_fail in ('writes.none', 'subprocess.none'):
+              got = by_id.get(must_fail, {}).get('verdict')
+              if got != 'fail':
+                  problems.append(
+                      '{} should have been refuted inside the sandbox, got {}'
+                      .format(must_fail, got))
           if problems:
               for p in problems:
                   print('::error::' + p)

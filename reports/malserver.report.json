@@ -15,7 +15,8 @@
   },
   "declaration_serial": "urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef",
   "harness_version": "0.1.0",
-  "monitor": "boundary egress proxy (any language) + cpython audit hook (python, in-runtime). Egress destinations are observed at the proxy; filesystem/subprocess via the audit hook. Not a sandbox: a raw socket to a bare IP ignoring proxy env, or a native syscall, is not compelled through either. Full enforcement needs a network-isolated container host.",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
   "conformant": false,
   "tally": {
     "pass": 1,
@@ -47,7 +48,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\wmqfyhjz; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\wmqfyhjz; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\xgs624vk; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\xgs624vk; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
     },
     {
       "id": "subprocess.none",

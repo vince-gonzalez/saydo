@@ -68,7 +68,7 @@ class Session:
         if env:
             full_env.update(env)
         if monitor_log:
-            full_env["SayDo_MONITOR_LOG"] = monitor_log
+            full_env["SAYDO_MONITOR_LOG"] = monitor_log
             boot = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 "monitor_boot")
             prior = full_env.get("PYTHONPATH")
@@ -80,9 +80,17 @@ class Session:
 
         self.proc = subprocess.Popen(command, stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
-                                     stderr=subprocess.DEVNULL,
+                                     stderr=subprocess.PIPE,
                                      env=full_env)
         self._lines = queue.Queue()
+        # Monitor events arrive on stderr when the server has no writable
+        # log path -- which is the case inside a container. stderr must be
+        # drained continuously regardless, or a chatty server fills the pipe
+        # buffer and deadlocks.
+        self.monitor_events = []
+        self._errthread = threading.Thread(target=self._pump_stderr,
+                                           daemon=True)
+        self._errthread.start()
         self._reader = threading.Thread(target=self._pump, daemon=True)
         self._reader.start()
         self._next_id = 0
@@ -92,6 +100,25 @@ class Session:
         for line in self.proc.stdout:
             self._lines.put(line)
         self._lines.put(None)
+
+    def _pump_stderr(self):
+        """Drain stderr, keeping the monitor events and discarding the rest.
+
+        The tool's own diagnostics are not evidence, so only lines carrying
+        the monitor prefix are retained.
+        """
+        prefix = b"@@SAYDO@@ "
+        try:
+            for line in self.proc.stderr:
+                if line.startswith(prefix):
+                    try:
+                        self.monitor_events.append(
+                            json.loads(line[len(prefix):].decode("utf-8",
+                                                                "replace")))
+                    except ValueError:
+                        pass
+        except Exception:
+            pass
 
     def _send(self, message):
         self.proc.stdin.write((json.dumps(message) + "\n").encode("utf-8"))
