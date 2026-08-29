@@ -40,8 +40,22 @@ import time
 
 
 class EgressProxy:
-    def __init__(self, log_path, host="127.0.0.1", port=0):
+    """Observe egress, and -- when an allowlist is supplied -- refuse it.
+
+    `allow=None` (the default) is observe-only: every destination is recorded
+    and forwarded. That is the honest posture on a host, where a tool can
+    route around the proxy anyway, so refusing here would give a false sense
+    of containment.
+
+    `allow={"api.example.com", ...}` is enforcement: a destination outside the
+    set is refused with 403 and recorded as `proxy.refused`. This is only
+    meaningful when the proxy is the tool's ONLY route out -- i.e. inside the
+    container -- which is why the runner, not the proxy, decides.
+    """
+
+    def __init__(self, log_path, host="127.0.0.1", port=0, allow=None):
         self.log_path = log_path
+        self.allow = set(allow) if allow is not None else None
         self._log_fd = os.open(log_path, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
         self._log_lock = threading.Lock()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -73,12 +87,19 @@ class EgressProxy:
         except OSError:
             pass
 
-    def _emit(self, host, port, scheme, method):
-        row = {"t": time.time(), "event": "proxy.connect",
+    def _emit(self, host, port, scheme, method, event="proxy.connect"):
+        row = {"t": time.time(), "event": event,
                "host": host, "port": port, "scheme": scheme, "method": method}
         line = (json.dumps(row) + "\n").encode("utf-8", "replace")
         with self._log_lock:
             os.write(self._log_fd, line)
+
+    def _permitted(self, host):
+        """True when the destination may be forwarded. Observe-only mode
+        permits everything; an allowlist permits exactly what it names."""
+        if self.allow is None:
+            return True
+        return host in self.allow
 
     def _serve(self):
         while not self._stop.is_set():
@@ -112,12 +133,26 @@ class EgressProxy:
             if method.upper() == "CONNECT":
                 host, _, port = target.partition(":")
                 port = int(port or 443)
-                self._emit(host, port, "https" if port == 443 else "tcp",
-                           "CONNECT")
+                scheme = "https" if port == 443 else "tcp"
+                if not self._permitted(host):
+                    self._emit(host, port, scheme, "CONNECT",
+                               event="proxy.refused")
+                    client.sendall(b"HTTP/1.1 403 Forbidden\r\n"
+                                   b"Content-Length: 0\r\n\r\n")
+                    client.close()
+                    return
+                self._emit(host, port, scheme, "CONNECT")
                 self._tunnel(client, host, port)
             else:
                 # Absolute-form request line: METHOD http://host[:port]/path
                 host, port = _host_from_absolute(target)
+                if host and not self._permitted(host):
+                    self._emit(host, port, "http", method.upper(),
+                               event="proxy.refused")
+                    client.sendall(b"HTTP/1.1 403 Forbidden\r\n"
+                                   b"Content-Length: 0\r\n\r\n")
+                    client.close()
+                    return
                 if host:
                     self._emit(host, port, "http", method.upper())
                 self._forward_http(client, host, port, head)

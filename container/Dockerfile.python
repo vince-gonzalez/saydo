@@ -1,0 +1,31 @@
+# A Python MCP server under SayDo, in a container it cannot leave.
+#
+# The image is built per server: SERVER_SPEC is the pip requirement (a pinned
+# version, so the run is reproducible and the receipt names what was tested)
+# and SERVER_CMD is the console entry point to launch. Nothing else is
+# installed, so the observed footprint is the server's, not the image's.
+#
+# The container carries no credentials and no host mounts. Its writable path
+# is a tmpfs the runner supplies at /scratch; the rootfs is read-only at run
+# time. Egress is whatever the network policy allows -- which is the SayDo
+# proxy and nothing else.
+
+FROM python:3.12-slim
+
+# A non-root user. Combined with --cap-drop ALL and no-new-privileges, the
+# server has no path to privilege inside the container even before gVisor.
+RUN useradd --create-home --uid 10001 saydo
+
+ARG SERVER_SPEC
+RUN test -n "$SERVER_SPEC" \
+ && pip install --no-cache-dir "$SERVER_SPEC"
+
+# Recorded so the receipt can name exactly what was under test.
+ENV SAYDO_SERVER_SPEC=${SERVER_SPEC}
+
+USER saydo
+WORKDIR /scratch
+
+# The command is supplied by the runner (the server's console entry point),
+# so one image definition serves every Python server.
+ENTRYPOINT []

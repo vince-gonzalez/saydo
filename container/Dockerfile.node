@@ -1,0 +1,25 @@
+# A Node MCP server under SayDo, in a container it cannot leave.
+#
+# This is the image that closes the measured gap. On a host, a Node client
+# that ignores proxy configuration escapes observation entirely (SANDBOX.md).
+# Here the container's only route off-host is the SayDo proxy, so a Node
+# server's egress is recorded and policed whether or not it cooperates -- the
+# same enforcement the Python image gets, from the same boundary.
+#
+# SERVER_SPEC is the npm package (pinned) and the runner supplies the command.
+
+FROM node:22-slim
+
+RUN useradd --create-home --uid 10001 saydo
+
+ARG SERVER_SPEC
+RUN test -n "$SERVER_SPEC" \
+ && npm install -g --omit=dev "$SERVER_SPEC" \
+ && npm cache clean --force
+
+ENV SAYDO_SERVER_SPEC=${SERVER_SPEC}
+
+USER saydo
+WORKDIR /scratch
+
+ENTRYPOINT []
