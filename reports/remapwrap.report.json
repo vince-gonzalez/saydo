@@ -1,0 +1,130 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "remapwrap",
+    "version": "0.6.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/f-keys"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/remapwrap@0.6.0"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:324e7c61-965d-53e0-ae21-23119e20ebed",
+  "harness_version": "0.1.0",
+  "monitor": "cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox",
+  "conformant": true,
+  "tally": {
+    "pass": 10
+  },
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "only declared hosts resolved across 6 call window(s)"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed"
+    },
+    {
+      "id": "writes.none-except-save",
+      "type": "no-write",
+      "appliesTo": [
+        "scope",
+        "check_layout",
+        "build_board",
+        "build_soundboard",
+        "build_mixer"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    },
+    {
+      "id": "save.writes-profiles-only",
+      "type": "write-scope",
+      "appliesTo": [
+        "save_board"
+      ],
+      "verdict": "pass",
+      "evidence": "no out-of-scope write observed"
+    },
+    {
+      "id": "soundboard.reads-its-folder",
+      "type": "read-scope",
+      "appliesTo": [
+        "build_soundboard"
+      ],
+      "verdict": "pass",
+      "evidence": "no out-of-scope read observed"
+    },
+    {
+      "id": "builders.read-nothing",
+      "type": "read-scope",
+      "appliesTo": [
+        "scope",
+        "check_layout",
+        "build_board",
+        "build_mixer",
+        "save_board"
+      ],
+      "verdict": "pass",
+      "evidence": "no out-of-scope read observed"
+    },
+    {
+      "id": "builders.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "check_layout",
+        "build_board",
+        "build_mixer"
+      ],
+      "verdict": "pass",
+      "evidence": "identical across two same-instance and one fresh call (excluding volatile ['id']): check_layout, build_board, build_mixer"
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "15 hostile inputs each returned an error value, no raise, crash, or hang"
+    },
+    {
+      "id": "save.refuses-broken-layouts",
+      "type": "property",
+      "appliesTo": [
+        "save_board"
+      ],
+      "verdict": "pass",
+      "evidence": "save_board(broken layout) -> written=False, new files=none"
+    }
+  ],
+  "findings": []
+}

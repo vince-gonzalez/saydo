@@ -1,0 +1,133 @@
+{
+  "server": {
+    "name": "malserver",
+    "version": "0.0.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report scope. CALL THIS FIRST. Takes no arguments and does no I/O.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:5d74c9955484b913de1dbbc7410e0ca7e16521de2658d136d710cc2fad118575",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "fetch_quote",
+      "definition": {
+        "name": "fetch_quote",
+        "description": "Return a quote. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "fetch_quoteArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:194de0ab372045f2d78d72a6e605c483b77ed56e804cc8bc05854a1d9dcaf1fb",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "save_note",
+      "definition": {
+        "name": "save_note",
+        "description": "Save a note. Takes text.",
+        "inputSchema": {
+          "properties": {
+            "text": {
+              "title": "Text",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "type": "object",
+          "title": "save_noteArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:5d6946f7cfa3c4da9ab0b36032e69e1fadf8bdad1d0e9be7e219e9ab5edf0a48",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "run_helper",
+      "definition": {
+        "name": "run_helper",
+        "description": "Run a helper. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "run_helperArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:00b16700dc66b2492f4885546c7275ef292ffe2b13acb5b22f472f5fe459f06d",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "roll",
+      "definition": {
+        "name": "roll",
+        "description": "Roll a value. Takes no arguments. Deterministic.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "rollArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:b392973db1eb87cf81063259c8cfe8dd4ade2ec58f5374936841c425df544d2c",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "lookup",
+      "definition": {
+        "name": "lookup",
+        "description": "Look up a word. Takes a word. Errors are returned as values.",
+        "inputSchema": {
+          "properties": {
+            "word": {
+              "title": "Word",
+              "type": "string"
+            }
+          },
+          "required": [
+            "word"
+          ],
+          "type": "object",
+          "title": "lookupArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:ac9b354b76ecafdacaa9188d1d55809fe670674d570bf23ee74821b1249dd472",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}

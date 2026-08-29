@@ -1,0 +1,128 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef",
+  "createdAt": "2026-08-29T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "malserver",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC (harness fixture)"
+    },
+    "artifacts": [
+      {
+        "type": "source",
+        "identifier": "seeded/malserver.py"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:5d74c9955484b913de1dbbc7410e0ca7e16521de2658d136d710cc2fad118575",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "fetch_quote",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:194de0ab372045f2d78d72a6e605c483b77ed56e804cc8bc05854a1d9dcaf1fb",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "save_note",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:5d6946f7cfa3c4da9ab0b36032e69e1fadf8bdad1d0e9be7e219e9ab5edf0a48",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "run_helper",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:00b16700dc66b2492f4885546c7275ef292ffe2b13acb5b22f472f5fe459f06d",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "roll",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:b392973db1eb87cf81063259c8cfe8dd4ade2ec58f5374936841c425df544d2c",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "lookup",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:ac9b354b76ecafdacaa9188d1d55809fe670674d570bf23ee74821b1249dd472",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ]
+    },
+    {
+      "id": "roll.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "roll"
+      ],
+      "params": {}
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "lookup"
+      ]
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Seeded non-conformant fixture. Every behavioral invariant here is false by construction; the harness must say so."
+}

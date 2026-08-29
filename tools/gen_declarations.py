@@ -198,7 +198,13 @@ SERVERS = {
                         "alsoAllowed": ["${APPDATA}/RemapWrap/profiles"]}},
             {"id": "builders.deterministic", "type": "deterministic",
              "appliesTo": ["check_layout", "build_board", "build_mixer"],
-             "params": {}},
+             "params": {"volatile": ["id"]},
+             "note": "The functional layout is deterministic. Control 'id' "
+                     "fields are opaque and allocated from a process counter, "
+                     "so they vary with call history and are excluded. This "
+                     "is a genuine dogfood finding: the builders' output "
+                     "carries process state in those ids; harmless to a "
+                     "board's function, but it is why the claim is scoped."},
             {"id": "errors.are-values", "type": "error-as-value",
              "appliesTo": ["*"]},
             {"id": "save.refuses-broken-layouts", "type": "property",

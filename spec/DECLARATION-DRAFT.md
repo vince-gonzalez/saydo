@@ -71,7 +71,7 @@ startup and shutdown, not just the union of tool invocations.
 | `write-scope` | writes only under `params.paths` (env-var templates) | filesystem monitoring |
 | `read-scope` | reads only: own artifact and runtime files, plus paths named by the arguments listed in `params.pathArgs`, plus `params.alsoAllowed` | filesystem monitoring |
 | `no-subprocess` | no child processes | process monitoring |
-| `deterministic` | identical canonical arguments and identical digests of files named by `params.pathArgs` produce identical results, excluding JSON pointers in `params.volatile` | repeated invocation and comparison |
+| `deterministic` | identical arguments and identical bytes of files named by `params.pathArgs` produce identical results, after removing every field named in `params.volatile` (recursively) | two same-instance calls and one fresh-instance call, compared |
 | `error-as-value` | malformed or out-of-domain input produces an error in the result payload; the transport never sees an exception or crash | fuzzing and adversarial input |
 | `refusal-tool` | the server exposes `params.tool`: listed in `tools/list`, takes no arguments, performs no I/O, and states what the server cannot answer | invocation under monitoring |
 | `property` | the named semantic check `params.check` holds; `params.statement` is the human-readable claim | an executable check the harness carries |

@@ -1,0 +1,81 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "malserver",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC (harness fixture)"
+    },
+    "artifacts": [
+      {
+        "type": "source",
+        "identifier": "seeded/malserver.py"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef",
+  "harness_version": "0.1.0",
+  "monitor": "cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox",
+  "conformant": false,
+  "tally": {
+    "pass": 1,
+    "fail": 5
+  },
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "egress: fetch_quote->socket.connect"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "write: run_helper:nul; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\2l_ophq5; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\2l_ophq5; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "subprocess: run_helper:subprocess.Popen"
+    },
+    {
+      "id": "roll.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "roll"
+      ],
+      "verdict": "fail",
+      "evidence": "same input gave different output across repeated and fresh calls: roll"
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "lookup"
+      ],
+      "verdict": "fail",
+      "evidence": "hostile input reached the transport as a failure instead of an error value: lookup:raised(isError); lookup:raised(isError); lookup:raised(isError)"
+    }
+  ],
+  "findings": []
+}

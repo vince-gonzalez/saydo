@@ -1,0 +1,104 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "authorecon",
+    "version": "1.1.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/apriori"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/authorecon@1.1.0"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:c38bfa3d-b819-5926-a005-b097d16dc8d8",
+  "harness_version": "0.1.0",
+  "monitor": "cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox",
+  "conformant": true,
+  "tally": {
+    "pass": 8
+  },
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "scope.offline",
+      "type": "no-network",
+      "appliesTo": [
+        "scope"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 1 call window(s)"
+    },
+    {
+      "id": "scan.offline",
+      "type": "no-network",
+      "appliesTo": [
+        "scan_document"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 1 call window(s)"
+    },
+    {
+      "id": "scan.reads-its-argument",
+      "type": "read-scope",
+      "appliesTo": [
+        "scan_document"
+      ],
+      "verdict": "pass",
+      "evidence": "no out-of-scope read observed"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed"
+    },
+    {
+      "id": "egress.reference-apis",
+      "type": "network-allowlist",
+      "appliesTo": [
+        "check_references"
+      ],
+      "verdict": "pass",
+      "evidence": "resolved api.crossref.org, api.openalex.org across 1 call window(s); all within the declared set"
+    },
+    {
+      "id": "egress.record-apis",
+      "type": "network-allowlist",
+      "appliesTo": [
+        "check_retractions",
+        "check_venues",
+        "check_self_citation"
+      ],
+      "verdict": "pass",
+      "evidence": "resolved api.openalex.org, pub.orcid.org across 1 call window(s); all within the declared set"
+    }
+  ],
+  "findings": []
+}

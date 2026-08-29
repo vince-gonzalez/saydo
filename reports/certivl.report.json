@@ -1,0 +1,112 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "certivl",
+    "version": "0.2.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC",
+      "url": "https://www.f-keys.com"
+    },
+    "repository": {
+      "url": "https://github.com/vince-gonzalez/certivl"
+    },
+    "artifacts": [
+      {
+        "type": "pypi",
+        "identifier": "pkg:pypi/certivl@0.2.0"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
+  "harness_version": "0.1.0",
+  "monitor": "cpython-audit-hook; observes the Python runtime, not the kernel; not a sandbox",
+  "conformant": true,
+  "tally": {
+    "pass": 9
+  },
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "only declared hosts resolved across 4 call window(s)"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    },
+    {
+      "id": "reads.none",
+      "type": "read-scope",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no out-of-scope read observed"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed"
+    },
+    {
+      "id": "answers.deterministic",
+      "type": "deterministic",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "identical across two same-instance and one fresh call: decide, enclose, scope"
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "6 hostile inputs each returned an error value, no raise, crash, or hang"
+    },
+    {
+      "id": "undecided.on-overlap",
+      "type": "property",
+      "appliesTo": [
+        "decide"
+      ],
+      "verdict": "pass",
+      "evidence": "decide(pi == pi) -> UNDECIDED, expected UNDECIDED; decide(sqrt2 * sqrt2 == 2) -> UNDECIDED, expected UNDECIDED; decide(1 < 2) -> TRUE, expected TRUE"
+    },
+    {
+      "id": "decimal.read-exactly",
+      "type": "property",
+      "appliesTo": [
+        "decide",
+        "enclose"
+      ],
+      "verdict": "pass",
+      "evidence": "decide(0.1 + 0.2 == 0.3) -> TRUE, expected TRUE (the decimal literal, not the nearest double)"
+    }
+  ],
+  "findings": []
+}
