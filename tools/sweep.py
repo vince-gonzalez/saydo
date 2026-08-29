@@ -37,35 +37,87 @@ def _scripts_dir(server_python):
     return os.path.dirname(os.path.abspath(server_python))
 
 
+# The registry of servers the sweep knows how to launch. `entry` is the console
+# script (preferred, since not every package supports `-m`); `module` is the
+# fallback. `args` are appended. Only reputable, credential-free utilities are
+# listed -- the sweep executes them, so this is not a place for arbitrary code.
+REGISTRY = [
+    {"name": "mcp-server-time", "entry": "mcp-server-time",
+     "module": "mcp_server_time",
+     "expected": "timezone math; should touch nothing"},
+    {"name": "mcp-server-fetch", "entry": "mcp-server-fetch",
+     "module": "mcp_server_fetch",
+     "expected": "fetches URLs; network by design"},
+    {"name": "mcp-server-git", "entry": "mcp-server-git",
+     "module": "mcp_server_git",
+     "expected": "git operations; subprocess + filesystem likely"},
+    {"name": "mcp-server-sqlite", "entry": "mcp-server-sqlite",
+     "args": ["--db-path", "@DB@"],
+     "expected": "sqlite; filesystem writes likely"},
+    {"name": "mcp-server-calculator", "entry": "mcp-server-calculator",
+     "module": "mcp_server_calculator",
+     "expected": "arithmetic; should touch nothing"},
+    {"name": "wikipedia-mcp", "entry": "wikipedia-mcp",
+     "module": "wikipedia_mcp",
+     "expected": "reads Wikipedia; network read"},
+    {"name": "duckduckgo-mcp-server", "entry": "duckduckgo-mcp-server",
+     "expected": "web search; network read"},
+    {"name": "mcp-simple-arxiv", "entry": "mcp-simple-arxiv",
+     "module": "mcp_simple_arxiv",
+     "expected": "reads arXiv; network read"},
+    {"name": "arxiv-mcp-server", "entry": "arxiv-mcp-server",
+     "args": ["--storage-path", "@ARXIV@"],
+     "expected": "arXiv with a local cache; network read + filesystem"},
+]
+
+
 def servers(server_python):
-    db = os.path.join(tempfile.gettempdir(), "saydo-sweep-sqlite.db")
+    """The registry entries this interpreter can actually launch, with their
+    argv resolved. A server whose entry point and module are both absent from
+    this environment is skipped, not reported as broken."""
+    scripts = _scripts_dir(server_python)
     ext = ".exe" if os.name == "nt" else ""
-    sqlite_exe = os.path.join(_scripts_dir(server_python),
-                              "mcp-server-sqlite" + ext)
-    return [
-        {"name": "mcp-server-time", "purl": "pkg:pypi/mcp-server-time",
-         "argv": [server_python, "-m", "mcp_server_time"],
-         "expected": "timezone math; should touch nothing"},
-        {"name": "mcp-server-fetch", "purl": "pkg:pypi/mcp-server-fetch",
-         "argv": [server_python, "-m", "mcp_server_fetch"],
-         "expected": "fetches URLs; network by design"},
-        {"name": "mcp-server-git", "purl": "pkg:pypi/mcp-server-git",
-         "argv": [server_python, "-m", "mcp_server_git"],
-         "expected": "git operations; subprocess + filesystem likely"},
-        {"name": "mcp-server-sqlite", "purl": "pkg:pypi/mcp-server-sqlite",
-         "argv": [sqlite_exe, "--db-path", db],
-         "expected": "sqlite; filesystem writes likely"},
-    ]
+    db = os.path.join(tempfile.gettempdir(), "saydo-sweep-sqlite.db")
+    arxiv_dir = os.path.join(tempfile.gettempdir(), "saydo-sweep-arxiv")
+    fill = {"@DB@": db, "@ARXIV@": arxiv_dir}
+    out = []
+    for spec in REGISTRY:
+        exe = os.path.join(scripts, spec["entry"] + ext)
+        if not os.path.exists(exe):
+            continue   # this server is not installed in this environment
+        args = [fill.get(a, a) for a in spec.get("args", [])]
+        out.append({"name": spec["name"],
+                    "purl": "pkg:pypi/" + spec["name"],
+                    "argv": [exe] + args, "expected": spec["expected"]})
+    return out
+
+
+def _capture_with_timeout(argv, seconds=30):
+    """Capture tools/list, but never hang: a server that needs config and
+    waits forever is marked unstartable rather than blocking the sweep."""
+    import threading
+    box = {}
+
+    def work():
+        try:
+            box["ok"] = capture_tools.capture(argv)
+        except Exception as e:
+            box["err"] = "{}: {}".format(type(e).__name__, e)
+
+    t = threading.Thread(target=work, daemon=True)
+    t.start()
+    t.join(seconds)
+    if t.is_alive():
+        return None, "timeout: no tools/list within {}s".format(seconds)
+    return box.get("ok"), box.get("err")
 
 
 def run_one(spec, server_python):
     argv = spec["argv"]
-    try:
-        capture = capture_tools.capture(argv)
-    except Exception as e:
+    capture, err = _capture_with_timeout(argv)
+    if capture is None:
         return {"name": spec["name"], "verdict": "unstartable",
-                "error": "{}: {}".format(type(e).__name__, e),
-                "expected": spec["expected"]}
+                "error": err, "expected": spec["expected"]}
 
     declaration = infer_declaration.infer(capture, purl=spec["purl"],
                                           supplier=spec["name"])
@@ -164,8 +216,18 @@ def main():
         nf = len(r.get("findings", []))
         print("  -> {}  ({} finding(s))".format(v, nf))
         results.append(r)
+    # Merge with any existing corpus so the sweep can run per-venv and
+    # accumulate: a re-run of the same server replaces its earlier entry.
+    existing = {}
+    corpus_path = os.path.join(out_dir, "corpus.json")
+    if os.path.exists(corpus_path):
+        with open(corpus_path, encoding="utf-8") as fh:
+            for s in json.load(fh).get("servers", []):
+                existing[s["name"]] = s
+    for r in results:
+        existing[r["name"]] = r
     corpus = {"date": "2026-08-29", "harness": harness.MONITOR_DESC,
-              "servers": results}
+              "servers": sorted(existing.values(), key=lambda s: s["name"])}
     write_report(corpus, out_dir)
     print("\nwrote {}/corpus.json and STATE-OF-MCP-DRAFT.md".format(out_dir))
 

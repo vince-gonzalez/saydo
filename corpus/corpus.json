@@ -3,11 +3,76 @@
   "harness": "boundary egress proxy (any language) + cpython audit hook (python, in-runtime). Egress destinations are observed at the proxy; filesystem/subprocess via the audit hook. Not a sandbox: a raw socket to a bare IP ignoring proxy env, or a native syscall, is not compelled through either. Full enforcement needs a network-isolated container host.",
   "servers": [
     {
-      "name": "mcp-server-time",
-      "expected": "timezone math; should touch nothing",
+      "name": "arxiv-mcp-server",
+      "expected": "arXiv with a local cache; network read + filesystem",
       "tools": [
-        "get_current_time",
-        "convert_time"
+        "search_papers",
+        "download_paper",
+        "list_papers",
+        "read_paper",
+        "get_abstract",
+        "semantic_search",
+        "reindex",
+        "citation_graph",
+        "export_citations",
+        "watch_topic",
+        "check_alerts",
+        "list_watches",
+        "unwatch_topic",
+        "get_paper_latex",
+        "list_paper_latex_sections",
+        "get_paper_latex_section",
+        "get_paper_outline",
+        "read_paper_section",
+        "search_paper_text"
+      ],
+      "verdict": "failing",
+      "tally": {
+        "fail": 2,
+        "pass": 1,
+        "not-covered": 1
+      },
+      "findings": [
+        {
+          "invariant": "network.none",
+          "type": "no-network",
+          "evidence": "egress: check_alerts->export.arxiv.org; search_papers->export.arxiv.org"
+        },
+        {
+          "invariant": "writes.none",
+          "type": "no-write",
+          "evidence": "write: check_alerts:C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-sweep-arxiv; check_alerts:C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-sweep-arxiv; check_alerts:C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-sweep-arxiv\\watched_topics.json; get_paper_outline:C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-sweep-arxiv; list_papers:C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-sweep-arxiv; list_watches:C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-sweep-arxiv"
+        }
+      ],
+      "receipt_head": "65cf7d7dd294c614d5cfa2e21f85e4c5dcdf66d1a27d6d875dda33e7d4dbdcf3"
+    },
+    {
+      "name": "duckduckgo-mcp-server",
+      "expected": "web search; network read",
+      "tools": [
+        "search",
+        "fetch_content"
+      ],
+      "verdict": "failing",
+      "tally": {
+        "fail": 1,
+        "pass": 2,
+        "not-covered": 1
+      },
+      "findings": [
+        {
+          "invariant": "network.none",
+          "type": "no-network",
+          "evidence": "egress: fetch_content->example.com; search->html.duckduckgo.com"
+        }
+      ],
+      "receipt_head": "f5c399f5391f90743b36baf32672afe32b19750315d6662bdb8dfe67002918ae"
+    },
+    {
+      "name": "mcp-server-calculator",
+      "expected": "arithmetic; should touch nothing",
+      "tools": [
+        "calculate"
       ],
       "verdict": "draft",
       "tally": {
@@ -15,7 +80,7 @@
         "not-covered": 1
       },
       "findings": [],
-      "receipt_head": "f8b83b9b3a041f80d2f513515a67df62456f2f11ffa1e536ca647aa39c899908"
+      "receipt_head": "7a4d9154cbd098f5f9740701ecfa82637c1277c6c0aaa89b69707e128a81db40"
     },
     {
       "name": "mcp-server-fetch",
@@ -70,7 +135,7 @@
         {
           "invariant": "writes.none",
           "type": "no-write",
-          "evidence": "write: git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\COMMIT_EDITMSG; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\COMMIT_EDITMSG; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\master.lock; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\master; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\master.lock; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\logs\\refs\\heads\\master.lock"
+          "evidence": "write: git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\COMMIT_EDITMSG; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\COMMIT_EDITMSG; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\test.lock; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\test; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\test.lock; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\logs\\refs\\heads\\test.lock"
         },
         {
           "invariant": "subprocess.none",
@@ -78,7 +143,7 @@
           "evidence": "subprocess: git_add:subprocess.Popen; git_checkout:subprocess.Popen; git_checkout:subprocess.Popen; git_commit:subprocess.Popen; git_commit:subprocess.Popen; git_commit:subprocess.Popen"
         }
       ],
-      "receipt_head": "07bfa97f5d3121dc000ac4c81d3dbcf22a61afed9931abd9c3266d6910f99753"
+      "receipt_head": "a1f606e8ceb228bb0165d2c9ffcdf31df9fa0ad6344e1be621af355a8e7bc5fa"
     },
     {
       "name": "mcp-server-sqlite",
@@ -98,6 +163,33 @@
       },
       "findings": [],
       "receipt_head": "fb4837c3ab99e703389fa898688847c82bc7053348c6b0cde33efa8f5b0723e0"
+    },
+    {
+      "name": "mcp-server-time",
+      "expected": "timezone math; should touch nothing",
+      "tools": [
+        "get_current_time",
+        "convert_time"
+      ],
+      "verdict": "draft",
+      "tally": {
+        "pass": 3,
+        "not-covered": 1
+      },
+      "findings": [],
+      "receipt_head": "f8b83b9b3a041f80d2f513515a67df62456f2f11ffa1e536ca647aa39c899908"
+    },
+    {
+      "name": "mcp-simple-arxiv",
+      "verdict": "unstartable",
+      "error": "timeout: no tools/list within 30s",
+      "expected": "reads arXiv; network read"
+    },
+    {
+      "name": "wikipedia-mcp",
+      "verdict": "unstartable",
+      "error": "timeout: no tools/list within 30s",
+      "expected": "reads Wikipedia; network read"
     }
   ]
 }
