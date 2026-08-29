@@ -690,7 +690,10 @@ def _declared_property_checks(declaration):
 
 def _launch(plan, server_python):
     """The argv that starts the server under test, for any plan shape:
-    an installed module (-m), a script path, or a python -c launch string."""
+    a full command argv, an installed module (-m), a script path, or a
+    python -c launch string."""
+    if plan.get("command_argv"):
+        return list(plan["command_argv"])
     if plan.get("module"):
         return [server_python, "-m", plan["module"]]
     if plan.get("script"):
@@ -723,6 +726,64 @@ def _runtime_roots(server_python):
     return sorted(roots)
 
 
+MONITOR_DESC = (
+    "boundary egress proxy (any language) + cpython audit hook (python, "
+    "in-runtime). Egress destinations are observed at the proxy; "
+    "filesystem/subprocess via the audit hook. Not a sandbox: a raw socket to "
+    "a bare IP ignoring proxy env, or a native syscall, is not compelled "
+    "through either. Full enforcement needs a network-isolated container host.")
+
+
+def run_conformance(name, plan, declaration, capture, server_python):
+    """Exercise one server behind the boundary proxy and judge it. Returns a
+    report dict. This is the in-process entry the CLI and the sweep both use."""
+    plans_mod.write_fixtures()
+    log = os.path.join(tempfile.gettempdir(), "saydo-monitor-{}.log".format(name))
+    egress_log = os.path.join(tempfile.gettempdir(),
+                              "saydo-egress-{}.log".format(name))
+
+    from egress_proxy import EgressProxy
+    open(egress_log, "w").close()
+    proxy = EgressProxy(egress_log).start()
+    os.environ["HTTP_PROXY"] = proxy.address
+    os.environ["HTTPS_PROXY"] = proxy.address
+    os.environ["http_proxy"] = proxy.address
+    os.environ["https_proxy"] = proxy.address
+    os.environ["SAYDO_EGRESS_LOG"] = egress_log
+    os.environ["NODE_USE_ENV_PROXY"] = "1"
+
+    try:
+        main_run = Run(name, plan, server_python, log, egress_log=egress_log)
+        appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
+        ctx = {
+            "declaration": declaration,
+            "appdata": appdata,
+            "runtime_roots": _runtime_roots(server_python),
+            "fuzz_outcomes": run_fuzz(name, plan, capture, server_python, log),
+            "determinism": run_determinism(name, plan, server_python, log),
+        }
+        ctx["property_results"] = run_properties(plan, server_python, log, ctx)
+    finally:
+        proxy.stop()
+
+    verdicts, findings = judge(declaration, capture, main_run, ctx)
+    tally = {}
+    for v in verdicts:
+        tally[v["verdict"]] = tally.get(v["verdict"], 0) + 1
+    conformant = (not findings and tally.get("fail", 0) == 0
+                  and tally.get("pass", 0) > 0)
+    return {
+        "subject": declaration["subject"],
+        "declaration_serial": declaration["serialNumber"],
+        "harness_version": "0.1.0",
+        "monitor": MONITOR_DESC,
+        "conformant": conformant,
+        "tally": tally,
+        "verdicts": verdicts,
+        "findings": findings,
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("declaration")
@@ -741,66 +802,9 @@ def main():
 
     name = args.plan or declaration["subject"]["name"]
     plan = plans_mod.PLANS[name]
-    log = os.path.join(tempfile.gettempdir(),
-                       "saydo-monitor-{}.log".format(name))
-    egress_log = os.path.join(tempfile.gettempdir(),
-                              "saydo-egress-{}.log".format(name))
-
-    # The boundary egress monitor: launch the server behind a logging proxy so
-    # its network destinations are observed outside the runtime, in any
-    # language. The audit hook stays on as a second, in-runtime signal.
-    from egress_proxy import EgressProxy
-    open(egress_log, "w").close()
-    proxy = EgressProxy(egress_log).start()
-    os.environ["HTTP_PROXY"] = proxy.address
-    os.environ["HTTPS_PROXY"] = proxy.address
-    os.environ["http_proxy"] = proxy.address
-    os.environ["https_proxy"] = proxy.address
-    os.environ["SAYDO_EGRESS_LOG"] = egress_log
-    # Node's built-in fetch ignores proxy env unless asked; this opts it in
-    # where the runtime supports it. On a container host the proxy is the only
-    # route and no cooperation is needed; here we observe the cooperative path.
-    os.environ["NODE_USE_ENV_PROXY"] = "1"
-
-    try:
-        main_run = Run(name, plan, args.python, log, egress_log=egress_log)
-
-        appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
-        ctx = {
-            "declaration": declaration,
-            "appdata": appdata,
-            "runtime_roots": _runtime_roots(args.python),
-            "fuzz_outcomes": run_fuzz(name, plan, capture, args.python, log),
-            "determinism": run_determinism(name, plan, args.python, log),
-        }
-        ctx["property_results"] = run_properties(plan, args.python, log, ctx)
-    finally:
-        proxy.stop()
-
-    verdicts, findings = judge(declaration, capture, main_run, ctx)
-
-    tally = {}
-    for v in verdicts:
-        tally[v["verdict"]] = tally.get(v["verdict"], 0) + 1
-    conformant = (not findings
-                  and tally.get("fail", 0) == 0
-                  and tally.get("pass", 0) > 0)
-
-    report = {
-        "subject": declaration["subject"],
-        "declaration_serial": declaration["serialNumber"],
-        "harness_version": "0.1.0",
-        "monitor": "boundary egress proxy (any language) + cpython audit hook "
-                   "(python, in-runtime). Egress destinations are observed at "
-                   "the proxy; filesystem/subprocess via the audit hook. Not a "
-                   "sandbox: a raw socket to a bare IP ignoring proxy env, or "
-                   "a native syscall, is not compelled through either. Full "
-                   "enforcement needs a network-isolated container host.",
-        "conformant": conformant,
-        "tally": tally,
-        "verdicts": verdicts,
-        "findings": findings,
-    }
+    report = run_conformance(name, plan, declaration, capture, args.python)
+    verdicts, findings = report["verdicts"], report["findings"]
+    conformant, tally = report["conformant"], report["tally"]
     with open(args.report, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(report, fh, indent=2, ensure_ascii=False)
         fh.write("\n")

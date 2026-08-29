@@ -1,0 +1,103 @@
+{
+  "date": "2026-08-29",
+  "harness": "boundary egress proxy (any language) + cpython audit hook (python, in-runtime). Egress destinations are observed at the proxy; filesystem/subprocess via the audit hook. Not a sandbox: a raw socket to a bare IP ignoring proxy env, or a native syscall, is not compelled through either. Full enforcement needs a network-isolated container host.",
+  "servers": [
+    {
+      "name": "mcp-server-time",
+      "expected": "timezone math; should touch nothing",
+      "tools": [
+        "get_current_time",
+        "convert_time"
+      ],
+      "verdict": "draft",
+      "tally": {
+        "pass": 3,
+        "not-covered": 1
+      },
+      "findings": [],
+      "receipt_head": "f8b83b9b3a041f80d2f513515a67df62456f2f11ffa1e536ca647aa39c899908"
+    },
+    {
+      "name": "mcp-server-fetch",
+      "expected": "fetches URLs; network by design",
+      "tools": [
+        "fetch"
+      ],
+      "verdict": "failing",
+      "tally": {
+        "fail": 2,
+        "pass": 1,
+        "not-covered": 1
+      },
+      "findings": [
+        {
+          "invariant": "network.none",
+          "type": "no-network",
+          "evidence": "egress: fetch->example.com"
+        },
+        {
+          "invariant": "subprocess.none",
+          "type": "no-subprocess",
+          "evidence": "subprocess: fetch:subprocess.Popen; fetch:subprocess.Popen"
+        }
+      ],
+      "receipt_head": "729fcb24fc3f148713cb8038c6f3b0afbd019fe3d1112443a6436b112fb358d1"
+    },
+    {
+      "name": "mcp-server-git",
+      "expected": "git operations; subprocess + filesystem likely",
+      "tools": [
+        "git_status",
+        "git_diff_unstaged",
+        "git_diff_staged",
+        "git_diff",
+        "git_commit",
+        "git_add",
+        "git_reset",
+        "git_log",
+        "git_create_branch",
+        "git_checkout",
+        "git_show",
+        "git_branch"
+      ],
+      "verdict": "failing",
+      "tally": {
+        "pass": 1,
+        "fail": 2,
+        "not-covered": 1
+      },
+      "findings": [
+        {
+          "invariant": "writes.none",
+          "type": "no-write",
+          "evidence": "write: git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\COMMIT_EDITMSG; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\COMMIT_EDITMSG; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\master.lock; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\master; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\refs\\heads\\master.lock; git_commit:C:\\Users\\Admin\\OneDrive\\Desktop\\saydo\\fixtures\\gitrepo\\.git\\logs\\refs\\heads\\master.lock"
+        },
+        {
+          "invariant": "subprocess.none",
+          "type": "no-subprocess",
+          "evidence": "subprocess: git_add:subprocess.Popen; git_checkout:subprocess.Popen; git_checkout:subprocess.Popen; git_commit:subprocess.Popen; git_commit:subprocess.Popen; git_commit:subprocess.Popen"
+        }
+      ],
+      "receipt_head": "07bfa97f5d3121dc000ac4c81d3dbcf22a61afed9931abd9c3266d6910f99753"
+    },
+    {
+      "name": "mcp-server-sqlite",
+      "expected": "sqlite; filesystem writes likely",
+      "tools": [
+        "read_query",
+        "write_query",
+        "create_table",
+        "list_tables",
+        "describe_table",
+        "append_insight"
+      ],
+      "verdict": "draft",
+      "tally": {
+        "pass": 3,
+        "not-covered": 1
+      },
+      "findings": [],
+      "receipt_head": "fb4837c3ab99e703389fa898688847c82bc7053348c6b0cde33efa8f5b0723e0"
+    }
+  ]
+}

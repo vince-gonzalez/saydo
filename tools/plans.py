@@ -29,6 +29,7 @@ FIXTURES = os.path.join(os.path.dirname(HERE), "fixtures")
 TINY_MM = os.path.join(FIXTURES, "tiny.mm")
 SAMPLE_DOC = os.path.join(FIXTURES, "sample-document.txt")
 SOUNDS_DIR = os.path.join(FIXTURES, "sounds")
+GITREPO = os.path.join(FIXTURES, "gitrepo")
 MALSERVER = os.path.join(os.path.dirname(HERE), "seeded", "malserver.py")
 
 CARBERRY = "0000-0002-1825-0097"
@@ -302,6 +303,63 @@ PLANS = {
 }
 
 
+def _benign_arg(field_name, schema):
+    """A harmless, plausible value for one argument, from its name and type.
+
+    The sweep drives tools it has no hand-written plan for. Benign values let
+    a tool actually do its thing so behavior is observable, without handing it
+    anything hostile: a URL points at example.com, a path points at the
+    fixtures directory, everything else is a minimal placeholder.
+    """
+    kind = schema.get("type", "string")
+    if isinstance(kind, list):
+        kind = kind[0] if kind else "string"
+    n = field_name.lower()
+    if kind == "string":
+        if any(k in n for k in ("url", "uri", "link", "endpoint")):
+            return "https://example.com/"
+        if any(k in n for k in ("repo", "repository")):
+            return GITREPO
+        if any(k in n for k in ("path", "file", "dir", "folder")):
+            return FIXTURES
+        if any(k in n for k in ("timezone", "tz")):
+            return "America/New_York"
+        return "test"
+    if kind in ("integer", "number"):
+        return 1
+    if kind == "boolean":
+        return False
+    if kind == "array":
+        return []
+    if kind == "object":
+        return {}
+    return "test"
+
+
+def synth_plan(capture, command_argv, timeout=30):
+    """A generic exercise for a server with no hand-written plan: call each
+    tool once with benign arguments, behind the boundary proxy and the audit
+    hook, so egress / writes / subprocess are observed under normal use.
+
+    It is a LOWER BOUND on findings: a tool that needs a specific valid input
+    to act (a real repo, a real query) may do little under a placeholder and
+    pass invariants it would fail with real input. The sweep reports it as
+    such rather than as a clean bill.
+    """
+    exercise = []
+    for t in capture["tools"]:
+        name = t["name"]
+        schema = t["definition"].get("inputSchema", {}) or {}
+        props = schema.get("properties", {}) or {}
+        required = schema.get("required", list(props))
+        args = {k: _benign_arg(k, props.get(k, {})) for k in required}
+        deterministic = (name.lower() in ("scope", "guard", "about")
+                         and not required)
+        exercise.append((name, args, deterministic))
+    return {"command_argv": list(command_argv), "exercise": exercise,
+            "call_timeout": timeout, "skip_fuzz": True, "synthetic": True}
+
+
 def write_fixtures():
     os.makedirs(FIXTURES, exist_ok=True)
     if not os.path.exists(TINY_MM):
@@ -319,6 +377,27 @@ def write_fixtures():
         with open(SAMPLE_DOC, "w", encoding="utf-8", newline="\n") as fh:
             fh.write("A short plain document.\n\nIt exists so scan_document "
                      "has a real local file to read under observation.\n")
+    # A real git repository, so a git server has something to operate on.
+    # Without it, git tools error on a non-repo path and the sweep sees
+    # nothing -- a false clean bill. Best effort: skip if git is absent.
+    if not os.path.isdir(os.path.join(GITREPO, ".git")):
+        import subprocess
+        try:
+            os.makedirs(GITREPO, exist_ok=True)
+            env = dict(os.environ,
+                       GIT_AUTHOR_NAME="saydo", GIT_AUTHOR_EMAIL="s@saydo",
+                       GIT_COMMITTER_NAME="saydo", GIT_COMMITTER_EMAIL="s@saydo")
+            run = lambda *a: subprocess.run(["git", "-C", GITREPO, *a],
+                                            env=env, capture_output=True)
+            run("init", "-q")
+            with open(os.path.join(GITREPO, "README.md"), "w",
+                      encoding="utf-8", newline="\n") as fh:
+                fh.write("# fixture repo\n")
+            run("add", "-A")
+            run("commit", "-q", "-m", "fixture")
+        except Exception:
+            pass
+
     os.makedirs(SOUNDS_DIR, exist_ok=True)
     for name in ("alpha.wav", "bravo.wav"):
         p = os.path.join(SOUNDS_DIR, name)
