@@ -41,7 +41,7 @@
         "*"
       ],
       "verdict": "pass",
-      "evidence": "only declared hosts resolved across 3 call window(s)"
+      "evidence": "no hosts resolved across 3 call window(s)"
     },
     {
       "id": "writes.none",

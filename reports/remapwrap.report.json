@@ -41,7 +41,7 @@
         "*"
       ],
       "verdict": "pass",
-      "evidence": "only declared hosts resolved across 6 call window(s)"
+      "evidence": "no hosts resolved across 6 call window(s)"
     },
     {
       "id": "subprocess.none",
