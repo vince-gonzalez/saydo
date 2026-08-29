@@ -352,6 +352,18 @@ def judge(declaration, capture, run, ctx):
                                    if allowed else
                                    "{} resolved across {} call window(s)"
                                    .format(obs, windows))
+                if ctx.get("enforcement") == "contained" and not observed:
+                    # Under enforcement, silence is ambiguous. A tool that
+                    # bypasses the proxy with a raw socket fails at DNS before
+                    # any watched event fires, so "nothing observed" can mean
+                    # "was prevented" rather than "never tried" -- and those
+                    # are very different facts about a tool. Say so rather
+                    # than letting the pass imply good behaviour.
+                    row["evidence"] += (
+                        "; NOTE: egress was enforced at the boundary, so an "
+                        "attempt that failed before reaching it is not "
+                        "individually attributable. This pass means no egress "
+                        "reached the boundary, NOT that none was attempted.")
 
         elif vtype == "no-subprocess":
             hits = [(tool, ev["event"]) for tool in tools
@@ -803,6 +815,7 @@ def run_conformance(name, plan, declaration, capture, server_python,
         ctx = {
             "declaration": declaration,
             "appdata": appdata,
+            "enforcement": runner.enforcement,
             "runtime_roots": _runtime_roots(server_python),
             "fuzz_outcomes": run_fuzz(name, plan, capture, server_python, log),
             "determinism": run_determinism(name, plan, server_python, log),

@@ -83,6 +83,33 @@ every receipt in this repository was produced by the local runner, which
 observes. `Runner.enforcement` carries the level from the run into the
 receipt, so a receipt may only say contained when the run actually was.
 
+## Known gap: under enforcement, silence is ambiguous
+
+A full conformance run of the seeded server inside the sandbox catches it
+writing outside scope, spawning a child, returning non-deterministic output,
+and raising instead of returning an error value. But `network.none` **passes**
+there, while the *same server on a host fails it* with
+`egress: fetch_quote->socket.connect`.
+
+The tool did attempt egress both times. Inside the sandbox there is no DNS, so
+`sock.connect(("example.com", 80))` fails during name resolution — which
+CPython performs *before* it raises the `socket.connect` audit event. No
+watched event fires, the harness sees nothing, and "nothing observed" is
+rendered as a pass.
+
+This is the correct verdict for the question actually asked ("did any egress
+reach the boundary?") and a misleading answer to the question a reader has in
+mind ("did this tool try to phone home?"). Enforcement without attribution
+loses the more interesting fact: not that the tool failed, but that it tried.
+
+Mitigated, not solved: an egress pass produced under enforcement now carries
+an explicit note that it means no egress *reached* the boundary, not that none
+was attempted. The real fix is to make attempts observable — run a logging DNS
+resolver on the internal network and point the sandbox at it, so a name
+lookup is recorded and refused rather than failing into silence. Until that
+exists, read a contained `no-network` pass as "nothing got out", never as
+"nothing was tried".
+
 ## The hardening roadmap this implies (in order)
 
 1. **Container execution** (hosted service, Linux): each server in its own
