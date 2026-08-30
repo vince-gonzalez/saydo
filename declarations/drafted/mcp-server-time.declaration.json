@@ -1,6 +1,6 @@
 {
   "declarationVersion": "0.1.0",
-  "serialNumber": "urn:uuid:b9517156-bd4d-5482-8ded-7e139a93b810",
+  "serialNumber": "urn:uuid:feb8c184-22f7-5d38-903a-e4b0fdb1d91f",
   "createdAt": "1970-01-01T00:00:00Z",
   "status": "draft",
   "subject": {
@@ -46,7 +46,7 @@
       "appliesTo": [
         "*"
       ],
-      "note": "HYPOTHESIS: assumes no egress. Relax to network-allowlist if the tool legitimately calls out."
+      "note": "observed to hold: no hosts resolved across 2 call window(s)"
     },
     {
       "id": "writes.none",
@@ -54,7 +54,7 @@
       "appliesTo": [
         "*"
       ],
-      "note": "HYPOTHESIS: assumes no filesystem writes."
+      "note": "observed to hold: no write observed"
     },
     {
       "id": "subprocess.none",
@@ -62,17 +62,17 @@
       "appliesTo": [
         "*"
       ],
-      "note": "HYPOTHESIS: assumes no child processes."
-    },
-    {
-      "id": "errors.are-values",
-      "type": "error-as-value",
-      "appliesTo": [
-        "*"
-      ],
-      "note": "HYPOTHESIS: assumes malformed input returns an error value rather than crashing the transport."
+      "note": "observed to hold: no subprocess observed"
     }
   ],
   "canonicalization": "rfc8785",
-  "notes": "Inferred skeleton: every invariant is a conservative HYPOTHESIS, not a finding. Run the harness; the failures are the map of what this tool actually does. Then keep what held, relax what was too strict for a real reason, and sign."
+  "notes": "Drafted from an observed run. Every invariant here already held once; that is a reason to believe it, not a proof it will keep holding. Review, tighten, then sign.",
+  "toDecide": [
+    {
+      "invariant": "errors.are-values",
+      "why": "the run never exercised this",
+      "evidence": "no fuzz outcomes for the covered tools",
+      "decide": "bound it with a narrower invariant if the behaviour is intended, or fix the tool"
+    }
+  ]
 }

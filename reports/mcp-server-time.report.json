@@ -9,11 +9,11 @@
     "artifacts": [
       {
         "type": "other",
-        "identifier": "pkg:unknown/mcp-time@1.29.1"
+        "identifier": "pkg:pypi/mcp-server-time"
       }
     ]
   },
-  "declaration_serial": "urn:uuid:a9e000be-7d02-5cbd-821c-127d26a66473",
+  "declaration_serial": "urn:uuid:b9517156-bd4d-5482-8ded-7e139a93b810",
   "harness_version": "0.1.0",
   "enforcement": "observed",
   "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",

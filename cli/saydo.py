@@ -29,6 +29,7 @@ verdict fails.
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 import os
 import re
@@ -174,8 +175,16 @@ def cmd_verify_any(args):
     else:
         print("\n[2/4] infer a conservative declaration (every invariant is a "
               "hypothesis, not a finding)")
+        # The package identity must be recorded, not the name the server calls
+        # itself. mcp-server-time reports its serverInfo name as "mcp-time",
+        # and a receipt that does not say which package produced it cannot be
+        # looked up, published, or trusted later.
+        purl = ("pkg:npm/" + args.npm if args.npm else
+                "pkg:pypi/" + args.pypi if args.pypi else
+                "pkg:generic/" + slug)
         _run([python, os.path.join(TOOLS, "infer_declaration.py"),
-              capture_path, "--supplier", name, "-o", decl_path])
+              capture_path, "--supplier", name, "--purl", purl,
+              "-o", decl_path])
 
     print("\n[3/4] exercise under the conformance harness")
     harness_cmd = [python, os.path.join(TOOLS, "harness.py"),
@@ -414,12 +423,39 @@ def cmd_verify(args):
     return 0 if anchor["conformant"] else 1
 
 
+def _receipt_paths(name):
+    """Where this subject's receipt lives, however it was named.
+
+    A receipt is filed under the subject the declaration names, which for an
+    arbitrary package is not always the string the user typed. Both are tried
+    so `saydo status` works for anything `saydo verify` produced, not only for
+    servers in the registry.
+    """
+    d = os.path.join(ROOT, "receipts")
+    for stem in (name, _safe(name)):
+        rec = os.path.join(d, stem + ".receipt.jsonl")
+        if os.path.exists(rec):
+            return rec, os.path.join(d, stem + ".anchor.json")
+    # Fall back to any receipt whose subject matches by name OR by package,
+    # since a server's self-reported name is often not the package name.
+    for anc in glob.glob(os.path.join(d, "*.anchor.json")):
+        try:
+            with open(anc, encoding="utf-8") as fh:
+                subject = json.load(fh).get("subject", {})
+        except Exception:
+            continue
+        purl = subject.get("purl", "")
+        if subject.get("name") == name or purl.endswith("/" + name) \
+                or purl.endswith("/" + name.split("/")[-1]):
+            return anc.replace(".anchor.json", ".receipt.jsonl"), anc
+    return (os.path.join(d, _safe(name) + ".receipt.jsonl"),
+            os.path.join(d, _safe(name) + ".anchor.json"))
+
+
 def cmd_status(args):
     """Print the compact saydo/status an agent reads to gate a tool."""
     import status as status_mod
-    p = _paths(args.name)
-    rec, anc = (os.path.join(p["receipts"], args.name + ".receipt.jsonl"),
-                p["anchor"])
+    rec, anc = _receipt_paths(args.name)
     if not (os.path.exists(rec) and os.path.exists(anc)):
         print(json.dumps({"saydoStatus": "0.1.0",
                           "subject": {"name": args.name},
@@ -431,6 +467,25 @@ def cmd_status(args):
     with open(rec, encoding="utf-8") as fh:
         st = status_mod.build(fh.readlines(), json.load(open(anc, encoding="utf-8")))
     print(json.dumps(st, indent=2, ensure_ascii=False))
+    return 0
+
+
+def cmd_declare(args):
+    """Draft a declaration from a run that already happened."""
+    slug = _safe(args.name)
+    report = os.path.join(ROOT, "reports", slug + ".report.json")
+    capture = os.path.join(ROOT, "captured", slug + ".json")
+    if not (os.path.exists(report) and os.path.exists(capture)):
+        raise SystemExit(
+            "no run on record for {!r}. A declaration is drafted from what a "
+            "run observed, so verify it first:\n"
+            "  saydo verify --npm/--pypi/--command ...".format(args.name))
+    out = args.out or os.path.join(ROOT, "declarations", "drafted",
+                                   slug + ".declaration.json")
+    _run([sys.executable, os.path.join(TOOLS, "declare.py"), report, capture,
+          "-o", out])
+    print("\nReview it, tighten anything too permissive, then sign it and\n"
+          "pass it back with:  saydo verify ... --declaration " + out)
     return 0
 
 
@@ -518,6 +573,12 @@ def main():
     st = sub.add_parser("status")
     st.add_argument("name")
     st.set_defaults(fn=cmd_status)
+
+    d = sub.add_parser("declare", help="draft a declaration you can sign, "
+                                       "from a run that already happened")
+    d.add_argument("name")
+    d.add_argument("-o", "--out")
+    d.set_defaults(fn=cmd_declare)
 
     s = sub.add_parser("selfcheck")
     s.add_argument("--python")
