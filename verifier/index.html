@@ -299,8 +299,15 @@ function render(result) {
     html += "<dt>Declaration</dt><dd>" + esc(open.declarationSerial) +
             " (" + esc(open.declarationStatus) + ")</dd>";
     if (close)
-      html += "<dt>Result</dt><dd>" + (close.conformant ?
-        "conformant" : "NOT conformant") + " &middot; " +
+      // Three outcomes, not two. `conformant` means only that nothing failed,
+      // and nothing fails in a run where nothing happened -- a server that
+      // declined every call closes its receipt as conformant. Rendering that
+      // as the same word used for a tool that was actually put through its
+      // paces tells the reader the opposite of what the evidence shows.
+      var outcome = !close.conformant ? "NOT conformant"
+        : (close.established === 0 ? "INCONCLUSIVE &mdash; nothing was "
+           + "established; the tool did no observable work" : "conformant");
+      html += "<dt>Result</dt><dd>" + outcome + " &middot; " +
         esc(JSON.stringify(close.tally)) + "</dd>";
     html += "</dl></div>";
   }

@@ -229,6 +229,15 @@ def build(report, declaration, capture, generated_at, prior_head=None,
     chain.add({
         "type": "receipt-close",
         "conformant": report["conformant"],
+        # How many invariants about the tool's CONDUCT were demonstrated.
+        # `conformant` only ever meant "nothing failed", and nothing fails in a
+        # run where nothing happened -- so a server that declined every call
+        # closes a receipt reading conformant: true. Anyone reading this record
+        # without knowing that would draw the opposite of the right conclusion,
+        # and the receipt is the artifact of record precisely so that reading
+        # it is enough. A third party should not have to reimplement our rule
+        # to avoid being misled by our own document.
+        "established": report.get("established", 0),
         "tally": report["tally"],
         "rowCount": chain.seq + 1,   # this row included
     })
