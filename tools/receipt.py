@@ -121,14 +121,15 @@ class Chain:
         return self.prev
 
 
-def build(report, declaration, capture, generated_at):
+def build(report, declaration, capture, generated_at, prior_head=None,
+          drift=None):
     subject = declaration["subject"]
     purl = subject["artifacts"][0]["identifier"]
     genesis = "SAYDO-RECEIPT/0.1.0|{}|{}".format(
         declaration["serialNumber"], purl)
     chain = Chain(genesis)
 
-    chain.add({
+    opening = {
         "type": "receipt-open",
         "receiptVersion": "0.1.0",
         "declarationSerial": declaration["serialNumber"],
@@ -141,7 +142,14 @@ def build(report, declaration, capture, generated_at):
                     "enforcement": report.get("enforcement", "observed"),
                     "monitor": report["monitor"]},
         "generatedAt": generated_at,
-    })
+    }
+    if prior_head:
+        # The receipts chain across runs as well as within one. Dropping an
+        # inconvenient earlier result breaks this link, and the break is
+        # visible to anyone holding an older copy -- so a history can be
+        # extended but not quietly rewritten.
+        opening["priorReceipt"] = prior_head
+    chain.add(opening)
 
     chain.add({
         "type": "capture",
@@ -189,15 +197,22 @@ def build(report, declaration, capture, generated_at):
             "by ordinary code. It is NOT containment.")
     chain.add(monitor_row)
 
+    flow = report.get("dataFlow") or {}
     for v in report["verdicts"]:
-        chain.add({
+        row = {
             "type": "verdict",
             "invariant": v["id"],
             "invariantType": v["type"],
             "appliesTo": v["appliesTo"],
             "verdict": v["verdict"],
             "evidence": v["evidence"],
-        })
+        }
+        if flow and v["type"] == "no-data-egress":
+            # Carried on the verdict it belongs to, so a later receipt can be
+            # compared with this one directly and a destination that starts
+            # carrying the input becomes visible across time.
+            row["dataFlow"] = flow
+        chain.add(row)
 
     for f in report["findings"]:
         chain.add({
@@ -206,6 +221,10 @@ def build(report, declaration, capture, generated_at):
             "tool": f.get("tool", ""),
             "detail": f["detail"],
         })
+
+    for d in (drift or []):
+        chain.add({"type": "drift", "kind": d["kind"], "subject": d["tool"],
+                   "severity": d["severity"], "detail": d["detail"]})
 
     chain.add({
         "type": "receipt-close",
@@ -223,6 +242,7 @@ def build(report, declaration, capture, generated_at):
         "conformant": report["conformant"],
         "rows": len(chain.rows),
         "head": chain.head,
+        "priorReceipt": prior_head,
         "signature": None,   # populated by main() when --sign is given
     }
     return chain, anchor
@@ -237,6 +257,8 @@ def main():
     ap.add_argument("--at", default="1970-01-01T00:00:00Z",
                     help="generatedAt stamp; fixed by default so committed "
                          "receipts are reproducible")
+    ap.add_argument("--no-drift", action="store_true",
+                    help="do not compare with the previous receipt")
     ap.add_argument("--sign", metavar="PRIVATE_JWK",
                     help="Ed25519 private-key JWK to sign the receipt head; "
                          "without it the receipt is an unsigned draft")
@@ -249,7 +271,21 @@ def main():
     with open(args.capture, encoding="utf-8") as fh:
         capture = json.load(fh)
 
-    chain, anchor = build(report, declaration, capture, args.at)
+    # Read the previous receipt BEFORE it is overwritten: the comparison is
+    # the point of keeping them.
+    name = declaration["subject"]["name"]
+    ledger_path = os.path.join(args.out_dir, name + ".receipt.jsonl")
+    prior_head, drift_findings = None, []
+    if not args.no_drift:
+        import drift as drift_mod
+        previous = drift_mod.load_receipt(ledger_path)
+        if previous:
+            prior_head = previous[-1].get("row_hash")
+            interim = build(report, declaration, capture, args.at)[0].rows
+            drift_findings = drift_mod.compare(previous, interim)
+
+    chain, anchor = build(report, declaration, capture, args.at,
+                          prior_head=prior_head, drift=drift_findings)
     if args.sign:
         anchor["signature"] = sign_head(anchor["head"], args.sign, args.at)
 
