@@ -194,12 +194,106 @@ class ContainerRunner(Runner):
             + "\").IPAddress}}", self.proxy_name)
         self._proxy_ip = (ip.stdout or "").strip()
 
+        self._install_bridge_log()
+
         self._proxy_addr = "http://saydo-proxy:8888"
         return self._proxy_addr
 
+    # -- bridge logging: the bare-IP case -----------------------------------
+    #
+    # A DNS sink sees any tool that resolves a name, which is almost all code.
+    # It cannot see a tool that connects straight to an IP address, because
+    # there is no lookup to record. Such a connection is still stopped by the
+    # internal network, but silently -- and "stopped silently" loses the fact
+    # that it was attempted.
+    #
+    # A LOG rule on the sandbox bridge closes that: every new connection
+    # leaving the sandbox subnet is recorded by the kernel before the network
+    # drops it. This needs root on the host, so it is attempted and its
+    # success is reported honestly rather than assumed.
+
+    LOG_PREFIX = "SAYDO-EGRESS "
+
+    def _sudo(self, *args):
+        return subprocess.run(["sudo", "-n", *args], capture_output=True,
+                              text=True, timeout=60)
+
+    def _install_bridge_log(self):
+        self.bridge_logging = False
+        self.bridge_reason = ""
+        if not shutil.which("iptables") or not shutil.which("sudo"):
+            self.bridge_reason = "iptables/sudo not available on this host"
+            return
+        info = self._docker("network", "inspect", self.network, "-f",
+                            "{{(index .IPAM.Config 0).Subnet}}|{{.Id}}")
+        raw = (info.stdout or "").strip()
+        if "|" not in raw:
+            self.bridge_reason = "could not read the sandbox subnet"
+            return
+        subnet, net_id = raw.split("|", 1)
+        self._bridge = "br-" + net_id[:12]
+        self._subnet = subnet
+        # New connections leaving the sandbox for anything outside its own
+        # subnet. Traffic to the proxy stays inside the subnet and is not
+        # logged, so what remains is exactly the attempts that bypassed it.
+        out = self._sudo("iptables", "-I", "DOCKER-USER", "-i", self._bridge,
+                         "!", "-d", subnet, "-m", "conntrack",
+                         "--ctstate", "NEW", "-j", "LOG",
+                         "--log-prefix", self.LOG_PREFIX, "--log-level", "4")
+        if out.returncode != 0:
+            self.bridge_reason = ("could not install the bridge LOG rule: "
+                                  + (out.stderr or "").strip()[:120])
+            return
+        self.bridge_logging = True
+        self._log_mark = time.time()
+
+    def _remove_bridge_log(self):
+        if getattr(self, "bridge_logging", False):
+            self._sudo("iptables", "-D", "DOCKER-USER", "-i", self._bridge,
+                       "!", "-d", self._subnet, "-m", "conntrack",
+                       "--ctstate", "NEW", "-j", "LOG",
+                       "--log-prefix", self.LOG_PREFIX, "--log-level", "4")
+
+    def _bridge_events(self):
+        """Connection attempts the kernel logged as they left the sandbox."""
+        if not getattr(self, "bridge_logging", False):
+            return []
+        out = self._sudo("dmesg")
+        if out.returncode != 0:
+            return []
+        events = []
+        for line in (out.stdout or "").splitlines():
+            if self.LOG_PREFIX not in line:
+                continue
+            fields = {}
+            for token in line.split():
+                if "=" in token:
+                    k, _, v = token.partition("=")
+                    fields[k] = v
+            dst, dpt = fields.get("DST"), fields.get("DPT")
+            if not dst:
+                continue
+            events.append({
+                # Timestamped now rather than from the kernel clock, which is
+                # uptime-relative and would not align with call windows. The
+                # rule is installed per run, so everything it logged belongs
+                # to this run.
+                "t": time.time(),
+                "event": "bridge.attempt",
+                "host": dst,
+                "port": int(dpt) if dpt and dpt.isdigit() else None,
+                "proto": fields.get("PROTO", ""),
+                "outcome": "blocked by the sandbox network",
+            })
+        return events
+
     def collect_egress(self):
-        """The proxy's decisions. It echoes each one to stdout, so the
-        container log is the evidence and no volume is needed."""
+        """The proxy's decisions plus anything that tried to leave around it.
+
+        The proxy echoes each decision to stdout, so the container log is the
+        evidence and no volume is needed; the bridge log supplies the attempts
+        that never reached the proxy at all.
+        """
         if not self._up:
             return []
         out = self._docker("logs", self.proxy_name)
@@ -211,11 +305,12 @@ class ContainerRunner(Runner):
                     events.append(json.loads(line))
                 except ValueError:
                     pass
-        return events
+        return events + self._bridge_events()
 
     def teardown(self):
         if not self._up:
             return
+        self._remove_bridge_log()
         self._docker("rm", "-f", self.proxy_name)
         self._docker("network", "rm", self.network)
         self._docker("network", "rm", self.outside)
@@ -301,13 +396,27 @@ class ContainerRunner(Runner):
         return {}
 
     def describe(self):
+        if getattr(self, "bridge_logging", False):
+            bare_ip = (" A connection to a bare IP address is recorded by the "
+                       "bridge before the network drops it, so an attempt "
+                       "that performs no name lookup is still attributable.")
+        else:
+            bare_ip = (" Bridge logging is NOT active ({}), so a connection to "
+                       "a bare IP address is stopped but not recorded: such an "
+                       "attempt would be invisible here."
+                       .format(getattr(self, "bridge_reason", "unknown")))
+        return (self._describe_base() + bare_ip)
+
+    def _describe_base(self):
         return ("container ({}{}): only network route is the SayDo proxy, "
                 "root filesystem read-only, {} the sole writable path, all "
-                "capabilities dropped. Egress, writes, and processes are "
-                "enforced at the boundary rather than observed in-runtime, so "
-                "coverage does not depend on the tool's language or its "
-                "cooperation.".format(
-                    self.image, " runtime=" + self.runtime if self.runtime else "",
+                "capabilities dropped. Every name lookup is recorded and "
+                "refused by the sandbox's own resolver. Egress, writes, and "
+                "processes are enforced at the boundary rather than observed "
+                "in-runtime, so coverage does not depend on the tool's "
+                "language or its cooperation.".format(
+                    self.image,
+                    " runtime=" + self.runtime if self.runtime else "",
                     self.scratch))
 
 

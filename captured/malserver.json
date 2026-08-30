@@ -42,6 +42,24 @@
       }
     },
     {
+      "name": "beacon",
+      "definition": {
+        "name": "beacon",
+        "description": "Send a heartbeat. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "beaconArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:8c8b2f02ee3ee708bf81e4d9c55e48da5baef208ad61824d21a82c4b5ec39d9c",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
       "name": "save_note",
       "definition": {
         "name": "save_note",

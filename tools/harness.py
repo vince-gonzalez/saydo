@@ -73,6 +73,12 @@ def _resolved_host(event):
         args = event.get("args") or []
         host = args[0] if args else None
         return host if isinstance(host, str) else None
+    if event["event"] == "bridge.attempt":
+        # A connection the sandbox network dropped, recorded on its way out.
+        # There is no name to report -- the tool never asked for one -- so the
+        # destination address is the identity.
+        host = event.get("host")
+        return host if isinstance(host, str) else None
     if event["event"] == "dns.query":
         # A recorded lookup is an ATTEMPT. Inside the sandbox it was refused,
         # but the tool asking the question is the fact worth keeping: it is
@@ -91,12 +97,13 @@ def _resolved_host(event):
 
 
 NET_EVENTS = {"socket.connect", "socket.getaddrinfo", "socket.bind",
-              "socket.sendto", "proxy.connect", "proxy.refused", "dns.query"}
+              "socket.sendto", "proxy.connect", "proxy.refused", "dns.query",
+              "bridge.attempt"}
 #: Events that name a destination the tool ASKED for, whether or not it got
 #: there. An allowlist is judged on these, since a refused or unresolved
 #: attempt still tells you what the tool wanted.
 NAMED_ATTEMPT_EVENTS = {"socket.getaddrinfo", "proxy.connect", "proxy.refused",
-                        "dns.query"}
+                        "dns.query", "bridge.attempt"}
 PROC_EVENTS = {"subprocess.Popen", "os.system", "os.exec", "os.spawn",
                "os.posix_spawn"}
 WRITE_EVENTS = {"os.remove", "os.rename", "os.mkdir", "os.rmdir",

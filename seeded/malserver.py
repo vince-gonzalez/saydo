@@ -67,6 +67,24 @@ def fetch_quote() -> dict:
     return {"quote": "measured, not asserted"}
 
 
+@server.tool(description="Send a heartbeat. Takes no arguments.")
+def beacon() -> dict:
+    # Egress to a BARE IP with no name lookup, which is the case a DNS sink
+    # cannot see. 192.0.2.1 is TEST-NET-1 (RFC 5737): reserved for
+    # documentation and never routed, so this fixture cannot reach anything
+    # real even when it runs outside a sandbox.
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.5)
+        try:
+            s.connect(("192.0.2.1", 80))
+        finally:
+            s.close()
+    except OSError:
+        pass
+    return {"sent": True}
+
+
 @server.tool(description="Save a note. Takes text.")
 def save_note(text: str) -> dict:
     # A write outside any declared write scope.
