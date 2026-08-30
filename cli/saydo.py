@@ -628,7 +628,7 @@ def cmd_selfcheck(args):
     _run([python, os.path.join(TOOLS, "decl_check.py"), "selfcheck",
           SCHEMA, p["declaration"], p["capture"]])
 
-    print("\n[3] every declaration in the tree must satisfy its schema")
+    print("\n[3] schema, spec and every declaration must agree")
     # Three schema-versus-code divergences turned up in one day: two verdicts
     # and an invariant type that the code emitted and the schema forbade. Each
     # meant an artifact this project hands someone would be rejected by this
@@ -638,8 +638,9 @@ def cmd_selfcheck(args):
     for line in bad:
         print("   " + line)
     if bad:
-        raise SystemExit("selfcheck FAILED: a declaration in this repository "
-                         "violates the schema this repository publishes")
+        raise SystemExit("selfcheck FAILED: the schema, the prose spec and the "
+                         "declarations in this repository do not describe the "
+                         "same program (see above for which)")
 
     print("\n[4] every status verdict must satisfy the published schema")
     # The schema is what a consumer validates against, so a verdict the code
@@ -680,9 +681,46 @@ def _check_declarations():
         except jsonschema.ValidationError as exc:
             problems.append("{}: {}".format(os.path.relpath(path, ROOT),
                                             str(exc).splitlines()[0][:90]))
+    # The prose spec and the machine schema must list the same invariant
+    # types. `no-data-egress` was implemented, used by a fixture, absent from
+    # the schema and absent from the spec table -- three documents describing
+    # three different programs. Whoever reimplements this reads the prose.
+    doc_path = os.path.join(ROOT, "spec", "DECLARATION-DRAFT.md")
+    if os.path.exists(doc_path):
+        with open(doc_path, encoding="utf-8") as fh:
+            doc = fh.read()
+        documented = set(re.findall(r"^\| `([a-z-]+)` \|", doc, re.M))
+        declared = set(_invariant_type_enum(schema))
+        for missing in sorted(declared - documented):
+            problems.append("{} is in the schema and not in the spec table"
+                            .format(missing))
+        for extra in sorted(documented - declared):
+            problems.append("{} is in the spec table and not in the schema"
+                            .format(extra))
+        if not problems:
+            print("   spec and schema agree on {} invariant type(s)"
+                  .format(len(declared)))
+
     if not problems:
         print("   {} declarations checked, all valid".format(len(files)))
     return problems
+
+
+def _invariant_type_enum(node):
+    """The invariant-type enum, wherever the schema keeps it."""
+    if isinstance(node, dict):
+        if "no-network" in (node.get("enum") or []):
+            return node["enum"]
+        for value in node.values():
+            found = _invariant_type_enum(value)
+            if found:
+                return found
+    elif isinstance(node, list):
+        for value in node:
+            found = _invariant_type_enum(value)
+            if found:
+                return found
+    return None
 
 
 def _check_status_schema():

@@ -74,7 +74,46 @@ startup and shutdown, not just the union of tool invocations.
 | `deterministic` | identical arguments and identical bytes of files named by `params.pathArgs` produce identical results, after removing every field named in `params.volatile` (recursively) | two same-instance calls and one fresh-instance call, compared |
 | `error-as-value` | malformed or out-of-domain input produces an error in the result payload; the transport never sees an exception or crash | fuzzing and adversarial input |
 | `refusal-tool` | the server exposes `params.tool`: listed in `tools/list`, takes no arguments, performs no I/O, and states what the server cannot answer | invocation under monitoring |
+| `no-data-egress` | egress may occur, but none of it carries the tool's own input | a marker planted in the input and looked for in outbound bodies, across two runs with different markers |
 | `property` | the named semantic check `params.check` holds; `params.statement` is the human-readable claim | an executable check the harness carries |
+
+`no-data-egress` is the one that answers the question people actually have.
+Observing a request tells you a request happened; it does not tell you whether
+your data left. Establishing this requires intervening on the input rather than
+watching traffic: run twice with a different marker each time, and classify
+each destination by whether what it received changed with the input.
+`input-dependent` means the payload carried what you gave it;
+`input-independent` means it did not. An opaque body is reported `unexamined`,
+never `clean` — a payload that could not be read is not evidence that nothing
+left.
+
+### A negative claim requires demonstrated conduct
+
+Normative, and an implementation that skips it produces receipts that look like
+these and mean something else. The types phrased as *it does not do X* —
+`no-network`, `no-write`, `no-subprocess`, `write-scope`, `read-scope` — may
+only be reported `pass` if the run observed the tool doing something. A run in
+which no call window produced any observable effect returns `not-covered` for
+all of them.
+
+Without this rule a server that starts, lists its tools and declines every call
+satisfies every negative invariant simultaneously and earns a signed
+conformance receipt, having done nothing. It made no network request the way an
+unplugged machine makes none. This is not a corner case: in a sweep of MCP
+servers published to public registries, declining every call was the commonest
+behaviour by a wide margin, so the rule decides what a receipt means for most
+of the population.
+
+A `refusal-tool` pass does not count as conduct. The server answering a
+question about itself is not the server behaving, and a warrant resting on it
+is one the subject issued to itself.
+
+The cost is stated rather than hidden: a tool that genuinely performs no I/O
+also produces no observable effect, and cannot establish `no-network` this way
+either. That is the correct reading of the evidence — computing quietly and
+declining to compute are indistinguishable from outside — and such a tool earns
+coverage through `deterministic`, `error-as-value` or `property`, which are
+judged on what it returned rather than on what it touched.
 
 What the table buys: tool poisoning, capability rug-pulls, and silent
 behavioral drift are all the same event under this model — a conformance run
