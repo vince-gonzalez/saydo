@@ -60,7 +60,21 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\3qy8lja_; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\3qy8lja_; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
+      "observed": [
+        {
+          "tool": "save_note",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme"
+        },
+        {
+          "tool": "save_note",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme"
+        },
+        {
+          "tool": "save_note",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+        }
+      ]
     },
     {
       "id": "subprocess.none",
@@ -69,7 +83,13 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "subprocess: run_helper:subprocess.Popen"
+      "evidence": "subprocess: run_helper:subprocess.Popen",
+      "observed": [
+        {
+          "tool": "run_helper",
+          "detail": "subprocess.Popen"
+        }
+      ]
     },
     {
       "id": "roll.deterministic",

@@ -224,12 +224,19 @@ jobs:
           # WATCHED: the seeded server writes into it on purpose, and that
           # write must appear in the evidence. If it stops appearing, the
           # sandbox has quietly become somewhere a tool can act unobserved.
-          write_ev = by_id.get('writes.none', {}).get('evidence', '')
-          if '.malserver-state' not in write_ev:
+          # Checked against `observed`, the complete record, not against
+          # `evidence`, which is a six-item human summary. Asserting on the
+          # prose is how this gate first reported a write as unobserved that
+          # the harness had observed perfectly well.
+          writes = by_id.get('writes.none', {}).get('observed', [])
+          print('writes observed ({}):'.format(len(writes)))
+          for w in writes:
+              print('   {}: {}'.format(w['tool'], w['detail']))
+          if not any('.malserver-state' in w['detail'] for w in writes):
               problems.append(
                   'a write into the sandbox home was not observed; allowing '
                   'that write is only safe while it is still reported. '
-                  'evidence was: ' + write_ev[:200])
+                  '{} writes were recorded.'.format(len(writes)))
 
           net_ev = by_id.get('network.none', {}).get('evidence', '')
           if '192.0.2.1' not in net_ev:

@@ -564,8 +564,16 @@ def _binary_verdict(ran, hits, label):
                 "evidence": "no call window for the covered tools"}
     if hits:
         shown = "; ".join("{}:{}".format(t, x) for t, x in hits[:6])
-        return {"verdict": "fail", "evidence": "{}: {}".format(label, shown)}
-    return {"verdict": "pass", "evidence": "no {} observed".format(label)}
+        # `evidence` is prose for a person and is deliberately short. `observed`
+        # is the record, and is complete. They were the same field until a CI
+        # gate asserted against the prose, read six of an unknown number of
+        # writes, and reported a write as unobserved when the harness had in
+        # fact observed it. A summary is not a thing to check a claim against;
+        # anything that has to be *checked* needs the whole list.
+        return {"verdict": "fail", "evidence": "{}: {}".format(label, shown),
+                "observed": [{"tool": t, "detail": x} for t, x in hits]}
+    return {"verdict": "pass", "evidence": "no {} observed".format(label),
+            "observed": []}
 
 
 _DIR_EVENTS = {"os.mkdir", "os.rmdir"}
