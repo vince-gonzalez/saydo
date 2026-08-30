@@ -73,7 +73,13 @@ def _resolved_host(event):
         args = event.get("args") or []
         host = args[0] if args else None
         return host if isinstance(host, str) else None
-    if event["event"] == "proxy.connect":
+    if event["event"] == "dns.query":
+        # A recorded lookup is an ATTEMPT. Inside the sandbox it was refused,
+        # but the tool asking the question is the fact worth keeping: it is
+        # what distinguishes "was prevented" from "never tried".
+        host = event.get("host")
+        return host if isinstance(host, str) else None
+    if event["event"] in ("proxy.connect", "proxy.refused"):
         # The boundary proxy records the real destination host of an HTTP or
         # HTTPS connection, whatever language made it. This is the primary
         # egress signal: once the server is launched behind the proxy, its
@@ -85,7 +91,12 @@ def _resolved_host(event):
 
 
 NET_EVENTS = {"socket.connect", "socket.getaddrinfo", "socket.bind",
-              "socket.sendto", "proxy.connect"}
+              "socket.sendto", "proxy.connect", "proxy.refused", "dns.query"}
+#: Events that name a destination the tool ASKED for, whether or not it got
+#: there. An allowlist is judged on these, since a refused or unresolved
+#: attempt still tells you what the tool wanted.
+NAMED_ATTEMPT_EVENTS = {"socket.getaddrinfo", "proxy.connect", "proxy.refused",
+                        "dns.query"}
 PROC_EVENTS = {"subprocess.Popen", "os.system", "os.exec", "os.spawn",
                "os.posix_spawn"}
 WRITE_EVENTS = {"os.remove", "os.rename", "os.mkdir", "os.rmdir",
@@ -322,9 +333,9 @@ def judge(declaration, capture, run, ctx):
                         # (from the proxy or a direct resolve) or an
                         # unnameable raw connect both count.
                         hits.append((tool, host or ev["event"]))
-                    else:
-                        # Allowlist judges by the destination NAME, which comes
-                        # from the proxy (any language) or a direct getaddrinfo.
+                    elif ev["event"] in NAMED_ATTEMPT_EVENTS:
+                        # Allowlist judges by the destination NAME, from the
+                        # proxy, a direct getaddrinfo, or a recorded lookup.
                         if host and host not in allowed:
                             hits.append((tool, host))
                         elif not host and ev["event"] in (

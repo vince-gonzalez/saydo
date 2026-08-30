@@ -185,6 +185,15 @@ class ContainerRunner(Runner):
         self._docker("network", "connect", self.outside, self.proxy_name)
         self._up = True
         time.sleep(2)
+
+        # The proxy is also the sandbox's only nameserver, so its address on
+        # the inside network is needed twice over.
+        ip = self._docker(
+            "inspect", "-f",
+            "{{(index .NetworkSettings.Networks \"" + self.network
+            + "\").IPAddress}}", self.proxy_name)
+        self._proxy_ip = (ip.stdout or "").strip()
+
         self._proxy_addr = "http://saydo-proxy:8888"
         return self._proxy_addr
 
@@ -254,6 +263,15 @@ class ContainerRunner(Runner):
                # stderr, so an attempt the boundary blocked is still recorded.
                # The image places it on PYTHONPATH.
                "-e", "SAYDO_MONITOR_STDERR=1"]
+
+        ip = getattr(self, "_proxy_ip", "")
+        if ip:
+            # The sandbox's ONLY nameserver is the sink, so every hostname the
+            # tool looks up is recorded before it is refused. The proxy itself
+            # is reachable by a hosts entry rather than by DNS, so a tool using
+            # the permitted route never depends on resolution -- and a tool
+            # bypassing it is caught in the act of trying.
+            cmd += ["--dns", ip, "--add-host", "saydo-proxy:" + ip]
         if self.runtime:
             cmd += ["--runtime", self.runtime]
         for k, v in (plan.get("container_env") or {}).items():

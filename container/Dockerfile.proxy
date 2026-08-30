@@ -14,18 +14,24 @@
 
 FROM python:3.12-slim
 
-RUN useradd --create-home --uid 10001 saydo
-
 # Build from the repository root: docker build -f container/Dockerfile.proxy .
 WORKDIR /app
 COPY tools/egress_proxy.py /app/egress_proxy.py
+COPY tools/dns_sink.py /app/dns_sink.py
 
-USER saydo
+# This container deliberately runs as root, because it binds port 53 to act as
+# the sandbox's only nameserver. It is SayDo's own trusted infrastructure and
+# never runs the code under test -- the isolation that matters is applied to
+# the tool's container, which drops every capability and runs unprivileged.
 
 # Listen on all interfaces inside the container so the server container can
 # reach it by network alias. SAYDO_ALLOW, when set, is a comma-separated
 # allowlist and switches the proxy from observing to REFUSING.
 ENV SAYDO_EGRESS_LOG=/tmp/egress.log
+# Act as the sandbox's nameserver as well as its proxy, so a lookup that
+# bypasses the proxy is still recorded.
+ENV SAYDO_DNS=1
 EXPOSE 8888
+EXPOSE 53/udp
 
 CMD ["python", "-u", "/app/egress_proxy.py", "8888", "--bind", "0.0.0.0"]

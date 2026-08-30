@@ -246,6 +246,17 @@ def main():
 
     proxy = EgressProxy(log, host=bind, port=port, allow=allow,
                         echo=True).start()
+
+    # In the sandbox this process is also the tool's only nameserver, so a
+    # lookup that bypasses the proxy is recorded rather than failing into
+    # silence. Off by default: on a host it would hijack real DNS.
+    if os.environ.get("SAYDO_DNS") == "1":
+        from dns_sink import DnsSink
+        sink = DnsSink(os.environ.get("SAYDO_DNS_LOG"), host=bind,
+                       port=int(os.environ.get("SAYDO_DNS_PORT", "53")))
+        sink.start()
+        print("saydo dns sink on {}:{} [records every query, answers "
+              "NXDOMAIN]".format(sink.host, sink.port), flush=True)
     mode = ("ENFORCING, allow=" + ",".join(sorted(allow))) if allow is not None \
         else "observe-only"
     print("saydo egress proxy on {} [{}] -> {}".format(

@@ -203,7 +203,11 @@ jobs:
 
           # The seeded server breaks these on purpose. Under containment the
           # ATTEMPT must still be visible even though the boundary stops it.
-          for must_fail in ('writes.none', 'subprocess.none'):
+          # network.none is the reason the DNS sink exists. The seeded server
+          # opens a raw socket to a hostname; the sandbox stops it, but the
+          # lookup is recorded, so the ATTEMPT must still refute the claim.
+          # If this passes, silence is being mistaken for good behaviour again.
+          for must_fail in ('network.none', 'writes.none', 'subprocess.none'):
               got = by_id.get(must_fail, {}).get('verdict')
               if got != 'fail':
                   problems.append(
