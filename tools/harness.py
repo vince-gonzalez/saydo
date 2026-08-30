@@ -942,6 +942,10 @@ def main():
                          "enforces (needs Docker on a Linux host)")
     ap.add_argument("--image", help="container image for --runner container")
     ap.add_argument("--runtime", help="container runtime, e.g. runsc for gVisor")
+    ap.add_argument("--routed", action="store_true",
+                    help="give the sandbox a gateway so bare-IP attempts are "
+                         "recorded in any language, contained by a host "
+                         "firewall instead of by the absence of a route")
     args = ap.parse_args()
 
     plans_mod.write_fixtures()
@@ -957,7 +961,7 @@ def main():
         if not args.image:
             raise SystemExit("--runner container needs --image")
         the_runner = runner_mod.make("container", image=args.image,
-                                     runtime=args.runtime)
+                                     runtime=args.runtime, routed=args.routed)
     else:
         the_runner = runner_mod.make("local")
 

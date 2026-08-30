@@ -164,7 +164,21 @@ class ContainerRunner(Runner):
 
     def __init__(self, image, runtime=None, network="saydo-inside",
                  outside="saydo-outside", proxy_image="saydo/proxy:ci",
-                 scratch="/scratch", memory="512m", pids=256, tag=""):
+                 scratch="/scratch", memory="512m", pids=256, tag="",
+                 routed=False):
+        # routed=False: the sandbox network is --internal. There is no route
+        #   off the subnet at all, so nothing can leave -- but a connection to
+        #   a bare IP dies in the routing table and never becomes a packet, so
+        #   a non-Python tool's attempt is stopped invisibly.
+        #
+        # routed=True: the sandbox has a gateway, so the packet is really
+        #   emitted and can be recorded, and a host firewall drops it before it
+        #   goes anywhere. Attribution becomes language-independent. The cost
+        #   is honest and worth stating: containment now rests on those
+        #   firewall rules being correct rather than on the absence of a road.
+        #   Because of that, routed mode REFUSES TO RUN if it cannot install
+        #   them -- a routed sandbox without the firewall is not a sandbox.
+        self.routed = routed
         self.image = image
         self.runtime = runtime          # "runsc" for gVisor, None for default
         self.network = network + tag
@@ -188,7 +202,12 @@ class ContainerRunner(Runner):
         inside `network` the proxy is simply the only thing there."""
         self._ca = ca
         self._canaries = list(canaries or [])
-        self._docker("network", "create", "--internal", self.network)
+        if self.routed:
+            # A gateway exists, so packets are emitted and observable. What
+            # stops them is the firewall installed below, not the topology.
+            self._docker("network", "create", self.network)
+        else:
+            self._docker("network", "create", "--internal", self.network)
         self._docker("network", "create", self.outside)
 
         cmd = ["run", "-d", "--name", self.proxy_name,
@@ -266,7 +285,69 @@ class ContainerRunner(Runner):
         return subprocess.run(["sudo", "-n", *args], capture_output=True,
                               text=True, timeout=60)
 
+    def _install_containment(self):
+        """Log then DROP everything leaving the sandbox subnet.
+
+        This is what makes routed mode safe. Two rules on the sandbox bridge,
+        both skipping the proxy's own traffic and both ignoring traffic that
+        stays inside the subnet (the sandbox talking to the proxy, which is
+        the one conversation it is allowed to have):
+
+            LOG   -- so the attempt is attributable, in any language
+            DROP  -- so the attempt goes nowhere
+
+        Order matters: iptables -I prepends, so DROP is inserted first and LOG
+        ends up ahead of it. A packet is therefore recorded before it dies.
+
+        If these cannot be installed the run must not proceed. A routed
+        sandbox without them has a working route to the internet, which would
+        turn the safest part of this system into the most dangerous.
+        """
+        if not shutil.which("iptables") or not shutil.which("sudo"):
+            raise SystemExit(
+                "routed topology requires iptables and sudo to contain the "
+                "sandbox, and neither is available. Refusing to run: without "
+                "the firewall the sandbox would have a real route out.")
+        info = self._docker("network", "inspect", self.network, "-f",
+                            "{{(index .IPAM.Config 0).Subnet}}|{{.Id}}")
+        raw = (info.stdout or "").strip()
+        if "|" not in raw:
+            raise SystemExit("routed topology: could not read the sandbox "
+                             "subnet, so containment cannot be installed")
+        subnet, net_id = raw.split("|", 1)
+        self._bridge = "br-" + net_id[:12]
+        self._subnet = subnet
+        proxy_ip = getattr(self, "_proxy_ip", "")
+
+        base = ["-i", self._bridge, "!", "-d", subnet]
+        if proxy_ip:
+            # The proxy is the one container here that is SUPPOSED to reach
+            # the outside world; it does so on the other network, but excluding
+            # it explicitly keeps the rule correct however Docker routes it.
+            base += ["!", "-s", proxy_ip]
+
+        drop = self._sudo("iptables", "-I", "DOCKER-USER", *base, "-j", "DROP")
+        log = self._sudo("iptables", "-I", "DOCKER-USER", *base,
+                         "-m", "conntrack", "--ctstate", "NEW",
+                         "-j", "LOG", "--log-prefix", self.LOG_PREFIX,
+                         "--log-level", "4")
+        if drop.returncode != 0 or log.returncode != 0:
+            raise SystemExit(
+                "routed topology: could not install containment rules ({}). "
+                "Refusing to run an uncontained sandbox."
+                .format((drop.stderr or log.stderr or "").strip()[:160]))
+        self._contained_rules = [
+            list(base) + ["-j", "DROP"],
+            list(base) + ["-m", "conntrack", "--ctstate", "NEW", "-j", "LOG",
+                          "--log-prefix", self.LOG_PREFIX, "--log-level", "4"],
+        ]
+        self.bridge_logging = True
+        self.bridge_reason = ""
+
     def _install_bridge_log(self):
+        if self.routed:
+            self._install_containment()
+            return
         self.bridge_logging = False
         self.bridge_reason = ""
         if not shutil.which("iptables") or not shutil.which("sudo"):
@@ -296,6 +377,13 @@ class ContainerRunner(Runner):
         self._log_mark = time.time()
 
     def _remove_bridge_log(self):
+        # Containment rules must never outlive the run: a stale DROP on a
+        # recycled bridge name would silently break unrelated containers.
+        for rule in getattr(self, "_contained_rules", []):
+            self._sudo("iptables", "-D", "DOCKER-USER", *rule)
+        if getattr(self, "_contained_rules", None):
+            self._contained_rules = []
+            return
         if getattr(self, "bridge_logging", False):
             self._sudo("iptables", "-D", "DOCKER-USER", "-i", self._bridge,
                        "!", "-d", self._subnet, "-m", "conntrack",
@@ -468,13 +556,24 @@ class ContainerRunner(Runner):
         # rule therefore cannot see it -- there is no packet to see. The rule
         # is still installed because it is correct for a routed topology, but
         # claiming it covers the bare-IP case here would be false.
-        bare_ip = (
-            " A connection to a bare IP performs no name lookup, so the "
-            "resolver cannot record it, and on an internal network it fails at "
-            "the routing table before any packet reaches the bridge. Such an "
-            "attempt is attributed only by the in-container audit hook, which "
-            "sees it for a Python tool and not for others. For a non-Python "
-            "tool a bare-IP attempt is stopped absolutely but is NOT recorded.")
+        if self.routed:
+            bare_ip = (
+                " The sandbox has a gateway, so a connection to a bare IP is "
+                "really emitted, recorded on the bridge, and then dropped by "
+                "the host firewall. Attribution therefore does not depend on "
+                "the tool's language. The trade is stated plainly: containment "
+                "here rests on those firewall rules being correct rather than "
+                "on the absence of any route, and the run refuses to start if "
+                "they cannot be installed.")
+        else:
+            bare_ip = (
+                " A connection to a bare IP performs no name lookup, so the "
+                "resolver cannot record it, and on an internal network it "
+                "fails at the routing table before any packet reaches the "
+                "bridge. Such an attempt is attributed only by the "
+                "in-container audit hook, which sees it for a Python tool and "
+                "not for others. For a non-Python tool a bare-IP attempt is "
+                "stopped absolutely but is NOT recorded.")
         return self._describe_base() + bare_ip
 
     def _describe_base(self):

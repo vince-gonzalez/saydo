@@ -249,3 +249,78 @@ jobs:
         run: |
           docker rm -f $(docker ps -aq --filter "name=saydo-proxy") 2>/dev/null || true
           docker network prune -f || true
+
+  # --------------------------------------------------------------------
+  # The routed topology. It exists to attribute a bare-IP connection from a
+  # tool of ANY language - the one case the DNS sink and the Python audit
+  # hook both miss. It is only worth having if it buys that WITHOUT giving up
+  # containment, so both halves are tested, and the containment half is
+  # tested with a NON-Python tool that really tries to reach the internet.
+  # --------------------------------------------------------------------
+  routed-topology:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the proxy image
+        run: docker build -f container/Dockerfile.proxy -t saydo/proxy:ci .
+
+      - name: Stand up the routed sandbox
+        run: |
+          # No --internal: the sandbox has a gateway, so packets are really
+          # emitted. What stops them is the firewall, installed next.
+          docker network create saydo-routed
+          docker network create saydo-routed-out
+          docker run -d --name saydo-proxy-routed \
+            --network saydo-routed --network-alias saydo-proxy \
+            saydo/proxy:ci
+          docker network connect saydo-routed-out saydo-proxy-routed
+          sleep 3
+          NET_ID=$(docker network inspect saydo-routed -f '{{.Id}}')
+          SUBNET=$(docker network inspect saydo-routed -f '{{(index .IPAM.Config 0).Subnet}}')
+          PROXY_IP=$(docker inspect -f '{{(index .NetworkSettings.Networks "saydo-routed").IPAddress}}' saydo-proxy-routed)
+          echo "BRIDGE=br-${NET_ID:0:12}" >> $GITHUB_ENV
+          echo "SUBNET=$SUBNET" >> $GITHUB_ENV
+          echo "PROXY_IP=$PROXY_IP" >> $GITHUB_ENV
+          echo "bridge=br-${NET_ID:0:12} subnet=$SUBNET proxy=$PROXY_IP"
+
+      - name: Install containment (LOG then DROP)
+        run: |
+          # -I prepends, so DROP goes in first and LOG ends up ahead of it:
+          # every attempt is recorded before it dies.
+          sudo iptables -I DOCKER-USER -i "$BRIDGE" ! -d "$SUBNET" ! -s "$PROXY_IP" -j DROP
+          sudo iptables -I DOCKER-USER -i "$BRIDGE" ! -d "$SUBNET" ! -s "$PROXY_IP" \
+            -m conntrack --ctstate NEW -j LOG --log-prefix "SAYDO-EGRESS " --log-level 4
+          sudo iptables -L DOCKER-USER -n --line-numbers | head -5
+
+      - name: 'CONTAINMENT: a non-Python tool must NOT reach the internet'
+        run: |
+          set +e
+          OUT=$(docker run --rm --network saydo-routed node:22-slim \
+            node -e "const s=require('net').connect(80,'93.184.216.34');s.setTimeout(6000);s.on('connect',()=>{console.log('REACHED');process.exit(0)});s.on('error',e=>{console.log('BLOCKED '+e.code)});s.on('timeout',()=>{console.log('BLOCKED timeout')});" 2>&1)
+          set -e
+          echo "$OUT"
+          if echo "$OUT" | grep -q "REACHED"; then
+            echo "::error::CONTAINMENT LOST - the routed sandbox reached the internet"
+            exit 1
+          fi
+          echo "OK: still contained."
+
+      - name: 'ATTRIBUTION: that same attempt must have been RECORDED'
+        run: |
+          sudo dmesg | grep "SAYDO-EGRESS" | tail -5 || true
+          if ! sudo dmesg | grep -q "SAYDO-EGRESS.*DST=93.184.216.34"; then
+            echo "::error::the bare-IP attempt by a non-Python tool was NOT recorded - the routed topology bought nothing"
+            exit 1
+          fi
+          echo "OK: a non-Python bare-IP attempt was attributed. This is the case the internal topology cannot see."
+
+      - name: Tear down
+        if: always()
+        run: |
+          sudo iptables -D DOCKER-USER -i "$BRIDGE" ! -d "$SUBNET" ! -s "$PROXY_IP" \
+            -m conntrack --ctstate NEW -j LOG --log-prefix "SAYDO-EGRESS " --log-level 4 || true
+          sudo iptables -D DOCKER-USER -i "$BRIDGE" ! -d "$SUBNET" ! -s "$PROXY_IP" -j DROP || true
+          docker rm -f saydo-proxy-routed || true
+          docker network rm saydo-routed saydo-routed-out || true
