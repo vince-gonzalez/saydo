@@ -1,0 +1,94 @@
+{
+  "entries": {
+    "pkg:pypi/certivl@0.2.0": {
+      "drift": [],
+      "enforcement": "observed",
+      "expiresAt": "2026-09-29T00:00:00+00:00",
+      "history": [
+        "754a675f79ea0f92ddb450a8cca0fd8cf9ba238f936320d4f68ca579208a2eab"
+      ],
+      "publishedAt": "2026-08-30T00:00:00+00:00",
+      "receipt": {
+        "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66|pkg:pypi/certivl@0.2.0",
+        "head": "2b490ff78b4cb4deda503f396f029a2bd0982d1d51d5469548fac90cce438f1f",
+        "priorReceipt": "754a675f79ea0f92ddb450a8cca0fd8cf9ba238f936320d4f68ca579208a2eab"
+      },
+      "revocationReason": "supply-chain compromise reported upstream",
+      "revokedAt": "2026-08-30T12:00:00+00:00",
+      "signature": {
+        "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+        "signer": "F-Keys Creative LLC"
+      },
+      "state": "revoked",
+      "subject": {
+        "name": "certivl",
+        "purl": "pkg:pypi/certivl@0.2.0",
+        "supplier": "F-Keys Creative LLC",
+        "version": "0.2.0"
+      },
+      "supersededAttempts": [
+        {
+          "at": "2026-08-31T00:00:00+00:00",
+          "head": "2b490ff78b4cb4deda503f396f029a2bd0982d1d51d5469548fac90cce438f1f"
+        }
+      ]
+    },
+    "pkg:pypi/mcp-server-time": {
+      "drift": [],
+      "enforcement": "observed",
+      "expiresAt": "2026-09-29T00:00:00+00:00",
+      "history": [
+        "0b04cea261bdff6dac5db3f3ce29a508910742e486501f76f6e98bb07f7e1186"
+      ],
+      "publishedAt": "2026-08-30T00:00:00+00:00",
+      "receipt": {
+        "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:b9517156-bd4d-5482-8ded-7e139a93b810|pkg:pypi/mcp-server-time",
+        "head": "a9ad1809ef4d82d51e42a6d7dc595760c92adedf9a8057b0066b6cded8369a94",
+        "priorReceipt": "0b04cea261bdff6dac5db3f3ce29a508910742e486501f76f6e98bb07f7e1186"
+      },
+      "signature": {
+        "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+        "signer": "F-Keys Creative LLC"
+      },
+      "state": "warranted",
+      "subject": {
+        "name": "mcp-time",
+        "purl": "pkg:pypi/mcp-server-time",
+        "supplier": "mcp-server-time",
+        "version": "1.29.1"
+      }
+    },
+    "seeded/malserver.py": {
+      "drift": [
+        {
+          "kind": "definition-drift",
+          "severity": "serious",
+          "subject": "sync"
+        }
+      ],
+      "enforcement": "observed",
+      "expiresAt": "2026-09-29T00:00:00+00:00",
+      "history": [
+        "e8204f30b8dbbb22cdaf0db3606595e4829b0ba99dfe6c8e7e0b6f99592dbe61"
+      ],
+      "publishedAt": "2026-08-30T00:00:00+00:00",
+      "receipt": {
+        "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:15d4648c-4d19-5768-9cbf-5b7fae3350ef|seeded/malserver.py",
+        "head": "b29778ab7745d4645dad7d9b120c4cb140676d2b124a867e9ea47fbab68796b5",
+        "priorReceipt": "e8204f30b8dbbb22cdaf0db3606595e4829b0ba99dfe6c8e7e0b6f99592dbe61"
+      },
+      "signature": {
+        "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+        "signer": "F-Keys Creative LLC"
+      },
+      "state": "failing",
+      "subject": {
+        "name": "malserver",
+        "purl": "seeded/malserver.py",
+        "supplier": "F-Keys Creative LLC (harness fixture)",
+        "version": "0.0.0"
+      }
+    }
+  },
+  "registryVersion": "0.1.0"
+}
