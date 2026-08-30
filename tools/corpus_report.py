@@ -104,7 +104,12 @@ def write_report(results, batches, out_md):
 
     L = []
     W = L.append
-    W("# What MCP tools actually do with your data\n")
+    # The title has to survive the body. An earlier one promised "what MCP
+    # tools actually do with your data", and four paragraphs later the report
+    # says it established nothing of the kind -- a headline the evidence
+    # withdraws is a false claim no matter how carefully the text under it
+    # hedges, and it is the line most people will read alone.
+    W("# How hard is it to audit an MCP server from the outside?\n")
     W("DRAFT. Wording is a placeholder pending the author's pass.\n")
     W("A behavioural sweep of {} MCP servers discovered from public package "
       "registries, executed inside a sandbox with no route out except a "
