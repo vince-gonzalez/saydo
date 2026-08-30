@@ -19,8 +19,9 @@
     },
     "verdict": {
       "type": "string",
-      "enum": ["warranted", "failing", "draft", "unknown"],
-      "$comment": "warranted: conformant AND signed. failing: a declared behavior was refuted, or a finding was raised. draft: tested but unsigned. unknown: no receipt exists. An agent treats anything but 'warranted' as not-vouched-for."
+      "enum": ["warranted", "failing", "inconclusive", "draft", "revoked",
+               "expired", "unknown"],
+      "$comment": "warranted: conformant AND signed AND at least one invariant about the tool's conduct was demonstrated. failing: a declared behavior was refuted, or a finding was raised. inconclusive: nothing failed and nothing was established -- the tool did no observable work, so it has not been shown to be well behaved, only unobserved; this is the ordinary result for a server that declines to act without credentials, and it is NOT a weaker pass. draft: tested but unsigned. revoked: the claim was withdrawn after the receipt was issued; the receipt is still authentic and no longer current. expired: the last check is too old to describe what is installed today. unknown: no receipt exists. An agent treats anything but 'warranted' as not-vouched-for."
     },
     "conformant": { "type": "boolean" },
     "summary": {

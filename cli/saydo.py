@@ -627,11 +627,67 @@ def cmd_selfcheck(args):
     _run([python, os.path.join(TOOLS, "decl_check.py"), "selfcheck",
           SCHEMA, p["declaration"], p["capture"]])
 
+    print("\n[3] every status verdict must satisfy the published schema")
+    # The schema is what a consumer validates against, so a verdict the code
+    # can emit but the schema forbids makes our own output invalid -- which is
+    # what happened when `inconclusive`, `revoked` and `expired` were added to
+    # the code and not to the enum. Checking each verdict the builder can
+    # produce turns that from something someone notices into something that
+    # fails here.
+    bad = _check_status_schema()
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: emitted a status the published "
+                         "schema rejects")
+
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "
                          "seeded server")
     print("\nselfcheck passed: the harness can fail, so a pass means something.")
     return 0
+
+
+def _check_status_schema():
+    """Validate one status per verdict the builder can reach. [] means good."""
+    import jsonschema
+    import status as status_mod
+
+    with open(os.path.join(ROOT, "spec", "status.schema.json"),
+              encoding="utf-8") as fh:
+        schema = json.load(fh)
+
+    def _one(slug, registry_entry=None):
+        rp = os.path.join(ROOT, "receipts", slug + ".receipt.jsonl")
+        ap = os.path.join(ROOT, "receipts", slug + ".anchor.json")
+        if not (os.path.exists(rp) and os.path.exists(ap)):
+            return None
+        with open(rp, encoding="utf-8") as fh:
+            lines = fh.readlines()
+        with open(ap, encoding="utf-8") as fh:
+            anchor = json.load(fh)
+        return status_mod.build(lines, anchor, registry_entry=registry_entry)
+
+    cases = [("certivl", None), ("malserver", None), ("silentserver", None),
+             ("certivl", {"state": "revoked", "key": "k",
+                          "revocationReason": "test"}),
+             ("certivl", {"state": "expired", "key": "k",
+                          "expiresAt": "2026-01-01T00:00:00+00:00"})]
+    problems, seen = [], set()
+    for slug, entry in cases:
+        st = _one(slug, entry)
+        if st is None:
+            continue
+        seen.add(st["verdict"])
+        try:
+            jsonschema.validate(st, schema)
+        except jsonschema.ValidationError as exc:
+            problems.append("{} -> {}: {}".format(slug, st["verdict"],
+                                                  str(exc).splitlines()[0]))
+    if not problems:
+        print("   {} verdicts checked, all valid: {}".format(
+            len(seen), ", ".join(sorted(seen))))
+    return problems
 
 
 def _parser():

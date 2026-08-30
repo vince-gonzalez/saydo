@@ -156,6 +156,33 @@ jobs:
           docker build -f container/Dockerfile.proxy  -t saydo/proxy:ci .
           docker build -f container/Dockerfile.seeded -t saydo/seeded:ci .
 
+      # What the audit hook ACTUALLY emits inside the image, unfiltered and
+      # before the harness attributes anything. A write kept going unreported
+      # with the reader intact and no error anywhere, which means guessing at
+      # the cause from the far end of the pipeline was never going to settle
+      # it. This prints the raw stream so the question is answered by evidence.
+      - name: 'DIAGNOSTIC: raw monitor events for a write inside the sandbox'
+        run: |
+          docker run --rm -i \
+            --network none --read-only \
+            --tmpfs /scratch --tmpfs /home/saydo:rw,noexec,nosuid,size=32m \
+            -e HOME=/home/saydo -e SAYDO_MONITOR_STDERR=1 \
+            -e PYTHONDONTWRITEBYTECODE=1 --workdir /scratch \
+            saydo/seeded:ci python -c '
+          import os, tempfile
+          print("HOME       =", os.environ.get("HOME"))
+          print("expanduser =", os.path.expanduser("~"))
+          print("gettempdir =", tempfile.gettempdir())
+          p = os.path.join(tempfile.gettempdir(), "probe_note.txt")
+          open(p, "w").write("x"); print("wrote", p)
+          h = os.path.join(os.path.expanduser("~"), ".probe-state")
+          try:
+              open(h, "w").write("x"); print("wrote", h)
+          except OSError as e:
+              print("home write FAILED:", e)
+          ' 2>&1 | sed 's/^/    /'
+          echo "--- above: every line prefixed @@SAYDO@@ is a monitor event ---"
+
       - name: Run conformance with the CONTAINER runner
         run: |
           python tools/harness.py \
