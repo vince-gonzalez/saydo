@@ -251,6 +251,64 @@ jobs:
           docker network prune -f || true
 
   # --------------------------------------------------------------------
+  # The path a stranger takes: point SayDo at a package nobody wrote a plan
+  # for, and have it inspected inside a sandbox built on the spot. If this
+  # breaks, the safe route is the hard route, and people will run unknown
+  # packages on their laptops instead.
+  # --------------------------------------------------------------------
+  verify-anything:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet jsonschema cryptography "mcp==1.29.1"
+      - run: docker build -f container/Dockerfile.proxy -t saydo/proxy:ci .
+
+      - name: Verify a PyPI package with one command and no prior setup
+        run: |
+          python cli/saydo.py verify --pypi mcp-server-fetch --sandbox \
+            --at 2026-08-30T00:00:00Z | tee out.txt
+
+      - name: The run must be contained, and must have inspected something
+        run: |
+          python - <<'PY'
+          import json
+          r = json.load(open('reports/mcp-server-fetch.report.json'))
+          print('enforcement:', r['enforcement'], 'tally:', r['tally'])
+          problems = []
+          if r['enforcement'] != 'contained':
+              problems.append('a --sandbox run was not contained: ' + r['enforcement'])
+          # It must have actually served, or the sandbox path proved nothing.
+          if not any(v['verdict'] in ('pass', 'fail') for v in r['verdicts']):
+              problems.append('nothing was established; the server never acted')
+          for p in problems:
+              print('::error::' + p)
+          raise SystemExit(1 if problems else 0)
+          PY
+
+      - name: The receipt must exist and verify
+        run: |
+          python - <<'PY'
+          import glob, hashlib, json, base64
+          from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+          anc = sorted(glob.glob('receipts/mcp-*fetch*.anchor.json'))[0]
+          a = json.load(open(anc))
+          rows = [json.loads(l) for l in open(anc.replace('.anchor.json', '.receipt.jsonl')) if l.strip()]
+          canon = lambda r: json.dumps(r, sort_keys=True, ensure_ascii=False, separators=(',', ':'))
+          prev = hashlib.sha256(a['genesis'].encode()).hexdigest()
+          for i, row in enumerate(rows, 1):
+              body = {k: v for k, v in row.items() if k not in ('prev_hash', 'row_hash')}
+              assert row['seq'] == i and row['prev_hash'] == prev
+              assert row['row_hash'] == hashlib.sha256((prev + canon(body)).encode()).hexdigest()
+              prev = row['row_hash']
+          assert prev == a['head'], 'head mismatch'
+          print('receipt verifies:', len(rows), 'rows, head', a['head'][:16])
+          PY
+
+  # --------------------------------------------------------------------
   # The routed topology. It exists to attribute a bare-IP connection from a
   # tool of ANY language - the one case the DNS sink and the Python audit
   # hook both miss. It is only worth having if it buys that WITHOUT giving up
