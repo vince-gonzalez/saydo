@@ -47,6 +47,15 @@
         }
       },
       {
+        "name": "sync",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:4d10ad4aaf12bee03c53d32223dd097347b9447c33ccf0c04c88310b3a047531",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
         "name": "save_note",
         "definitionDigest": {
           "algorithm": "sha256",
@@ -129,6 +138,13 @@
       "type": "error-as-value",
       "appliesTo": [
         "lookup"
+      ]
+    },
+    {
+      "id": "data.stays-put",
+      "type": "no-data-egress",
+      "appliesTo": [
+        "*"
       ]
     }
   ],

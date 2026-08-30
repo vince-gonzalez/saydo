@@ -30,6 +30,7 @@ Run standalone for a smoke test:
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import select
@@ -54,9 +55,16 @@ class EgressProxy:
     """
 
     def __init__(self, log_path, host="127.0.0.1", port=0, allow=None,
-                 echo=False):
+                 echo=False, ca=None, canaries=None):
         self.log_path = log_path
         self.allow = set(allow) if allow is not None else None
+        # With a CA, HTTPS is terminated here rather than tunnelled blind, so
+        # the body can be examined for the tool's own input leaving. Without
+        # one the proxy sees destinations only, which is the honest default:
+        # interception is a deliberate act, never something that happens
+        # because a flag defaulted to on.
+        self.ca = ca
+        self.canaries = list(canaries or [])
         # When the proxy runs in its own container the log file is not
         # reachable from outside, so every decision is also written to stdout
         # where `docker logs` captures it as evidence.
@@ -151,7 +159,10 @@ class EgressProxy:
                     client.close()
                     return
                 self._emit(host, port, scheme, "CONNECT")
-                self._tunnel(client, host, port)
+                if self.ca and port == 443:
+                    self._intercept(client, host, port)
+                else:
+                    self._tunnel(client, host, port)
             else:
                 # Absolute-form request line: METHOD http://host[:port]/path
                 host, port = _host_from_absolute(target)
@@ -170,6 +181,144 @@ class EgressProxy:
                 client.close()
             except OSError:
                 pass
+
+    def _intercept(self, client, host, port):
+        """Terminate TLS, examine what is being sent, then forward it on.
+
+        The tool is not shielded from reality: the connection upstream is made
+        with ordinary certificate verification, so a host with a bad
+        certificate fails here exactly as it would have failed for the tool.
+        Interception is for seeing the payload, not for smoothing the path.
+        """
+        import ssl
+        import tempfile
+
+        client.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
+
+        # Upstream FIRST, with ordinary verification. If the real host has a
+        # bad certificate the tool must experience a TLS failure, not an HTTP
+        # error from us: completing the client handshake before checking
+        # upstream would shield the tool from a failure it would really have
+        # hit, which is the proxy lying about the world.
+        try:
+            upstream_ctx = ssl.create_default_context()
+            raw = socket.create_connection((host, port), timeout=20)
+            upstream = upstream_ctx.wrap_socket(raw, server_hostname=host)
+        except ssl.SSLCertVerificationError as e:
+            self._note({"event": "upstream.untrusted", "host": host,
+                        "detail": str(e)[:160],
+                        "meaning": "the real host failed certificate "
+                                   "verification; the tool is not shielded "
+                                   "from this"})
+            # A fatal TLS alert, written before any handshake of ours, so the
+            # tool sees a TLS-layer failure rather than a fabricated response.
+            try:
+                client.sendall(b"\x15\x03\x03\x00\x02\x02\x30")  # unknown_ca
+            except OSError:
+                pass
+            client.close()
+            return
+        except Exception as e:
+            self._note({"event": "upstream.failed", "host": host,
+                        "detail": str(e)[:160]})
+            client.close()
+            return
+
+        cert_pem, key_pem = self.ca.leaf_pem(host)
+        # SSLContext.load_cert_chain still wants paths, so the leaf lives
+        # briefly in this container's own tmpfs -- never in the sandbox, and
+        # never on disk beyond the call.
+        with tempfile.TemporaryDirectory() as tmp:
+            cert_path = os.path.join(tmp, "leaf.pem")
+            key_path = os.path.join(tmp, "leaf.key")
+            with open(cert_path, "wb") as fh:
+                fh.write(cert_pem)
+            with open(key_path, "wb") as fh:
+                fh.write(key_pem)
+            server_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            server_ctx.load_cert_chain(cert_path, key_path)
+            try:
+                tls_client = server_ctx.wrap_socket(client, server_side=True)
+            except (ssl.SSLError, OSError) as e:
+                # A pinned or strict client refuses our certificate. Unlike
+                # network enforcement, which the tool cannot decline, TLS
+                # inspection is COOPERATIVE -- so this is a coverage gap, and
+                # the verdict must treat it as unexamined rather than clean.
+                self._note({"event": "exfil.unexamined", "host": host,
+                            "detail": "the client rejected the inspection "
+                                      "certificate: " + str(e)[:100],
+                            "meaning": "payload could not be examined, so "
+                                       "whether data left is UNKNOWN"})
+                for s in (client, upstream):
+                    try:
+                        s.close()
+                    except OSError:
+                        pass
+                return
+
+        # The handshake deadline must not become the idle deadline: the socket
+        # inherited a short timeout from _handle, which would sever a healthy
+        # connection mid-transfer.
+        tls_client.settimeout(120)
+
+        try:
+            request = _read_http_request(tls_client)
+        except Exception:
+            request = None
+        if request is None:
+            for s in (tls_client, upstream):
+                try:
+                    s.close()
+                except OSError:
+                    pass
+            return
+        head, body = request
+
+        self._examine(host, head, body)
+
+        try:
+            upstream.sendall(head + b"\r\n\r\n" + (body or b""))
+            _pipe_tls(tls_client, upstream)
+        finally:
+            for s in (tls_client, upstream):
+                try:
+                    s.close()
+                except OSError:
+                    pass
+
+    def _examine(self, host, head, body):
+        """Record what this request carried, honestly including 'unknown'."""
+        if not self.canaries:
+            return
+        import hashlib
+        from canary import examine
+        verdict, detail = examine(body, self.canaries)
+        # The method, never the path, and a digest, never the body. A receipt
+        # is published: a request path can carry a token and the plaintext can
+        # carry the tool's own credentials. The digest is enough to show two
+        # requests were identical without disclosing either.
+        method = head.split(b" ", 1)[0].decode("latin-1", "replace")[:12]
+        row = {"event": "exfil." + verdict, "host": host,
+               "method": method, "bytes": len(body or b""),
+               "bodySha256": hashlib.sha256(body or b"").hexdigest()[:32],
+               "detail": detail}
+        if verdict == "match":
+            row["meaning"] = ("the tool sent its own input data to this host")
+        elif verdict == "unexamined":
+            row["meaning"] = ("the payload could not be decoded, so whether "
+                              "data left is UNKNOWN, not disproven")
+        self._note(row)
+
+    def _note(self, row):
+        """Emit a structured observation on the same stream as the rest."""
+        row = dict(row)
+        row.setdefault("t", time.time())
+        text = json.dumps(row)
+        with self._log_lock:
+            os.write(self._log_fd, (text + "\n").encode("utf-8", "replace"))
+            if self.echo:
+                sys.stdout.write(text + "\n")
+                sys.stdout.flush()
 
     def _tunnel(self, client, host, port):
         try:
@@ -193,6 +342,100 @@ class EgressProxy:
             return
         upstream.sendall(initial)
         _pipe(client, upstream)
+
+
+def _pipe_tls(a, b):
+    """Pump between two TLS sockets with blocking reads, one thread each way.
+
+    select() cannot be used here. It reports readiness of the underlying file
+    descriptor, but a decrypted record may already be sitting in the SSL
+    object's own buffer with nothing left at the fd -- so select says "idle"
+    while data waits, and the transfer stalls. Blocking recv on the wrapped
+    socket asks the SSL layer, which is the only thing that knows.
+    """
+    done = threading.Event()
+
+    def pump(src, dst):
+        try:
+            while not done.is_set():
+                data = src.recv(65536)
+                if not data:
+                    break
+                dst.sendall(data)
+        except Exception:
+            pass
+        finally:
+            done.set()
+
+    back = threading.Thread(target=pump, args=(b, a), daemon=True)
+    back.start()
+    pump(a, b)
+    back.join(timeout=5)
+
+
+def _read_http_request(sock, limit=4 * 1024 * 1024):
+    """(head, body) of one HTTP request, or None.
+
+    Reads a Content-Length body, and a chunked body up to `limit`. Anything
+    else is returned with whatever body was captured, so the examiner reports
+    it as unexamined rather than pretending it was clean.
+    """
+    buf = b""
+    while b"\r\n\r\n" not in buf:
+        chunk = sock.recv(65536)
+        if not chunk:
+            return None
+        buf += chunk
+        if len(buf) > limit:
+            break
+    head, _, rest = buf.partition(b"\r\n\r\n")
+    lowered = head.lower()
+
+    length = None
+    for line in head.split(b"\r\n")[1:]:
+        if line.lower().startswith(b"content-length:"):
+            try:
+                length = int(line.split(b":", 1)[1].strip())
+            except ValueError:
+                length = None
+
+    body = rest
+    if length is not None:
+        while len(body) < length and len(body) < limit:
+            chunk = sock.recv(65536)
+            if not chunk:
+                break
+            body += chunk
+    elif b"transfer-encoding: chunked" in lowered:
+        sock.settimeout(5)
+        try:
+            while len(body) < limit:
+                chunk = sock.recv(65536)
+                if not chunk:
+                    break
+                body += chunk
+        except OSError:
+            pass
+        body = _dechunk(body)
+    return head, body
+
+
+def _dechunk(body):
+    """Best-effort de-chunking; returns the original bytes if it does not fit
+    the format, so nothing is silently mangled before examination."""
+    out, i = b"", 0
+    try:
+        while i < len(body):
+            nl = body.index(b"\r\n", i)
+            size = int(body[i:nl].split(b";")[0], 16)
+            if size == 0:
+                break
+            start = nl + 2
+            out += body[start:start + size]
+            i = start + size + 2
+        return out or body
+    except (ValueError, IndexError):
+        return body
 
 
 def _host_from_absolute(target):
@@ -244,8 +487,21 @@ def main():
     allow = ([h.strip() for h in raw.split(",") if h.strip()]
              if raw is not None else None)
 
+    # Content inspection. The CA is generated HERE, inside the proxy, so its
+    # private key never exists on the host that runs the harness -- only the
+    # public certificate leaves, on stdout, for the sandbox to trust.
+    ca = None
+    canaries = []
+    if os.environ.get("SAYDO_INSPECT") == "1":
+        from sandbox_ca import SandboxCA
+        ca = SandboxCA()
+        canaries = [c for c in
+                    (os.environ.get("SAYDO_CANARIES") or "").split(",") if c]
+        print("@@SAYDO-CA@@ " + base64.b64encode(ca.ca_pem()).decode("ascii"),
+              flush=True)
+
     proxy = EgressProxy(log, host=bind, port=port, allow=allow,
-                        echo=True).start()
+                        echo=True, ca=ca, canaries=canaries).start()
 
     # In the sandbox this process is also the tool's only nameserver, so a
     # lookup that bypasses the proxy is recorded rather than failing into

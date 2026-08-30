@@ -23,10 +23,12 @@ until a run actually used ContainerRunner -- see `Runner.enforcement`.
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 
 
@@ -79,15 +81,23 @@ class LocalRunner(Runner):
         self._proxy = None
         self._egress_log = None
 
-    def setup(self, egress_log, allow=None):
+    def setup(self, egress_log, allow=None, ca=None, canaries=None):
         # Deliberately started WITHOUT an allowlist even when one is declared:
         # on a host the tool can route around this proxy entirely, so refusing
         # here would produce the appearance of enforcement without the fact of
         # it. Locally the proxy reports; only the container enforces.
         from egress_proxy import EgressProxy
         self._egress_log = egress_log
+        # Content inspection needs a certificate authority the tool trusts.
+        # One is minted only when there is actually a canary to look for, so
+        # a run that claims nothing about data egress is never intercepted.
+        if ca is None and canaries:
+            from sandbox_ca import SandboxCA
+            ca = SandboxCA()
+        self._ca = ca
         open(egress_log, "w").close()
-        self._proxy = EgressProxy(egress_log).start()
+        self._proxy = EgressProxy(egress_log, ca=ca,
+                                  canaries=canaries).start()
         return self._proxy.address
 
     def collect_egress(self):
@@ -109,6 +119,16 @@ class LocalRunner(Runner):
             "SAYDO_EGRESS_LOG": egress_log,
             "NODE_USE_ENV_PROXY": "1",
         }
+        if getattr(self, "_ca", None):
+            # The tool must trust the inspection certificate or every HTTPS
+            # request fails. Written beside the run's other scratch, never
+            # into any system trust store on this machine.
+            import tempfile
+            path = os.path.join(tempfile.gettempdir(), "saydo-sandbox-ca.pem")
+            with open(path, "wb") as fh:
+                fh.write(self._ca.ca_pem())
+            env.update({"SSL_CERT_FILE": path, "REQUESTS_CA_BUNDLE": path,
+                        "CURL_CA_BUNDLE": path, "NODE_EXTRA_CA_CERTS": path})
         if monitor_boot_dir:
             prior = os.environ.get("PYTHONPATH")
             env["PYTHONPATH"] = monitor_boot_dir + (
@@ -162,10 +182,12 @@ class ContainerRunner(Runner):
         return subprocess.run(["docker", *args], capture_output=True,
                               text=True, timeout=kw.get("timeout", 120))
 
-    def setup(self, egress_log, allow=None):
+    def setup(self, egress_log, allow=None, ca=None, canaries=None):
         """Stand up the two networks and the proxy, then hand back the address
         the server should use. The address is a network alias, not a host port:
         inside `network` the proxy is simply the only thing there."""
+        self._ca = ca
+        self._canaries = list(canaries or [])
         self._docker("network", "create", "--internal", self.network)
         self._docker("network", "create", self.outside)
 
@@ -176,6 +198,9 @@ class ContainerRunner(Runner):
             # Here an allowlist is a real policy: the tool has no other route,
             # so a refusal at the proxy is a refusal in fact.
             cmd += ["-e", "SAYDO_ALLOW=" + ",".join(sorted(allow))]
+        if self._canaries:
+            cmd += ["-e", "SAYDO_INSPECT=1",
+                    "-e", "SAYDO_CANARIES=" + ",".join(self._canaries)]
         cmd += [self.proxy_image]
         out = self._docker(*cmd)
         if out.returncode != 0:
@@ -195,9 +220,32 @@ class ContainerRunner(Runner):
         self._proxy_ip = (ip.stdout or "").strip()
 
         self._install_bridge_log()
+        self._collect_ca()
 
         self._proxy_addr = "http://saydo-proxy:8888"
         return self._proxy_addr
+
+    def _collect_ca(self):
+        """Retrieve the inspection CA's PUBLIC certificate from the proxy.
+
+        The private key stays inside the proxy container and is never written
+        to the host. Only this certificate travels, and only into the sandbox,
+        so nothing on the host or on any developer's machine is asked to trust
+        it.
+        """
+        self._ca_path = None
+        if not self._canaries:
+            return
+        out = self._docker("logs", self.proxy_name)
+        for line in (out.stdout or "").splitlines():
+            if line.startswith("@@SAYDO-CA@@ "):
+                pem = base64.b64decode(line.split(" ", 1)[1].strip())
+                path = os.path.join(tempfile.gettempdir(),
+                                    "saydo-inspect-ca.pem")
+                with open(path, "wb") as fh:
+                    fh.write(pem)
+                self._ca_path = path
+                return
 
     # -- bridge logging: the bare-IP case -----------------------------------
     #
@@ -375,6 +423,24 @@ class ContainerRunner(Runner):
             # elaboration of it.
             cmd += ["--dns", ip, "--add-host", "saydo-proxy:" + ip,
                     "--dns-search", ".", "--dns-opt", "ndots:1"]
+
+        ca_path = getattr(self, "_ca_path", None)
+        if ca_path:
+            # The sandbox trusts the inspection CA and nothing else. That is
+            # correct rather than restrictive: its only route out is the
+            # proxy, which presents this CA, so a tool cannot both refuse the
+            # certificate and reach anything. Read-only, and a public
+            # certificate, so the mount grants the tool nothing.
+            cmd += ["-v", ca_path + ":/saydo/ca.pem:ro",
+                    "-e", "SSL_CERT_FILE=/saydo/ca.pem",
+                    "-e", "REQUESTS_CA_BUNDLE=/saydo/ca.pem",
+                    "-e", "CURL_CA_BUNDLE=/saydo/ca.pem",
+                    "-e", "NODE_EXTRA_CA_CERTS=/saydo/ca.pem"]
+        for c in self._canaries:
+            # The fixture's "sensitive data". In a real run the canary is
+            # planted in the tool's actual inputs; here it is handed over
+            # explicitly so the exfiltrating fixture has something to steal.
+            cmd += ["-e", "SAYDO_CANARY=" + c]
         if self.runtime:
             cmd += ["--runtime", self.runtime]
         for k, v in (plan.get("container_env") or {}).items():

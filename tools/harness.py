@@ -396,6 +396,44 @@ def judge(declaration, capture, run, ctx):
                         "individually attributable. This pass means no egress "
                         "reached the boundary, NOT that none was attempted.")
 
+        elif vtype == "no-data-egress":
+            # The strongest claim a tool can make and the strongest finding
+            # SayDo can produce: not that a call happened, but that the tool's
+            # own input left, and to where.
+            matches, unexamined, clean = [], [], 0
+            for tool in tools:
+                for ev in run.events_for(tool):
+                    name = ev.get("event", "")
+                    if name == "exfil.match":
+                        matches.append((tool, ev.get("host"), ev.get("detail")))
+                    elif name == "exfil.unexamined":
+                        unexamined.append((tool, ev.get("host")))
+                    elif name == "exfil.clean":
+                        clean += 1
+            if matches:
+                row["verdict"] = "fail"
+                row["evidence"] = "the tool sent its own input data out: " + \
+                    "; ".join("{} -> {}".format(t, h) for t, h, _ in matches[:5])
+            elif unexamined:
+                # Refusal-first, and the case that matters most: an opaque
+                # payload is not evidence of innocence. Reporting this as a
+                # pass would be exactly the lie this project exists to stop.
+                row["verdict"] = "not-covered"
+                row["evidence"] = (
+                    "{} payload(s) could not be decoded, so whether data left "
+                    "is UNKNOWN: {}".format(
+                        len(unexamined),
+                        "; ".join("{} -> {}".format(t, h)
+                                  for t, h in unexamined[:5])))
+            elif clean:
+                row["verdict"] = "pass"
+                row["evidence"] = ("{} outbound payload(s) examined in full, "
+                                   "none carried the tool's input".format(clean))
+            else:
+                row["verdict"] = "not-covered"
+                row["evidence"] = ("no outbound payload was examined; content "
+                                   "inspection requires the container runner")
+
         elif vtype == "no-subprocess":
             hits = [(tool, ev["event"]) for tool in tools
                     for ev in run.events_for(tool)
@@ -835,7 +873,20 @@ def run_conformance(name, plan, declaration, capture, server_python,
         # the receipt's enforcement claim false.
         raise SystemExit("runner unavailable: " + why)
 
-    proxy_address = runner.setup(egress_log, allow=_declared_hosts(declaration))
+    # A canary is planted only when the declaration actually claims the tool
+    # keeps its input to itself. Interception is intrusive, so it happens
+    # because something was claimed, never by default.
+    wants_content = any(inv.get("type") == "no-data-egress"
+                        for inv in declaration.get("invariants", []))
+    canaries = []
+    if wants_content:
+        import canary as canary_mod
+        canaries = [canary_mod.new_marker()]
+        os.environ["SAYDO_CANARY"] = canaries[0]
+
+    proxy_address = runner.setup(egress_log,
+                                 allow=_declared_hosts(declaration),
+                                 canaries=canaries)
     os.environ.update(runner.env(proxy_address, None, egress_log))
     _ACTIVE_RUNNER = runner
 

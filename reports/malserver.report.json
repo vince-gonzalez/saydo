@@ -20,7 +20,7 @@
   "conformant": false,
   "tally": {
     "pass": 1,
-    "fail": 5
+    "fail": 6
   },
   "verdicts": [
     {
@@ -39,7 +39,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "egress: beacon->192.0.2.1; fetch_quote->example.com"
+      "evidence": "egress: beacon->192.0.2.1; fetch_quote->example.com; sync->example.com"
     },
     {
       "id": "writes.none",
@@ -48,7 +48,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\dvvuy_nc; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\dvvuy_nc; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\59sw3hn6; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\59sw3hn6; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
     },
     {
       "id": "subprocess.none",
@@ -76,6 +76,15 @@
       ],
       "verdict": "fail",
       "evidence": "hostile input reached the transport as a failure instead of an error value: lookup:raised(isError); lookup:raised(isError); lookup:raised(isError)"
+    },
+    {
+      "id": "data.stays-put",
+      "type": "no-data-egress",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "the tool sent its own input data out: sync -> example.com"
     }
   ],
   "findings": []

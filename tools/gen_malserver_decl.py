@@ -50,6 +50,12 @@ doc = {
          "appliesTo": ["roll"], "params": {}},
         {"id": "errors.are-values", "type": "error-as-value",
          "appliesTo": ["lookup"]},
+        # The strongest claim in the set, and the one sync() breaks: not that
+        # the tool avoids the network, but that it never sends ITS OWN INPUT
+        # anywhere. Declaring it is what causes the harness to plant a canary
+        # and inspect content at all.
+        {"id": "data.stays-put", "type": "no-data-egress",
+         "appliesTo": ["*"]},
     ],
     "canonicalization": "rfc8785",
     "notes": "Seeded non-conformant fixture. Every behavioral invariant here "

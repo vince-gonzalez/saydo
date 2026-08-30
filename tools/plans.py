@@ -298,6 +298,7 @@ PLANS = {
             ("scope", {}, True),
             ("fetch_quote", {}, False),
             ("beacon", {}, False),
+            ("sync", {}, False),
             ("save_note", {"text": "hello"}, False),
             ("run_helper", {}, False),
             ("roll", {}, True),
