@@ -341,10 +341,12 @@ def judge(declaration, capture, run, ctx):
                     if ev["event"] not in NET_EVENTS:
                         continue
                     host = _resolved_host(ev)
-                    # The loopback route to the boundary proxy is the monitored
-                    # path, not egress; the proxy.connect event carries the real
-                    # destination for anything that went through it.
-                    if host and _loopback(host):
+                    # The route to the boundary proxy is the monitored path,
+                    # not a destination the tool chose. The proxy.connect
+                    # event carries the real destination for anything that
+                    # went through it.
+                    if host and (_loopback(host)
+                                 or _is_instrumentation(host, ctx)):
                         continue
                     if ev["event"] == "socket.connect" and _connect_loopback(ev):
                         continue
@@ -526,6 +528,21 @@ def judge(declaration, capture, run, ctx):
                              "detail": "process exited during this call "
                                        "(exit {})".format(out.exit_code)})
     return verdicts, findings
+
+
+#: SayDo's own instrumentation. A tool reaching the proxy is the tool using
+#: the one route it was given, not a destination it chose -- reporting our own
+#: measuring apparatus as somewhere the tool sent data would be an accusation
+#: about our plumbing.
+INSTRUMENTATION_HOSTS = {"saydo-proxy"}
+
+
+def _is_instrumentation(host, ctx):
+    if not isinstance(host, str):
+        return False
+    if host in INSTRUMENTATION_HOSTS:
+        return True
+    return bool(ctx.get("proxy_ip")) and host == ctx["proxy_ip"]
 
 
 def _loopback(host):
@@ -940,6 +957,8 @@ def run_conformance(name, plan, declaration, capture, server_python,
             "declaration": declaration,
             "appdata": appdata,
             "enforcement": runner.enforcement,
+            # So the proxy is never reported as somewhere the tool sent data.
+            "proxy_ip": getattr(runner, "_proxy_ip", ""),
             "runtime_roots": _runtime_roots(server_python),
             "fuzz_outcomes": run_fuzz(name, plan, capture, server_python, log),
             "determinism": run_determinism(name, plan, server_python, log),

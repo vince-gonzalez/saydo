@@ -493,7 +493,11 @@ class ContainerRunner(Runner):
                # The audit hook still runs inside the sandbox and reports over
                # stderr, so an attempt the boundary blocked is still recorded.
                # The image places it on PYTHONPATH.
-               "-e", "SAYDO_MONITOR_STDERR=1"]
+               "-e", "SAYDO_MONITOR_STDERR=1",
+               # Bytecode caching is the interpreter's housekeeping, not the
+               # tool's behaviour. Left on, every Python server appears to
+               # write files it never asked to write.
+               "-e", "PYTHONDONTWRITEBYTECODE=1"]
 
         ip = getattr(self, "_proxy_ip", "")
         if ip:
