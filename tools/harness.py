@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
 import time
@@ -880,15 +881,25 @@ def _declared_hosts(declaration):
     return sorted(hosts)
 
 
+def _safe_name(name):
+    """A filename-safe form of a package name.
+
+    Scoped npm packages contain a slash, so using the name directly in a path
+    asks to write into a directory that does not exist. That failed as an
+    exception attributed to the server rather than to the harness.
+    """
+    return re.sub(r"[^A-Za-z0-9._-]", "_", name)[:80]
+
+
 def run_conformance(name, plan, declaration, capture, server_python,
                     runner=None):
     """Exercise one server behind the boundary proxy and judge it. Returns a
     report dict. This is the in-process entry the CLI and the sweep both use."""
     global _ACTIVE_RUNNER
     plans_mod.write_fixtures()
-    log = os.path.join(tempfile.gettempdir(), "saydo-monitor-{}.log".format(name))
+    log = os.path.join(tempfile.gettempdir(), "saydo-monitor-{}.log".format(_safe_name(name)))
     egress_log = os.path.join(tempfile.gettempdir(),
-                              "saydo-egress-{}.log".format(name))
+                              "saydo-egress-{}.log".format(_safe_name(name)))
 
     if runner is None:
         import runner as runner_mod

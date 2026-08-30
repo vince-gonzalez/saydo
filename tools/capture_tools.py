@@ -56,7 +56,14 @@ def _read_response(stream, want_id):
         line = line.strip()
         if not line:
             continue
-        msg = json.loads(line)
+        try:
+            msg = json.loads(line)
+        except ValueError:
+            # Servers print banners, version notices and deprecation warnings
+            # to stdout alongside the protocol. Treating that as fatal made
+            # perfectly working servers look unstartable, which is a failure
+            # of the harness reported as a finding about the tool.
+            continue
         if msg.get("id") == want_id:
             if "error" in msg:
                 raise RuntimeError("server error: {}".format(msg["error"]))
