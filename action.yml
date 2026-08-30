@@ -1,0 +1,202 @@
+name: 'SayDo conformance'
+description: >-
+  Run a tool against the behavioural contract its author signed, and emit a
+  hash-chained receipt anyone can verify without trusting this build.
+author: 'F-Keys Creative LLC'
+
+branding:
+  icon: 'check-square'
+  color: 'gray-dark'
+
+inputs:
+  command:
+    description: 'Command that starts the MCP server (e.g. "python -m my_server").'
+    required: false
+  npm:
+    description: 'npm package to install and run instead of `command`.'
+    required: false
+  pypi:
+    description: 'PyPI package to install and run instead of `command`.'
+    required: false
+  declaration:
+    description: >-
+      Path to the declaration being tested. Omit and a deliberately
+      conservative one is inferred, in which case most invariants come back
+      not-covered -- which is the honest result, not a passing one.
+    required: false
+  sandbox:
+    description: >-
+      Run inside a container whose only route out is a recording proxy. When
+      false the run is observed rather than enforced, and the receipt says so.
+    required: false
+    default: 'true'
+  require-coverage:
+    description: >-
+      Fail if the run established nothing -- no invariant was actually
+      exercised. On by default, because a green check that proves nothing is
+      worse than no check: it is a claim of conformance nobody made.
+    required: false
+    default: 'true'
+  fail-on-drift:
+    description: >-
+      Fail when the tool was redefined without its version changing. Off by
+      default because the first run of a new subject has nothing to compare
+      against; turn it on once a prior receipt exists.
+    required: false
+    default: 'false'
+  upload-receipt:
+    description: 'Upload the receipt, anchor and report as a build artifact.'
+    required: false
+    default: 'true'
+
+outputs:
+  verdict:
+    description: 'warranted | failing | draft | revoked | expired'
+    value: ${{ steps.saydo.outputs.verdict }}
+  conformant:
+    description: 'true only if every covered invariant held'
+    value: ${{ steps.saydo.outputs.conformant }}
+  enforcement:
+    description: 'contained (sandboxed) or observed (not)'
+    value: ${{ steps.saydo.outputs.enforcement }}
+  receipt-head:
+    description: 'Head hash of the receipt chain; the thing a verifier checks'
+    value: ${{ steps.saydo.outputs.receipt_head }}
+  receipt-path:
+    description: 'Path to the receipt JSONL written by this run'
+    value: ${{ steps.saydo.outputs.receipt_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install the harness
+      shell: bash
+      run: pip install --quiet jsonschema cryptography "mcp==1.29.1"
+
+    - name: Run conformance
+      id: saydo
+      shell: bash
+      env:
+        SAYDO_HOME: ${{ github.action_path }}
+        IN_COMMAND: ${{ inputs.command }}
+        IN_NPM: ${{ inputs.npm }}
+        IN_PYPI: ${{ inputs.pypi }}
+        IN_DECL: ${{ inputs.declaration }}
+        IN_SANDBOX: ${{ inputs.sandbox }}
+      run: |
+        set -euo pipefail
+        args=()
+        if   [ -n "$IN_NPM"  ]; then args+=(--npm  "$IN_NPM")
+        elif [ -n "$IN_PYPI" ]; then args+=(--pypi "$IN_PYPI")
+        elif [ -n "$IN_COMMAND" ]; then args+=(--command "$IN_COMMAND")
+        else
+          echo "::error::give one of command, npm or pypi"; exit 1
+        fi
+        [ -n "$IN_DECL" ] && args+=(--declaration "$IN_DECL")
+        [ "$IN_SANDBOX" = "true" ] && args+=(--sandbox)
+
+        # The run is allowed to report a failing tool without killing the step;
+        # whether a failing tool fails the BUILD is decided below, from the
+        # report, so the reason is legible instead of an opaque exit code.
+        set +e
+        python "$SAYDO_HOME/cli/saydo.py" verify "${args[@]}"
+        set -e
+
+        python - <<'PY' >> "$GITHUB_OUTPUT"
+        import glob, json, os, sys
+        home = os.environ["SAYDO_HOME"]
+        reports = sorted(glob.glob(os.path.join(home, "reports", "*.report.json")),
+                         key=os.path.getmtime)
+        if not reports:
+            print("::error::no report was produced; the run did not complete", file=sys.stderr)
+            raise SystemExit(1)
+        rep = json.load(open(reports[-1], encoding="utf-8"))
+        slug = os.path.basename(reports[-1])[:-len(".report.json")]
+        anchor_path = os.path.join(home, "receipts", slug + ".anchor.json")
+        anchor = json.load(open(anchor_path, encoding="utf-8"))
+        est = rep.get("established", 0)
+        print("verdict=" + ("failing" if not rep["conformant"] else
+                            "inconclusive" if not est else "warranted"))
+        print("conformant=" + str(bool(rep["conformant"])).lower())
+        print("enforcement=" + rep.get("enforcement", "observed"))
+        print("receipt_head=" + str(anchor.get("head")))
+        print("receipt_path=" + os.path.join(home, "receipts", slug + ".receipt.jsonl"))
+        print("established=" + str(est))
+        print("slug=" + slug)
+        PY
+
+    - name: Judge the run
+      shell: bash
+      env:
+        SAYDO_HOME: ${{ github.action_path }}
+        SAYDO_SLUG: ${{ steps.saydo.outputs.slug }}
+        SAYDO_HEAD: ${{ steps.saydo.outputs.receipt_head }}
+        REQUIRE_COVERAGE: ${{ inputs.require-coverage }}
+        FAIL_ON_DRIFT: ${{ inputs.fail-on-drift }}
+      run: |
+        python - <<'PY'
+        import json, os, sys
+        home = os.environ["SAYDO_HOME"]
+        slug = os.environ["SAYDO_SLUG"]
+        rep = json.load(open(os.path.join(home, "reports", slug + ".report.json"),
+                             encoding="utf-8"))
+        rows = rep["verdicts"]
+        failed = [v for v in rows if v["verdict"] == "fail"]
+        # Coverage means invariants about CONDUCT that held. The refusal tool
+        # answering is the server describing itself, and a build that goes
+        # green on it is green because the tool said so.
+        established = rep.get("established", 0)
+
+        print("enforcement: {}".format(rep.get("enforcement")))
+        for v in rows:
+            print("  {:<12} {:<24} {}".format(v["verdict"], v["id"],
+                                              v.get("evidence", "")[:100]))
+
+        problems = []
+        for v in failed:
+            problems.append("{} was declared and did not hold: {}".format(
+                v["id"], v.get("evidence", "")[:200]))
+
+        # A run that exercised nothing is not a pass. Reporting it as one is
+        # how a badge comes to mean less than nothing -- the reader supplies a
+        # meaning the evidence never carried.
+        if os.environ.get("REQUIRE_COVERAGE") == "true" and not established:
+            problems.append(
+                "this run established nothing: no invariant about the tool's "
+                "conduct was demonstrated. The tool most likely declined to "
+                "act without credentials or inputs it accepts. That is not a "
+                "pass. Supply what it needs and the run gains real coverage; "
+                "set require-coverage: false only if you want the non-result "
+                "recorded as the non-result it is.")
+
+        if os.environ.get("FAIL_ON_DRIFT") == "true":
+            drift = [d for d in rep.get("drift", [])
+                     if d.get("severity") == "serious"]
+            for d in drift:
+                problems.append("serious drift in {}: {}".format(
+                    d.get("subject"), d.get("detail", "")[:200]))
+
+        if problems:
+            for p in problems:
+                print("::error::" + p)
+            sys.exit(1)
+        print("\nSayDo: {} invariant(s) about conduct held, enforcement={}"
+              .format(established, rep.get("enforcement")))
+        print("receipt " + os.environ.get("SAYDO_HEAD", "?"))
+        PY
+
+    - name: Upload the receipt
+      if: ${{ always() && inputs.upload-receipt == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: saydo-receipt-${{ steps.saydo.outputs.slug }}
+        path: |
+          ${{ github.action_path }}/receipts/*.receipt.jsonl
+          ${{ github.action_path }}/receipts/*.anchor.json
+          ${{ github.action_path }}/reports/*.report.json
+        if-no-files-found: warn

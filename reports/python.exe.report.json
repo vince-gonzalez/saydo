@@ -1,30 +1,26 @@
 {
   "subject": {
     "kind": "mcp-server",
-    "name": "certivl",
-    "version": "0.2.0",
+    "name": "silentserver",
+    "version": "0.0.0",
     "supplier": {
-      "name": "F-Keys Creative LLC",
-      "url": "https://www.f-keys.com"
-    },
-    "repository": {
-      "url": "https://github.com/vince-gonzalez/certivl"
+      "name": "python.exe"
     },
     "artifacts": [
       {
-        "type": "pypi",
-        "identifier": "pkg:pypi/certivl@0.2.0"
+        "type": "other",
+        "identifier": "pkg:generic/python.exe"
       }
     ]
   },
-  "declaration_serial": "urn:uuid:2150aecb-4619-58c3-ae9a-fa017e972b66",
+  "declaration_serial": "urn:uuid:80c89ce7-f90a-5d0f-888b-ad820111b29e",
   "harness_version": "0.1.0",
   "enforcement": "observed",
   "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
   "conformant": true,
-  "established": 4,
+  "established": 0,
   "tally": {
-    "pass": 5,
+    "pass": 1,
     "not-covered": 4
   },
   "dataFlow": {},
@@ -58,16 +54,6 @@
       "observed": []
     },
     {
-      "id": "reads.none",
-      "type": "read-scope",
-      "appliesTo": [
-        "*"
-      ],
-      "verdict": "not-covered",
-      "evidence": "no out-of-scope read observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
-      "observed": []
-    },
-    {
       "id": "subprocess.none",
       "type": "no-subprocess",
       "appliesTo": [
@@ -78,41 +64,13 @@
       "observed": []
     },
     {
-      "id": "answers.deterministic",
-      "type": "deterministic",
-      "appliesTo": [
-        "*"
-      ],
-      "verdict": "pass",
-      "evidence": "identical across two same-instance and one fresh call: decide, enclose, scope"
-    },
-    {
       "id": "errors.are-values",
       "type": "error-as-value",
       "appliesTo": [
         "*"
       ],
-      "verdict": "pass",
-      "evidence": "6 hostile inputs each returned an error value, no raise, crash, or hang"
-    },
-    {
-      "id": "undecided.on-overlap",
-      "type": "property",
-      "appliesTo": [
-        "decide"
-      ],
-      "verdict": "pass",
-      "evidence": "decide(pi == pi) -> UNDECIDED, expected UNDECIDED; decide(sqrt2 * sqrt2 == 2) -> UNDECIDED, expected UNDECIDED; decide(1 < 2) -> TRUE, expected TRUE"
-    },
-    {
-      "id": "decimal.read-exactly",
-      "type": "property",
-      "appliesTo": [
-        "decide",
-        "enclose"
-      ],
-      "verdict": "pass",
-      "evidence": "decide(0.1 + 0.2 == 0.3) -> TRUE, expected TRUE (the decimal literal, not the nearest double)"
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
     }
   ],
   "findings": []

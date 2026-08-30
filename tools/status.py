@@ -102,8 +102,19 @@ def build(receipt_lines, anchor, receipt_url=None, registry_entry=None):
     signed = bool(anchor.get("signature"))
     conformant = bool(anchor.get("conformant"))
 
+    # A pass on the refusal tool means the server answered a question about
+    # itself. It is not conduct, and it must not be what a warrant rests on.
+    established = [v for v in passed if v.get("invariantType") != "refusal-tool"]
+
     if not conformant or failed or findings:
         verdict = "failing"
+    elif not established:
+        # Nothing failed, and nothing was shown. This is the ordinary result
+        # for a server that declines to act without credentials, and it used to
+        # come back "warranted" -- an agent reading that would have been told
+        # the tool was checked and fine, when the truth is that it never did
+        # anything for anyone to check.
+        verdict = "inconclusive"
     elif not signed:
         verdict = "draft"
     else:
@@ -134,6 +145,14 @@ def build(receipt_lines, anchor, receipt_url=None, registry_entry=None):
         advice = ("Do not rely on this tool's declared behavior. It does more "
                   "than it declares: {}. Verify the receipt.".format(
                       "; ".join(reasons[:4])))
+    elif verdict == "inconclusive":
+        summary = ("{} {}: INCONCLUSIVE. The run established nothing; {} "
+                   "checks came back not-covered.".format(name, version,
+                                                          len(notcov)))
+        advice = ("Treat as unverified. Nothing failed, but nothing was shown "
+                  "either -- the tool did no observable work during the run, "
+                  "usually because it declines to act without credentials. "
+                  "This is not a clean result; it is the absence of one.")
     else:  # draft
         summary = "{} {}: unsigned draft. Tested but not signed.".format(
             name, version)

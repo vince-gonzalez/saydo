@@ -43,6 +43,10 @@ WARRANTED = "warranted"
 FAILING = "failing"
 EXPIRED = "expired"
 REVOKED = "revoked"
+#: Nothing failed and nothing was shown. Kept distinct from WARRANTED because
+#: collapsing them is how a registry ends up publishing a green mark for a
+#: server that declined every call it was given.
+INCONCLUSIVE = "inconclusive"
 
 
 def _now(at=None):
@@ -89,8 +93,19 @@ def publish(registry, anchor, receipt_rows, at=None, ttl_days=DEFAULT_TTL_DAYS):
 
     signed = bool(anchor.get("signature"))
     conformant = bool(closing.get("conformant"))
-    state = WARRANTED if (conformant and signed) else (
-        FAILING if not conformant else "draft")
+    # A pass on the refusal tool is the server answering a question about
+    # itself, not conduct. A warrant may not rest on it.
+    established = [r for r in receipt_rows
+                   if r.get("type") == "verdict" and r.get("verdict") == "pass"
+                   and r.get("invariantType") != "refusal-tool"]
+    if not conformant:
+        state = FAILING
+    elif not established:
+        state = INCONCLUSIVE
+    elif not signed:
+        state = "draft"
+    else:
+        state = WARRANTED
 
     entry = {
         "subject": subject,
@@ -166,6 +181,10 @@ def lookup(registry, key, at=None):
                             if serious else ""))
     elif entry["state"] == FAILING:
         out["advice"] = "did not conform to its declaration when last checked"
+    elif entry["state"] == INCONCLUSIVE:
+        out["advice"] = ("the last run established nothing: the tool did no "
+                         "observable work, so it has not been shown to be "
+                         "well behaved, only unobserved")
     else:
         out["advice"] = ("tested but unsigned, so nobody has put their name "
                          "to it")
@@ -183,6 +202,7 @@ def badge(entry):
     text = {
         WARRANTED: "conformed when last checked",
         FAILING: "did NOT conform when last checked",
+        INCONCLUSIVE: "checked, but nothing was established",
         EXPIRED: "claim expired, re-verification needed",
         REVOKED: "withdrawn",
         UNKNOWN: "not on record",

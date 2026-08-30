@@ -1,0 +1,98 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:80c89ce7-f90a-5d0f-888b-ad820111b29e",
+  "createdAt": "1970-01-01T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "silentserver",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "python.exe"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/python.exe"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:e284784b0d419d86c4aed5cf458c5ec51c63f5ca3026018dc8a582f17cba421f",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "fetch",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:b557ddd3c2f7e9cab910733e76e45de13b97ec2dad225dc0444b2aef2b07a990",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "store",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:5920c7171ab6e869bfdb81fddfcf71b4c54f0ee3f1e7a33b7ee011e4cc6e5252",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      },
+      "note": "HYPOTHESIS: assumes scope is a no-I/O refusal tool."
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no egress. Relax to network-allowlist if the tool legitimately calls out."
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no filesystem writes."
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no child processes."
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes malformed input returns an error value rather than crashing the transport."
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Inferred skeleton: every invariant is a conservative HYPOTHESIS, not a finding. Run the harness; the failures are the map of what this tool actually does. Then keep what held, relax what was too strict for a real reason, and sign."
+}

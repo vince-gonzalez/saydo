@@ -1,0 +1,106 @@
+# Verify the verifier, for the Action itself.
+#
+# A GitHub Action that reports success is worthless unless it is capable of
+# reporting failure for the reason you care about. There are two such reasons,
+# and this workflow proves the Action fails on both and passes on neither:
+#
+#   1. a tool that BREAKS its declaration          -> the build must fail
+#   2. a tool that ESTABLISHES NOTHING             -> the build must fail
+#
+# The second is the one people get wrong. A server that declines every call
+# produces no network traffic, writes no files and starts no processes, and a
+# naive harness reports all three as passes. That is the commonest server in
+# the wild, and warranting it would make the mark meaningless.
+#
+# Both cases run with `continue-on-error` and then have their outcome ASSERTED,
+# because a step that is allowed to fail and is never checked is a step that
+# proves nothing.
+name: action selfcheck
+
+on:
+  push:
+    paths:
+      - 'action.yml'
+      - '.github/workflows/action-selfcheck.yml'
+      - 'tools/**'
+      - 'cli/**'
+      - 'seeded/**'
+  workflow_dispatch:
+
+jobs:
+  the-action-must-be-able-to-fail:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the fixtures' SDK
+        run: pip install --quiet "mcp==1.29.1" jsonschema cryptography
+
+      # 1. A server built to lie. The Action must fail the build.
+      - name: 'A tool that breaks its declaration (must FAIL)'
+        id: liar
+        continue-on-error: true
+        uses: ./
+        with:
+          command: python seeded/malserver.py
+          declaration: seeded/malserver.declaration.json
+          sandbox: 'false'
+          upload-receipt: 'false'
+
+      - name: Assert the liar was caught
+        run: |
+          if [ "${{ steps.liar.outcome }}" != "failure" ]; then
+            echo "::error::the Action passed a server that breaks its own \
+          declaration. Every receipt it has ever produced is worthless."
+            exit 1
+          fi
+          echo "OK: the Action failed the build on a non-conformant tool."
+
+      # 2. A server that starts and then declines everything. The Action must
+      #    still fail, because nothing was established.
+      - name: 'A tool that establishes nothing (must FAIL)'
+        id: silent
+        continue-on-error: true
+        uses: ./
+        with:
+          command: python seeded/silentserver.py
+          sandbox: 'false'
+          upload-receipt: 'false'
+
+      - name: Assert the non-result was not reported as a pass
+        run: |
+          if [ "${{ steps.silent.outcome }}" != "failure" ]; then
+            echo "::error::the Action went green on a server that declined \
+          every call. Silence is being read as good behaviour, which is the \
+          one failure this project exists to prevent."
+            exit 1
+          fi
+          echo "OK: the Action refused to warrant a run that showed nothing."
+          echo "    verdict was: ${{ steps.silent.outputs.verdict }}"
+
+      # 3. The same non-result, explicitly accepted. It must be recorded as
+      #    inconclusive -- never as warranted.
+      - name: 'The same run with require-coverage off (must PASS, inconclusive)'
+        id: allowed
+        uses: ./
+        with:
+          command: python seeded/silentserver.py
+          sandbox: 'false'
+          require-coverage: 'false'
+          upload-receipt: 'false'
+
+      - name: Assert opting out records the truth rather than a pass
+        run: |
+          v="${{ steps.allowed.outputs.verdict }}"
+          echo "verdict: $v"
+          if [ "$v" = "warranted" ]; then
+            echo "::error::turning off require-coverage upgraded a non-result \
+          to a warrant. The opt-out is meant to let a build continue, not to \
+          change what the run found."
+            exit 1
+          fi
+          if [ "$v" != "inconclusive" ]; then
+            echo "::error::expected inconclusive, got '$v'"
+            exit 1
+          fi
+          echo "OK: recorded as inconclusive, which is what it was."

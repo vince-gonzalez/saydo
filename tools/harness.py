@@ -305,6 +305,43 @@ def judge(declaration, capture, run, ctx):
     def window_ran(tools):
         return any(run.outcomes_for(t) for t in tools)
 
+    # Did the server ever DO anything? A tool that answers every call with
+    # "not configured" produces a call window, an answer, and no observable
+    # effect -- which used to satisfy every no-network / no-write /
+    # no-subprocess check at once and earn a signed CONFORMANT receipt for a
+    # server that had done nothing whatsoever.
+    #
+    # That is the exact error this project exists to refuse, committed by this
+    # project. A sweep of public MCP servers found declining-every-call to be
+    # the single commonest behaviour, so it is not a corner case; it is most of
+    # the population, and the harness was warranting all of it.
+    #
+    # A run with no observable effect of any kind cannot distinguish a tool
+    # that behaved well from one that never acted, so it establishes neither.
+    # A publisher gets real coverage by running SayDo where the credentials
+    # are, which is the whole argument for the publisher running it.
+    # Counted inside call windows only, and reads of the tool's own files do
+    # not count: an interpreter importing its modules opens plenty of files,
+    # and taking that as evidence the tool acted would make every run look
+    # busy and this check useless.
+    def _acted():
+        for tool, _t0, _t1, _out in run.windows:
+            for ev in run.events_for(tool):
+                name = ev.get("event")
+                if name in NET_EVENTS or name in PROC_EVENTS                         or name in WRITE_EVENTS:
+                    return True
+                if name == "open":
+                    if ev.get("intent") == "write":
+                        return True
+                    if not _self_read_ok(ev.get("path"), ctx):
+                        return True
+        return False
+
+    acted = _acted()
+    silent = None if acted else (
+        "the server produced no observable effect of any kind during the run, "
+        "so a well-behaved tool and one that declined to act look the same")
+
     for inv in declaration["invariants"]:
         tools = _tools_of(inv, bound_names)
         vtype = inv["type"]
@@ -397,6 +434,14 @@ def judge(declaration, capture, run, ctx):
                         seen.append((t, h))
                 row["evidence"] = "egress: " + "; ".join(
                     "{}->{}".format(t, h) for t, h in seen[:8])
+            elif run.monitor_incomplete or silent:
+                # "It made no network call" is only a finding if the tool did
+                # anything at all. A server that declined every call made no
+                # network call the way a switched-off machine makes none.
+                row["verdict"] = "not-covered"
+                row["evidence"] = ("no egress observed, but {}, so this "
+                                   "establishes nothing".format(
+                                       run.monitor_incomplete or silent))
             else:
                 row["verdict"] = "pass"
                 obs = ", ".join(sorted(observed)) if observed else "no hosts"
@@ -483,12 +528,12 @@ def judge(declaration, capture, run, ctx):
                     for ev in run.events_for(tool)
                     if ev["event"] in PROC_EVENTS]
             row.update(_binary_verdict(window_ran(tools), hits, "subprocess",
-                                       run.monitor_incomplete))
+                                       run.monitor_incomplete or silent))
 
         elif vtype == "no-write":
             hits = [(t, p) for t, p, _d in _write_hits(run, tools, ctx)]
             row.update(_binary_verdict(window_ran(tools), hits, "write",
-                                       run.monitor_incomplete))
+                                       run.monitor_incomplete or silent))
 
         elif vtype == "write-scope":
             roots = [_expand(p, ctx) for p in params.get("paths", [])]
@@ -504,7 +549,7 @@ def judge(declaration, capture, run, ctx):
                 hits.append((tool, path))
             row.update(_binary_verdict(window_ran(tools), hits,
                                        "out-of-scope write",
-                                       run.monitor_incomplete))
+                                       run.monitor_incomplete or silent))
 
         elif vtype == "read-scope":
             extra = [_expand(p, ctx) for p in params.get("alsoAllowed", [])]
@@ -522,7 +567,7 @@ def judge(declaration, capture, run, ctx):
                         hits.append((tool, path))
             row.update(_binary_verdict(window_ran(tools), hits,
                                        "out-of-scope read",
-                                       run.monitor_incomplete))
+                                       run.monitor_incomplete or silent))
 
         elif vtype == "error-as-value":
             row.update(_judge_error_as_value(declaration, run, tools, ctx))
@@ -1040,6 +1085,17 @@ def run_conformance(name, plan, declaration, capture, server_python,
         "enforcement": runner.enforcement,
         "monitor": runner.describe(),
         "conformant": conformant,
+        # How much was actually ESTABLISHED, as opposed to merely not refuted.
+        # `conformant` only ever meant "nothing failed", and nothing fails in a
+        # run where nothing happened -- so a server that declined every call
+        # was being announced as CONFORMANT, which is the single most
+        # misleading word this program could print. Coverage is now carried
+        # beside the verdict so no reader downstream has to infer it, and a
+        # behavioural pass is counted only if it is behavioural: a refusal-tool
+        # check answering is a fact about the harness, not about conduct.
+        "established": sum(1 for v in verdicts
+                           if v["verdict"] == "pass"
+                           and v.get("type") != "refusal-tool"),
         "tally": tally,
         # Which destinations carry the tool's input and which do not. Empty
         # unless the declaration claimed no-data-egress, since establishing it

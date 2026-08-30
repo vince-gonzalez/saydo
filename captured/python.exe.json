@@ -1,0 +1,79 @@
+{
+  "server": {
+    "name": "silentserver",
+    "version": "0.0.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report scope. CALL THIS FIRST. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:e284784b0d419d86c4aed5cf458c5ec51c63f5ca3026018dc8a582f17cba421f",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "fetch",
+      "definition": {
+        "name": "fetch",
+        "description": "Fetch a record by id. Takes an id.",
+        "inputSchema": {
+          "properties": {
+            "record_id": {
+              "title": "Record Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "record_id"
+          ],
+          "type": "object",
+          "title": "fetchArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:b557ddd3c2f7e9cab910733e76e45de13b97ec2dad225dc0444b2aef2b07a990",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "store",
+      "definition": {
+        "name": "store",
+        "description": "Store a note. Takes text.",
+        "inputSchema": {
+          "properties": {
+            "text": {
+              "title": "Text",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "type": "object",
+          "title": "storeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:5920c7171ab6e869bfdb81fddfcf71b4c54f0ee3f1e7a33b7ee011e4cc6e5252",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}

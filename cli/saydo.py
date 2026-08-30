@@ -299,6 +299,19 @@ def _resolve_command(args):
     test have no business sharing an environment.
     """
     if args.command:
+        # Both shapes work, because both get typed:
+        #
+        #   --command python my_server.py       (REMAINDER, several tokens)
+        #   --command "python my_server.py"     (one quoted token)
+        #
+        # The second is what anyone writes in a YAML file or a shell variable,
+        # and it used to arrive as a single argv entry -- a program literally
+        # named "python my_server.py", which does not exist. It failed with a
+        # file-not-found naming a string nobody could act on. A quoted command
+        # is split the way a shell would split it.
+        if len(args.command) == 1 and re.search(r"\s", args.command[0]):
+            import shlex
+            return shlex.split(args.command[0], posix=(os.name != "nt"))
         return args.command
     if args.npm:
         return ["npx", "-y", args.npm]
@@ -327,7 +340,7 @@ def _summarise(slug, name, report_path):
     anchor_path = os.path.join(ROOT, "receipts", slug + ".anchor.json")
     print("\n" + "=" * 62)
     print("  {}   {}".format(
-        name, "CONFORMANT" if report["conformant"] else "NOT CONFORMANT"))
+        name, _headline(report)))
     print("  enforcement  {}".format(report.get("enforcement", "observed")))
     print("  tally        {}".format(report["tally"]))
     for v in report["verdicts"]:
@@ -350,6 +363,21 @@ def _summarise(slug, name, report_path):
     print("=" * 62)
     print("\nverify it yourself: open verifier/index.html and paste the "
           "receipt and anchor.")
+
+
+def _headline(report):
+    """The one word a reader takes away, and it must be earned.
+
+    NOT CONFORMANT when something failed. INCONCLUSIVE when nothing failed but
+    nothing was established either -- the ordinary case for a server that
+    declines to act without credentials, and previously announced as
+    CONFORMANT, which told the reader the opposite of the truth.
+    """
+    if not report["conformant"]:
+        return "NOT CONFORMANT"
+    if not report.get("established"):
+        return "INCONCLUSIVE (nothing was established)"
+    return "CONFORMANT"
 
 
 def cmd_verify(args):
@@ -398,8 +426,7 @@ def cmd_verify(args):
         report = json.load(fh)
 
     print("\n" + "=" * 60)
-    verdict = "CONFORMANT" if anchor["conformant"] else "NOT CONFORMANT"
-    print("  {}   {}".format(name, verdict))
+    print("  {}   {}".format(name, _headline(report)))
     print("  tally      {}".format(report["tally"]))
     if report["findings"]:
         print("  findings   {}".format(len(report["findings"])))

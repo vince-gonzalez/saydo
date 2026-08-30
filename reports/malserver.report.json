@@ -18,6 +18,7 @@
   "enforcement": "observed",
   "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
   "conformant": false,
+  "established": 0,
   "tally": {
     "pass": 1,
     "fail": 6
@@ -60,15 +61,15 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\ptbhhxvw; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\ptbhhxvw; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
       "observed": [
         {
           "tool": "save_note",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\ptbhhxvw"
         },
         {
           "tool": "save_note",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\ptbhhxvw"
         },
         {
           "tool": "save_note",
