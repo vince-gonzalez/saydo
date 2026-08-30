@@ -27,6 +27,15 @@ on:
       - 'seeded/**'
   workflow_dispatch:
 
+# One run per branch at a time. Pushing three commits in five minutes
+# used to start three full runs that all raced for the same runners --
+# starving the corpus sweep, and mailing a failure for each superseded
+# run as it was killed. Only the newest commit's result is meaningful,
+# so the older ones are cancelled rather than finished.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   the-action-must-be-able-to-fail:
     runs-on: ubuntu-latest

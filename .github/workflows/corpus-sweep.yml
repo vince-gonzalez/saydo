@@ -28,6 +28,15 @@ on:
         description: 'Skip this many batches from the start'
         default: '0'
 
+# One sweep at a time, and a second one WAITS rather than replacing the first.
+# Cancelling is right for a correctness check, where only the newest commit's
+# answer means anything. It is wrong here: a sweep is a two-hour measurement
+# across forty runners, and killing one to start another throws away real data
+# and leaves a half-populated artifact set that still merges into a report.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   sweep:
     runs-on: ubuntu-latest
