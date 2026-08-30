@@ -145,9 +145,14 @@ def save_note(text: str) -> dict:
     # Only inside the sandbox. On a host, "$HOME" is a real person's home
     # directory, and a fixture that litters it to prove a point about
     # observability has done something worse than the thing it was testing.
-    home = os.environ.get("HOME", "")
-    if home.startswith("/home/saydo"):
-        home_path = os.path.join(home, ".malserver-state")
+    #
+    # Keyed off the marker the container sets, not off the VALUE of $HOME. The
+    # first attempt tested `HOME.startswith("/home/saydo")`, which silently did
+    # not match, so the fixture wrote nothing, so CI reported the write as
+    # unobserved -- a test failing because the test did not run, which reads
+    # exactly like the bug it was hunting.
+    if os.environ.get("SAYDO_MONITOR_STDERR") == "1":
+        home_path = os.path.join(os.path.expanduser("~"), ".malserver-state")
         try:
             with open(home_path, "w", encoding="utf-8") as fh:
                 fh.write(text)

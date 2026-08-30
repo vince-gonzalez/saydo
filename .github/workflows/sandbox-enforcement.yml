@@ -237,6 +237,11 @@ jobs:
                   'a write into the sandbox home was not observed; allowing '
                   'that write is only safe while it is still reported. '
                   '{} writes were recorded.'.format(len(writes)))
+          # A test that quietly does not run looks exactly like a test that
+          # passed. Print what the fixture reported so a future failure says
+          # which of the two happened.
+          print('home write seen:',
+                [w for w in writes if 'malserver-state' in w['detail']] or 'NONE')
 
           net_ev = by_id.get('network.none', {}).get('evidence', '')
           if '192.0.2.1' not in net_ev:
