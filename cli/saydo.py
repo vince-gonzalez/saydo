@@ -156,8 +156,18 @@ def cmd_verify_any(args):
     print("saydo verify {}\n  command: {}".format(name, " ".join(argv)))
 
     print("\n[1/4] capture the live tool definitions")
+    # Capture STARTS the server, so under --sandbox it must start it inside
+    # the container too. Reading tools/list on the host would execute the
+    # untrusted package on the machine the sandbox exists to protect -- the
+    # sandbox built and then walked around.
+    probe = argv
+    if args.runner == "container":
+        probe = ["docker", "run", "--rm", "-i", "--network", "none",
+                 "--read-only", "--tmpfs", "/scratch", "--cap-drop", "ALL",
+                 "--security-opt", "no-new-privileges", "--memory", "512m",
+                 "--workdir", "/scratch", args.image] + argv
     _run([python, os.path.join(TOOLS, "capture_tools.py"),
-          capture_path, "--"] + argv)
+          capture_path, "--"] + probe)
 
     if args.declaration:
         print("\n[2/4] using the declaration supplied by the author")

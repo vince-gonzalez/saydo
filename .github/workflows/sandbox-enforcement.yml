@@ -269,8 +269,11 @@ jobs:
 
       - name: Verify a PyPI package with one command and no prior setup
         run: |
+          # No pipe here. `cmd | tee` reports tee's exit status, so a failing
+          # verify would be reported as a passing step, which is how a broken
+          # path reaches a green check.
           python cli/saydo.py verify --pypi mcp-server-fetch --sandbox \
-            --at 2026-08-30T00:00:00Z | tee out.txt
+            --at 2026-08-30T00:00:00Z
 
       - name: The run must be contained, and must have inspected something
         run: |
