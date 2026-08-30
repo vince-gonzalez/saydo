@@ -60,15 +60,15 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
       "observed": [
         {
           "tool": "save_note",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv"
         },
         {
           "tool": "save_note",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\_iz0lgme"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\t8aminfv"
         },
         {
           "tool": "save_note",

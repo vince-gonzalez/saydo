@@ -88,6 +88,11 @@ class Session:
         # drained continuously regardless, or a chatty server fills the pipe
         # buffer and deadlocks.
         self.monitor_events = []
+        #: How much of the monitor stream was lost, and why. Anything other
+        #: than (0, None) means the in-runtime observations are incomplete,
+        #: and an invariant that rests on them cannot be answered.
+        self.monitor_dropped = 0
+        self.monitor_broke = None
         self._errthread = threading.Thread(target=self._pump_stderr,
                                            daemon=True)
         self._errthread.start()
@@ -106,6 +111,20 @@ class Session:
 
         The tool's own diagnostics are not evidence, so only lines carrying
         the monitor prefix are retained.
+
+        Both failure paths here used to be `pass`, and that was a hole big
+        enough to drive the whole product through. A prefixed line that would
+        not parse was dropped without a trace, and any exception in the loop
+        abandoned the REST OF THE STREAM in silence -- so a tool that provoked
+        one error stopped being watched for the remainder of the run, and the
+        harness, seeing no further writes, reported that it had performed no
+        writes. A monitor that can be silenced is bad. A monitor that can be
+        silenced and then reports a pass is worse than none, because it
+        launders the absence of evidence into evidence of absence.
+
+        Nothing is swallowed now. Losses are counted and the reason is kept,
+        and the harness turns any such loss into lost coverage rather than a
+        clean result.
         """
         prefix = b"@@SAYDO@@ "
         try:
@@ -116,9 +135,11 @@ class Session:
                             json.loads(line[len(prefix):].decode("utf-8",
                                                                 "replace")))
                     except ValueError:
-                        pass
-        except Exception:
-            pass
+                        self.monitor_dropped += 1
+        except Exception as exc:
+            # The stream stopped early. Say so; do not let the events that did
+            # arrive stand in for the ones that never will.
+            self.monitor_broke = "{}: {}".format(type(exc).__name__, exc)[:200]
 
     def _send(self, message):
         self.proc.stdin.write((json.dumps(message) + "\n").encode("utf-8"))

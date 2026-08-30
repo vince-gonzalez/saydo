@@ -129,6 +129,8 @@ class Run:
         self.name = name
         self.windows = []   # (tool, t0, t1, outcome)
         self.events = []
+        #: Set when the in-runtime monitor stream did not arrive intact.
+        self.monitor_incomplete = None
         self.egress_log = egress_log
         self.runner = runner
         self._launch(plan, server_python, monitor_log)
@@ -181,6 +183,18 @@ class Run:
             self.events = _read_events(monitor_log)
             # In-container hook events arrive over stderr rather than a file.
             self.events += list(getattr(session, "monitor_events", []))
+            # Whether that stream arrived INTACT. If it did not, the in-runtime
+            # observations are a sample of unknown size, and "we saw no writes"
+            # stops being a finding -- it becomes an absence of one. Recorded
+            # here so the verdicts can refuse rather than pass.
+            dropped = getattr(session, "monitor_dropped", 0)
+            broke = getattr(session, "monitor_broke", None)
+            if dropped or broke:
+                self.monitor_incomplete = (
+                    "the in-runtime monitor stream was incomplete"
+                    + (" ({} unreadable events)".format(dropped) if dropped
+                       else "")
+                    + (" and ended early [{}]".format(broke) if broke else ""))
             # Merge the boundary-proxy egress into the same event stream; both
             # are {t, event, host}, so attribution by call window is identical
             # whether the proxy was a local listener or a container.
@@ -468,11 +482,13 @@ def judge(declaration, capture, run, ctx):
             hits = [(tool, ev["event"]) for tool in tools
                     for ev in run.events_for(tool)
                     if ev["event"] in PROC_EVENTS]
-            row.update(_binary_verdict(window_ran(tools), hits, "subprocess"))
+            row.update(_binary_verdict(window_ran(tools), hits, "subprocess",
+                                       run.monitor_incomplete))
 
         elif vtype == "no-write":
             hits = [(t, p) for t, p, _d in _write_hits(run, tools, ctx)]
-            row.update(_binary_verdict(window_ran(tools), hits, "write"))
+            row.update(_binary_verdict(window_ran(tools), hits, "write",
+                                       run.monitor_incomplete))
 
         elif vtype == "write-scope":
             roots = [_expand(p, ctx) for p in params.get("paths", [])]
@@ -487,7 +503,8 @@ def judge(declaration, capture, run, ctx):
                     continue
                 hits.append((tool, path))
             row.update(_binary_verdict(window_ran(tools), hits,
-                                       "out-of-scope write"))
+                                       "out-of-scope write",
+                                       run.monitor_incomplete))
 
         elif vtype == "read-scope":
             extra = [_expand(p, ctx) for p in params.get("alsoAllowed", [])]
@@ -504,7 +521,8 @@ def judge(declaration, capture, run, ctx):
                             continue
                         hits.append((tool, path))
             row.update(_binary_verdict(window_ran(tools), hits,
-                                       "out-of-scope read"))
+                                       "out-of-scope read",
+                                       run.monitor_incomplete))
 
         elif vtype == "error-as-value":
             row.update(_judge_error_as_value(declaration, run, tools, ctx))
@@ -558,10 +576,21 @@ def _connect_loopback(ev):
     return isinstance(ip, str) and _loopback(ip)
 
 
-def _binary_verdict(ran, hits, label):
+def _binary_verdict(ran, hits, label, incomplete=None):
     if not ran:
         return {"verdict": "not-covered",
                 "evidence": "no call window for the covered tools"}
+    if not hits and incomplete:
+        # Seeing nothing is only a finding when you were watching the whole
+        # time. With part of the monitor stream missing, "no writes observed"
+        # describes the monitor, not the tool, and returning `pass` here would
+        # convert a gap in our instrumentation into a claim about someone
+        # else's software. A fail is still a fail -- an event that did arrive
+        # really happened -- so only the clean answer is withdrawn.
+        return {"verdict": "not-covered",
+                "evidence": "no {} observed, but {}, so this establishes "
+                            "nothing".format(label, incomplete),
+                "observed": []}
     if hits:
         shown = "; ".join("{}:{}".format(t, x) for t, x in hits[:6])
         # `evidence` is prose for a person and is deliberately short. `observed`
