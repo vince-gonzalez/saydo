@@ -49,6 +49,21 @@
       "type": "string",
       "enum": ["rfc8785"]
     },
+    "toDecide": {
+      "type": "array",
+      "$comment": "Questions the drafting run could not answer, carried in the document so they cannot be lost. `saydo declare` proposes only invariants it actually observed and puts everything else here -- typically a negative claim the run never exercised, which the author must either bound with a narrower invariant or fix in the tool. DRAFT-ONLY: a declaration with status 'declared' and open questions would be a signature over a document that still says it does not know, so the conditional below forbids it.",
+      "items": {
+        "type": "object",
+        "required": ["invariant", "why", "decide"],
+        "properties": {
+          "invariant": { "type": "string" },
+          "why": { "type": "string" },
+          "evidence": { "type": "string" },
+          "decide": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
     "notes": {
       "type": "string",
       "$comment": "Non-normative. Nothing in here is tested and nothing in here is warranted."
@@ -61,6 +76,18 @@
       "$comment": "Optional at the schema level so a draft validates. Normatively: status 'declared' requires a supplier signature over the RFC 8785 canonical form of the document minus this array."
     }
   },
+  "allOf": [
+    {
+      "$comment": "You may not sign a document that still has open questions. A declaration with status 'declared' must carry no unresolved toDecide entries.",
+      "if": {
+        "properties": { "status": { "const": "declared" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": { "toDecide": { "maxItems": 0 } }
+      }
+    }
+  ],
   "additionalProperties": false,
   "$defs": {
     "Organization": {
@@ -192,6 +219,7 @@
             "deterministic",
             "error-as-value",
             "refusal-tool",
+            "no-data-egress",
             "property"
           ]
         },

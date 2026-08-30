@@ -628,7 +628,20 @@ def cmd_selfcheck(args):
     _run([python, os.path.join(TOOLS, "decl_check.py"), "selfcheck",
           SCHEMA, p["declaration"], p["capture"]])
 
-    print("\n[3] every status verdict must satisfy the published schema")
+    print("\n[3] every declaration in the tree must satisfy its schema")
+    # Three schema-versus-code divergences turned up in one day: two verdicts
+    # and an invariant type that the code emitted and the schema forbade. Each
+    # meant an artifact this project hands someone would be rejected by this
+    # project's own validator. A specification nobody checks against is a
+    # description of an earlier program.
+    bad = _check_declarations()
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: a declaration in this repository "
+                         "violates the schema this repository publishes")
+
+    print("\n[4] every status verdict must satisfy the published schema")
     # The schema is what a consumer validates against, so a verdict the code
     # can emit but the schema forbids makes our own output invalid -- which is
     # what happened when `inconclusive`, `revoked` and `expired` were added to
@@ -647,6 +660,29 @@ def cmd_selfcheck(args):
                          "seeded server")
     print("\nselfcheck passed: the harness can fail, so a pass means something.")
     return 0
+
+
+def _check_declarations():
+    """Validate every declaration this repository ships. [] means good."""
+    import jsonschema
+    with open(SCHEMA, encoding="utf-8") as fh:
+        schema = json.load(fh)
+    files = sorted(
+        glob.glob(os.path.join(ROOT, "declarations", "**",
+                               "*.declaration.json"), recursive=True)
+        + glob.glob(os.path.join(ROOT, "seeded", "*.declaration.json")))
+    problems = []
+    for path in files:
+        with open(path, encoding="utf-8") as fh:
+            doc = json.load(fh)
+        try:
+            jsonschema.validate(doc, schema)
+        except jsonschema.ValidationError as exc:
+            problems.append("{}: {}".format(os.path.relpath(path, ROOT),
+                                            str(exc).splitlines()[0][:90]))
+    if not problems:
+        print("   {} declarations checked, all valid".format(len(files)))
+    return problems
 
 
 def _check_status_schema():

@@ -1,0 +1,93 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:378f7690-2c05-5b3e-a36e-425bca63ed1b",
+  "createdAt": "1970-01-01T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "certivl",
+    "version": "0.2.0",
+    "supplier": {
+      "name": "F-Keys Creative LLC"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:pypi/certivl@0.2.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:8112c4520fb0a5d0e8e21216cb071d0686724e7f4e8f310850736507231903a6",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "decide",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:f71a9a33d66be05c03592f20c7495969a1fcf704331870950eff876b1ba36703",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "enclose",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:b41da64ef1891d708cc01fe94e76c8f17454457272f5318834ad0bf3d3c118d7",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "observed to hold: 6 hostile inputs each returned an error value, no raise, crash, or hang"
+    },
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      }
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Drafted from an observed run. Every invariant here already held once; that is a reason to believe it, not a proof it will keep holding. Review, tighten, then sign.",
+  "toDecide": [
+    {
+      "invariant": "network.none",
+      "why": "the run never exercised this",
+      "evidence": "no egress observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
+      "decide": "bound it with a narrower invariant if the behaviour is intended, or fix the tool"
+    },
+    {
+      "invariant": "writes.none",
+      "why": "the run never exercised this",
+      "evidence": "no write observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
+      "decide": "bound it with a narrower invariant if the behaviour is intended, or fix the tool"
+    },
+    {
+      "invariant": "subprocess.none",
+      "why": "the run never exercised this",
+      "evidence": "no subprocess observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
+      "decide": "bound it with a narrower invariant if the behaviour is intended, or fix the tool"
+    }
+  ]
+}
