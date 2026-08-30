@@ -181,6 +181,37 @@ def write_report(results, batches, out_md):
                 W("- `{}` -> {}".format(name, ", ".join(sorted(hosts)[:4])))
             W("")
 
+    diag = {}
+    for r in results:
+        d = r.get("diagnosis")
+        if d:
+            diag[d["class"]] = diag.get(d["class"], 0) + 1
+    if diag:
+        W("## Why the rest would not start\n")
+        W("| reason | servers |")
+        W("|---|---|")
+        labels = {
+            "needs-configuration": "demanded a key, token or setting",
+            "crashes": "started and crashed",
+            "hangs": "started and never answered",
+            "wrong-command": "SayDo guessed the launch command wrongly",
+            "silent": "exited quietly, saying nothing",
+            "no-command": "no launch command could be derived",
+            "unknown": "could not be classified",
+        }
+        for k, n in sorted(diag.items(), key=lambda kv: -kv[1]):
+            W("| {} | {} |".format(labels.get(k, k), n))
+        W("")
+        if diag.get("wrong-command"):
+            W("The `wrong-command` row is SayDo's fault, not the "
+              "ecosystem's, and is reported here rather than buried so the "
+              "number above it can be read for what it is.\n")
+        W("A server demanding configuration is the single most common reason "
+          "an MCP server cannot be audited by anyone who does not already "
+          "operate it. That is the argument for the author declaring what "
+          "their tool does and proving it where the credentials already "
+          "are.\n")
+
     W("## How to argue with this\n")
     W("- Servers were run without credentials, so a credentialed server may "
       "do more than is recorded here. Every figure is a lower bound.\n"

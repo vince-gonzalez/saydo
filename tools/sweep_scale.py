@@ -236,7 +236,50 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
 
     record["outcome"] = "unstartable"
     record["error"] = "no conventional launch command produced a tools/list"
+    # WHY it would not start is the finding. "Unstartable" lumps together a
+    # server demanding an API key, a server that crashes, and a launch command
+    # we guessed wrong -- three very different facts about the ecosystem, and
+    # only one of them is about the ecosystem at all.
+    record["diagnosis"] = _diagnose(attempts, image)
     return record
+
+
+CREDENTIAL_HINTS = ("api_key", "api key", "apikey", "token", "credential",
+                    "unauthorized", "authentication", "must be set",
+                    "environment variable", "not set", "missing required",
+                    "no such option", "usage:")
+
+
+def _diagnose(attempts, image, limit=600):
+    """Run the most likely command and keep what it said before dying."""
+    if not attempts:
+        return {"class": "no-command", "detail": "no launch command to try"}
+    argv = attempts[0]
+    try:
+        out = subprocess.run(
+            ["docker", "run", "--rm", "-i", "--network", "none",
+             "--read-only", "--tmpfs", "/scratch", "--cap-drop", "ALL",
+             "--memory", "512m", "--workdir", "/scratch", image] + argv,
+            input="", capture_output=True, text=True, timeout=45)
+    except subprocess.TimeoutExpired:
+        return {"class": "hangs",
+                "detail": "started and never answered; probably waiting on "
+                          "something it was not given"}
+    except Exception as e:
+        return {"class": "unknown", "detail": str(e)[:200]}
+
+    said = ((out.stderr or "") + (out.stdout or "")).strip()
+    low = said.lower()
+    if "not found" in low or "no such file" in low or "cannot find" in low:
+        klass = "wrong-command"       # our fault, not theirs
+    elif any(h in low for h in CREDENTIAL_HINTS):
+        klass = "needs-configuration"
+    elif "traceback" in low or "error:" in low or out.returncode not in (0,):
+        klass = "crashes"
+    else:
+        klass = "silent"
+    return {"class": klass, "exit": out.returncode,
+            "detail": said[-limit:] if said else "said nothing at all"}
 
 
 def main():
