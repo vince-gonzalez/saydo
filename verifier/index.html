@@ -329,6 +329,37 @@ function render(result) {
     });
     html += "</div>";
   }
+
+  // What changed since the previous receipt. A single receipt cannot show a
+  // rug-pull: a tool redefined under an unchanged version looks perfectly
+  // normal on its own, and only exists as a difference between two runs. So
+  // the differences are rendered as prominently as the verdicts, and the link
+  // to the prior receipt is shown so a reader can follow the history back.
+  var drift = result.rows.filter(function (r) { return r.type === "drift"; });
+  var priorHead = (open && open.priorReceipt) || null;
+  if (drift.length || priorHead) {
+    html += "<div class='panel'><label>Since the previous receipt</label>";
+    if (priorHead) {
+      html += "<div class='ev' style='margin-bottom:8px'>continues from " +
+              "receipt <code>" + esc(priorHead.slice(0, 24)) + "…</code>" +
+              " &mdash; break this link and the omission is visible</div>";
+    }
+    if (!drift.length) {
+      html += "<div class='ev'>nothing changed</div>";
+    } else {
+      drift.forEach(function (d) {
+        var cls = d.severity === "serious" ? "fail"
+                : d.severity === "improvement" ? "pass" : "notcov";
+        html += "<div style='margin-bottom:6px'><span class='v " + cls +
+                "'>" + esc(d.severity) + "</span> " +
+                "<span class='inv'>" + esc(d.kind) + "</span> &middot; " +
+                esc(d.subject) + "<br><span class='ev'>" + esc(d.detail) +
+                "</span></div>";
+      });
+    }
+    html += "</div>";
+  }
+
   report.innerHTML = html;
 }
 
