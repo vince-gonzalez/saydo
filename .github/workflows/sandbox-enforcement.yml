@@ -214,16 +214,10 @@ jobs:
                       '{} should have been refuted inside the sandbox, got {}'
                       .format(must_fail, got))
 
-          # Bridge logging is what makes a bare-IP connection attributable.
-          # This runner can install it, so if it silently did not, say so
-          # rather than quietly losing the coverage.
-          if 'Bridge logging is NOT active' in r['monitor']:
-              problems.append('bridge logging failed to install: ' + r['monitor'][-160:])
-
           # The seeded server's beacon() connects to 192.0.2.1 with no name
-          # lookup at all. The DNS sink cannot see that; only the bridge log
-          # can. Its presence in the evidence is the proof that the bare-IP
-          # case is covered rather than merely stopped.
+          # lookup at all, so the resolver cannot record it. Naming that
+          # address in the evidence is the proof that the bare-IP case is
+          # attributed rather than merely stopped.
           net_ev = by_id.get('network.none', {}).get('evidence', '')
           if '192.0.2.1' not in net_ev:
               problems.append(

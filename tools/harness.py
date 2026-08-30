@@ -79,6 +79,15 @@ def _resolved_host(event):
         # destination address is the identity.
         host = event.get("host")
         return host if isinstance(host, str) else None
+    if event["event"] == "socket.connect":
+        # The address the socket was pointed at. For a literal IP there is no
+        # lookup to record anywhere else, so this is the ONLY place the
+        # destination appears -- discarding it would throw away the single
+        # piece of attribution available for a bare-IP connection.
+        args = event.get("args") or []
+        addr = args[1] if len(args) > 1 else None
+        ip = addr[0] if isinstance(addr, list) and addr else None
+        return ip if isinstance(ip, str) else None
     if event["event"] == "dns.query":
         # A recorded lookup is an ATTEMPT. Inside the sandbox it was refused,
         # but the tool asking the question is the fact worth keeping: it is
@@ -345,11 +354,15 @@ def judge(declaration, capture, run, ctx):
                         # proxy, a direct getaddrinfo, or a recorded lookup.
                         if host and host not in allowed:
                             hits.append((tool, host))
-                        elif not host and ev["event"] in (
-                                "socket.connect", "socket.sendto"):
-                            # A raw egress we cannot name is not provably within
-                            # the allowlist, so it is a finding, not a pass.
-                            hits.append((tool, "unnamed raw " + ev["event"]))
+                    elif ev["event"] in ("socket.connect", "socket.sendto"):
+                        # A raw connection carries an address, not a name, so
+                        # it cannot be checked against a hostname allowlist.
+                        # Unverifiable is not the same as permitted: report it
+                        # rather than let it pass unexamined.
+                        hits.append((tool, "raw connection to {} (an address "
+                                            "cannot be checked against a "
+                                            "hostname allowlist)"
+                                     .format(host or "an unnamed peer")))
             windows = sum(1 for t in tools for _ in run.outcomes_for(t))
             if not window_ran(tools):
                 row["verdict"] = "not-covered"

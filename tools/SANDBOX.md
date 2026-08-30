@@ -95,13 +95,31 @@ with `network.none` failing on `egress: fetch_quote->example.com`. Previously
 that invariant passed, because the attempt died before anything watched fired.
 Containment no longer costs attribution.
 
-**The remaining, narrower limit.** The sink sees a tool that resolves a
-hostname, which is essentially all ordinary code. It does not see a tool that
-connects to a bare IP address, since that involves no lookup at all: such a
-connection still fails at the network boundary, silently. Catching it needs
-connection-level logging at the bridge rather than DNS, and until that exists
-a contained `no-network` pass means "nothing resolved and nothing reached the
-boundary", not "nothing was attempted by any means".
+**The bare-IP case, and a correction.** The sink sees a tool that resolves a
+hostname, which is essentially all ordinary code. It cannot see a tool that
+connects to a bare IP, since there is no lookup to record.
+
+The obvious fix — a kernel LOG rule on the sandbox bridge — was built, and it
+does not work here. It installs correctly, and it records nothing, because on
+an `--internal` network the container has no route off its own subnet: an
+off-subnet connection fails in the routing table with `ENETUNREACH` and no
+packet ever reaches the bridge. There is nothing to log. The rule is retained
+because it is correct for a routed topology, but on this topology it adds no
+coverage, and the monitor description says so rather than implying otherwise.
+
+What actually attributes a bare-IP attempt is the in-container audit hook. A
+literal address needs no resolution, so `socket.connect` fires and carries the
+destination, and the harness now reports that address instead of discarding
+it. Demonstrated: the seeded server's `beacon()` connects to `192.0.2.1`
+(TEST-NET-1, RFC 5737, never routed) and is refuted by name.
+
+**So the honest boundary is language, not layer.** A bare-IP attempt by a
+Python tool is recorded. By a non-Python tool it is stopped absolutely and
+*not* recorded. Closing that would require the sandbox to have a route to a
+gateway under our control — giving up the simplicity of an internal network —
+and is not done. A contained `no-network` pass means "nothing resolved,
+nothing reached the boundary, and nothing was seen attempting it in-process",
+not "nothing was attempted by any means".
 
 ## The original gap, kept for the record
 

@@ -39,7 +39,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "egress: beacon->socket.connect; fetch_quote->socket.connect"
+      "evidence": "egress: beacon->192.0.2.1; fetch_quote->example.com"
     },
     {
       "id": "writes.none",
@@ -48,7 +48,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\z38veyxu; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\z38veyxu; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\dvvuy_nc; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\dvvuy_nc; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
     },
     {
       "id": "subprocess.none",

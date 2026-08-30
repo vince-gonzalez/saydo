@@ -396,16 +396,20 @@ class ContainerRunner(Runner):
         return {}
 
     def describe(self):
-        if getattr(self, "bridge_logging", False):
-            bare_ip = (" A connection to a bare IP address is recorded by the "
-                       "bridge before the network drops it, so an attempt "
-                       "that performs no name lookup is still attributable.")
-        else:
-            bare_ip = (" Bridge logging is NOT active ({}), so a connection to "
-                       "a bare IP address is stopped but not recorded: such an "
-                       "attempt would be invisible here."
-                       .format(getattr(self, "bridge_reason", "unknown")))
-        return (self._describe_base() + bare_ip)
+        # Measured, not assumed: on an --internal network the container has no
+        # route off its own subnet, so a connection to an outside address
+        # fails in the routing table and never reaches the wire. A bridge LOG
+        # rule therefore cannot see it -- there is no packet to see. The rule
+        # is still installed because it is correct for a routed topology, but
+        # claiming it covers the bare-IP case here would be false.
+        bare_ip = (
+            " A connection to a bare IP performs no name lookup, so the "
+            "resolver cannot record it, and on an internal network it fails at "
+            "the routing table before any packet reaches the bridge. Such an "
+            "attempt is attributed only by the in-container audit hook, which "
+            "sees it for a Python tool and not for others. For a non-Python "
+            "tool a bare-IP attempt is stopped absolutely but is NOT recorded.")
+        return self._describe_base() + bare_ip
 
     def _describe_base(self):
         return ("container ({}{}): only network route is the SayDo proxy, "
