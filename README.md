@@ -36,6 +36,37 @@ words rather than returning a green tick.
 `not-covered` is never quietly upgraded to `pass`. Most of the interesting
 failures in this domain come from silence being read as good behaviour.
 
+And a whole run resolves to one of four things, not two:
+
+    CONFORMANT      it did what it said, and it was shown doing it
+    NOT CONFORMANT  it did something it declared it would not
+    INCONCLUSIVE    nothing failed, and nothing was established
+    (revoked / expired, once a registry has spoken)
+
+`INCONCLUSIVE` carries most of the weight. A server that declines every call —
+the commonest kind in the public sweep — makes no network request, writes no
+file and starts no process, so a naive harness marks all three as passes and
+issues a warrant for a program that did nothing. SayDo requires a run to have
+demonstrated *conduct* before any of those checks can pass, and a server
+describing itself does not count as conduct.
+
+## In your CI
+
+    - uses: vince-gonzalez/saydo@main
+      with:
+        command: python -m my_server
+        declaration: saydo.declaration.json
+
+The build fails if the tool breaks its declaration, and also if the run
+established nothing — because a green check that proves nothing is worse than
+no check, being a claim of conformance that nobody actually made. Set
+`require-coverage: false` to let such a build through; the receipt still
+records it as `inconclusive` and never as a warrant.
+
+This is the place the tool is worth the most. Coverage comes from the tool
+actually doing its work, which needs the credentials and inputs it accepts —
+and those exist in the publisher's own CI and essentially nowhere else.
+
 ## Run it on anything
 
 `saydo` puts one tool under test and writes a receipt. The tool does not have
@@ -109,8 +140,11 @@ redefinition with no version change is graded `serious` rather than noted.
     tools/declare.py       draft a declaration from an observed run
     tools/discover.py      find MCP servers on npm and PyPI
     tools/sweep_scale.py   measure many of them, in batches
+    action.yml             SayDo as a GitHub Action
     verifier/index.html    self-contained browser verifier, no network
     seeded/malserver.py    a server built to lie, so the harness can be tested
+    seeded/silentserver.py a server that declines everything, so the harness
+                           can be tested against reporting silence as clean
 
 ## Verify the verifier
 
@@ -119,6 +153,15 @@ purpose. If the harness reports it conformant, or attributes a finding to the
 wrong invariant, then the harness is broken and no receipt it has ever produced
 is worth anything. The declaration validator is checked the same way, against
 five mutations it must reject.
+
+A second fixture does the opposite and matters just as much: it starts, lists
+its tools, and declines every call. The harness must report that as
+`INCONCLUSIVE`. When it reported `CONFORMANT` — which it did, and the receipt
+was signed — the mark meant nothing, since that is what most public MCP servers
+do when a stranger calls them.
+
+CI asserts both, on the library and on the Action: a build must fail on a tool
+that lies, and on a run that shows nothing.
 
 A check that cannot fail for the reason you care about is not a check.
 
