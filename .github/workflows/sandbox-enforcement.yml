@@ -218,6 +218,19 @@ jobs:
           # lookup at all, so the resolver cannot record it. Naming that
           # address in the evidence is the proof that the bare-IP case is
           # attributed rather than merely stopped.
+          # The sandbox gives the tool a writable, ephemeral home, because a
+          # read-only one kills servers in their constructor and measures
+          # nothing. That concession is only acceptable while the home stays
+          # WATCHED: the seeded server writes into it on purpose, and that
+          # write must appear in the evidence. If it stops appearing, the
+          # sandbox has quietly become somewhere a tool can act unobserved.
+          write_ev = by_id.get('writes.none', {}).get('evidence', '')
+          if '.malserver-state' not in write_ev:
+              problems.append(
+                  'a write into the sandbox home was not observed; allowing '
+                  'that write is only safe while it is still reported. '
+                  'evidence was: ' + write_ev[:200])
+
           net_ev = by_id.get('network.none', {}).get('evidence', '')
           if '192.0.2.1' not in net_ev:
               problems.append(

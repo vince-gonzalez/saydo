@@ -185,6 +185,22 @@ exists, read a contained `no-network` pass as "nothing got out", never as
    outside the declared allowlist, and record the refusal in the receipt.
 3. **Filesystem policy**: a scratch mount per run; a write outside it fails
    at the OS, not just in the report.
+
+   With one deliberate exception, measured. A read-only root also denied
+   servers the state directory they create under `$HOME` before they will
+   serve at all, and four servers in the corpus sweep died in their own
+   constructor because of it — then got filed under *their* failures, which is
+   a harness marking its own bug as the ecosystem's. The sandbox now mounts an
+   ephemeral `tmpfs` home (`noexec`, `nosuid`, 32 MB, destroyed at teardown).
+
+   The trade, stated plainly: the tool can now write in two places instead of
+   one, and neither survives the run or reaches the host. Writes to the home
+   are **not** exempt from the report — they are recorded and judged against
+   the declared write scope exactly like any other write. CI asserts this
+   directly: the seeded server writes into the sandbox home on purpose, and if
+   that write ever stops appearing in the findings the job fails. A permitted
+   write is fine; an unobserved one is the thing this whole layer exists to
+   prevent.
 4. **Least privilege for SayDo itself**: pinned dependencies, its own releases
    signed by SayDo, the signing key managed (not the proof-of-concept key in
    `keys/`).

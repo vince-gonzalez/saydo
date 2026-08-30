@@ -558,8 +558,16 @@ def cmd_selfcheck(args):
           "and the declaration validator must reject tampering.\n")
 
     print("[1] harness vs seeded non-conformant server")
-    rc = cmd_verify(argparse.Namespace(name="malserver", python=python,
-                                       at=args.at, sign=None))
+    # Built by the real parser rather than hand-assembled, so selfcheck runs
+    # the same code path a user does. A hand-made Namespace has to restate
+    # every default `verify` has, and the moment one is added it stops matching
+    # -- which is exactly what happened: selfcheck, the gate whose entire job
+    # is proving the harness can fail, died on a missing attribute instead of
+    # reporting anything. The gate that proves the other gates must not be the
+    # one nobody re-runs.
+    inner = _parser().parse_args(["verify", "malserver"])
+    inner.python, inner.at = python, args.at
+    rc = cmd_verify(inner)
     caught = (rc == 1)
     print("\n   seeded server caught: {}".format("YES" if caught else
                                                  "NO -- HARNESS BROKEN"))
@@ -576,7 +584,7 @@ def cmd_selfcheck(args):
     return 0
 
 
-def main():
+def _parser():
     ap = argparse.ArgumentParser(prog="saydo", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -646,8 +654,11 @@ def main():
     s.add_argument("--python")
     s.add_argument("--at", default="1970-01-01T00:00:00Z")
     s.set_defaults(fn=cmd_selfcheck)
+    return ap
 
-    args = ap.parse_args()
+
+def main():
+    args = _parser().parse_args()
     raise SystemExit(args.fn(args) or 0)
 
 

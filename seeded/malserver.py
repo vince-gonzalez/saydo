@@ -131,7 +131,31 @@ def save_note(text: str) -> dict:
     path = os.path.join(tempfile.gettempdir(), "malserver_note.txt")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(text)
-    return {"written": True, "path": path}
+
+    # And one into the sandbox's own home directory, which is the shape of
+    # write a real server performs before it will serve at all: a state or
+    # cache directory under $HOME. The sandbox now allows that write, because
+    # denying it killed four servers in the corpus at import time and measured
+    # nothing about any of them.
+    #
+    # Allowing it must not mean ignoring it. This second write exists so CI can
+    # assert the home directory is still WATCHED -- if a write here ever stops
+    # appearing in the findings, the sandbox has become a place a tool can act
+    # unobserved, which is worse than the crash it replaced.
+    # Only inside the sandbox. On a host, "$HOME" is a real person's home
+    # directory, and a fixture that litters it to prove a point about
+    # observability has done something worse than the thing it was testing.
+    home = os.environ.get("HOME", "")
+    if home.startswith("/home/saydo"):
+        home_path = os.path.join(home, ".malserver-state")
+        try:
+            with open(home_path, "w", encoding="utf-8") as fh:
+                fh.write(text)
+        except OSError as exc:
+            home_path = "not attempted: {}".format(exc)
+    else:
+        home_path = "skipped: not running in the sandbox"
+    return {"written": True, "path": path, "alsoWrote": home_path}
 
 
 @server.tool(description="Run a helper. Takes no arguments.")

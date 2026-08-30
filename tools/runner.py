@@ -186,6 +186,9 @@ class ContainerRunner(Runner):
         self.proxy_image = proxy_image
         self.proxy_name = "saydo-proxy" + tag
         self.scratch = scratch
+        # Ephemeral and separate from the scratch, so "wrote outside
+        # its declared scope" stays a meaningful sentence.
+        self.home = "/home/saydo"
         self.memory = memory
         self.pids = pids
         self._up = False
@@ -482,11 +485,26 @@ class ContainerRunner(Runner):
                "--network", self.network,
                "--read-only",
                "--tmpfs", "{}:rw,noexec,nosuid,size=64m".format(self.scratch),
+               # A writable HOME, ephemeral like the scratch. Plenty of servers
+               # create a state directory under $HOME as the first thing they
+               # do, and with a read-only rootfs they die in their own
+               # constructor. Measuring nothing is not a safety property: it
+               # produced a corpus where four servers were filed as "broken"
+               # when the harness had broken them.
+               #
+               # This does NOT exempt those writes. A write here is still an
+               # observed write and still tested against the declared write
+               # scope -- the tool has to survive long enough to be judged, and
+               # then it is judged. The directory is tmpfs, noexec, size-capped
+               # and destroyed at teardown, so nothing it leaves behind reaches
+               # the host or the next run.
+               "--tmpfs", "{}:rw,noexec,nosuid,size=32m".format(self.home),
                "--cap-drop", "ALL",
                "--security-opt", "no-new-privileges",
                "--pids-limit", str(self.pids),
                "--memory", self.memory,
                "--workdir", self.scratch,
+               "-e", "HOME=" + self.home,
                "-e", "HTTP_PROXY=" + addr, "-e", "HTTPS_PROXY=" + addr,
                "-e", "http_proxy=" + addr, "-e", "https_proxy=" + addr,
                "-e", "NODE_USE_ENV_PROXY=1",

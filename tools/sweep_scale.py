@@ -189,7 +189,9 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
         # Capture runs the server directly to read tools/list. It is still
         # inside a container, just without the proxy standing up first.
         probe = ["docker", "run", "--rm", "-i", "--network", "none",
-                 "--read-only", "--tmpfs", "/scratch", "--cap-drop", "ALL",
+                 "--read-only", "--tmpfs", "/scratch",
+             "--tmpfs", "/home/saydo:rw,noexec,nosuid,size=32m",
+             "-e", "HOME=/home/saydo", "--cap-drop", "ALL",
                  "--security-opt", "no-new-privileges", "--memory", "512m",
                  "--workdir", "/scratch", image] + argv
         try:
@@ -250,6 +252,31 @@ CREDENTIAL_HINTS = ("api_key", "api key", "apikey", "token", "credential",
                     "no such option", "usage:")
 
 
+#: Writes the sandbox refused, which say nothing about the server. Matched on
+#: the SHAPE of the failure -- a filesystem syscall against a path the run does
+#: not make writable -- rather than on the word "ENOENT", because "no such
+#: file" is also what a missing command looks like and conflating the two is
+#: precisely the bug this replaced: four servers were reported as launched with
+#: the wrong command when the harness had denied them their own state
+#: directory. A harness that breaks a server and then blames it is not
+#: measuring anything.
+_DENIED_SYSCALLS = ("mkdir", "open", "mkdtemp", "writefile", "unlink", "rename",
+                    "chmod", "symlink", "copyfile")
+
+
+def _sandbox_denied(said):
+    low = said.lower()
+    if "read-only file system" in low or "erofs" in low:
+        return True
+    if not ("eacces" in low or "enoent" in low or "permission denied" in low):
+        return False
+    # A denial we caused names a syscall and a path we did not make writable.
+    if not any("syscall: '" + c in low or "syscall: \"" + c in low
+               for c in _DENIED_SYSCALLS):
+        return False
+    return not ("path: '/scratch" in low or "'/scratch" in low)
+
+
 def _diagnose(attempts, image, limit=600):
     """Run the most likely command and keep what it said before dying."""
     if not attempts:
@@ -258,7 +285,9 @@ def _diagnose(attempts, image, limit=600):
     try:
         out = subprocess.run(
             ["docker", "run", "--rm", "-i", "--network", "none",
-             "--read-only", "--tmpfs", "/scratch", "--cap-drop", "ALL",
+             "--read-only", "--tmpfs", "/scratch",
+             "--tmpfs", "/home/saydo:rw,noexec,nosuid,size=32m",
+             "-e", "HOME=/home/saydo", "--cap-drop", "ALL",
              "--memory", "512m", "--workdir", "/scratch", image] + argv,
             input="", capture_output=True, text=True, timeout=45)
     except subprocess.TimeoutExpired:
@@ -270,8 +299,12 @@ def _diagnose(attempts, image, limit=600):
 
     said = ((out.stderr or "") + (out.stdout or "")).strip()
     low = said.lower()
-    if "not found" in low or "no such file" in low or "cannot find" in low:
-        klass = "wrong-command"       # our fault, not theirs
+    if _sandbox_denied(said):
+        klass = "sandbox-denied"      # OUR containment, not their defect
+    elif ("command not found" in low or "executable file not found" in low
+          or "cannot find module" in low or "cannot find package" in low
+          or "no such file or directory: " in low):
+        klass = "wrong-command"       # our fault, and a different fix
     elif any(h in low for h in CREDENTIAL_HINTS):
         klass = "needs-configuration"
     elif "traceback" in low or "error:" in low or out.returncode not in (0,):

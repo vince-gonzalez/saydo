@@ -195,17 +195,33 @@ def write_report(results, batches, out_md):
             "crashes": "started and crashed",
             "hangs": "started and never answered",
             "wrong-command": "SayDo guessed the launch command wrongly",
+            "sandbox-denied": "SayDo's sandbox refused a write it needed to "
+                              "start",
             "silent": "exited quietly, saying nothing",
             "no-command": "no launch command could be derived",
             "unknown": "could not be classified",
         }
+        ours = ("wrong-command", "sandbox-denied")
         for k, n in sorted(diag.items(), key=lambda kv: -kv[1]):
-            W("| {} | {} |".format(labels.get(k, k), n))
+            W("| {}{} | {} |".format(labels.get(k, k),
+                                     " **(SayDo's fault)**" if k in ours else "",
+                                     n))
         W("")
-        if diag.get("wrong-command"):
-            W("The `wrong-command` row is SayDo's fault, not the "
-              "ecosystem's, and is reported here rather than buried so the "
-              "number above it can be read for what it is.\n")
+        mine = sum(diag.get(k, 0) for k in ours)
+        if mine:
+            W("{} of these are SayDo's fault, not the ecosystem's, and are "
+              "marked as such rather than buried so the number above them can "
+              "be read for what it is. A harness that breaks a server and then "
+              "files it under the server's failures is not measuring "
+              "anything.\n".format(mine))
+        if diag.get("sandbox-denied"):
+            W("`sandbox-denied` in particular is the containment refusing a "
+              "write the server makes before it can serve at all, usually a "
+              "state directory under its own home. It says nothing whatsoever "
+              "about the server; it is the reason the sandbox now provides an "
+              "ephemeral writable home, and those writes are still measured "
+              "against the declared scope once the server survives long enough "
+              "to be judged.\n")
         W("A server demanding configuration is the single most common reason "
           "an MCP server cannot be audited by anyone who does not already "
           "operate it. That is the argument for the author declaring what "
