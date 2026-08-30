@@ -99,34 +99,91 @@ def build(dockerfile, image):
     return out.returncode == 0, (out.stderr or "")[-400:]
 
 
-def commands_for(candidate):
-    """Plausible in-container commands to start this server over stdio.
+def npm_bins(name, timeout=20):
+    """The binaries a package actually declares, from the registry.
 
-    A package rarely declares how it is launched in a way that can be read
-    without installing it, so a small set of conventional names is tried. A
-    server that answers none of them is recorded as unstartable, which is a
-    finding about how hard the ecosystem is to audit, not a silent omission.
+    Guessing this is wrong often enough to sink a sweep:
+    @aashari/mcp-server-atlassian-jira installs a binary called
+    mcp-atlassian-jira, which no rule derived from the package name produces.
+    The registry knows the answer, so ask it rather than infer it.
+    """
+    import urllib.request
+    url = "https://registry.npmjs.org/{}/latest".format(
+        name.replace("/", "%2f"))
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "saydo/0.1"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            manifest = json.loads(r.read().decode("utf-8", "replace"))
+    except Exception:
+        return []
+    declared = manifest.get("bin")
+    if isinstance(declared, dict):
+        return list(declared.keys())
+    if isinstance(declared, str):
+        return [name.split("/")[-1]]
+    return []
+
+
+def image_bins(image):
+    """Every executable the built image provides, so a Python package's
+    console script can be found by name rather than assumed."""
+    out = subprocess.run(
+        ["docker", "run", "--rm", "--network", "none", "--entrypoint", "sh",
+         image, "-c", "ls /usr/local/bin 2>/dev/null"],
+        capture_output=True, text=True, timeout=120)
+    return set((out.stdout or "").split())
+
+
+def commands_for(candidate, available=()):
+    """In-container commands to try, best evidence first.
+
+    A server that answers none of them is recorded as unstartable, which is a
+    finding about how hard this ecosystem is to audit rather than a silent
+    omission.
     """
     name = candidate["name"]
     bare = name.split("/")[-1]
-    module = bare.replace("-", "_")
+    tried = []
+
     if candidate["registry"] == "npm":
-        return [[bare], ["npx", "-y", name]]
-    return [[bare], [bare.replace("_", "-")],
-            ["python", "-m", module]]
+        for b in candidate.get("bins") or npm_bins(name):
+            tried.append([b])
+        tried.append([bare])
+        tried.append(["npx", "-y", name])
+        return tried
+
+    # PyPI does not publish console-script names, so match what the image
+    # actually installed against the tokens of the package name.
+    tokens = [t for t in bare.replace("_", "-").split("-") if len(t) > 2]
+    scored = []
+    for b in available:
+        hits = sum(1 for t in tokens if t in b)
+        if hits:
+            scored.append((hits, b))
+    for _, b in sorted(scored, reverse=True)[:3]:
+        tried.append([b])
+    tried.append([bare])
+    tried.append([bare.replace("_", "-")])
+    tried.append(["python", "-m", bare.replace("-", "_")])
+    return tried
 
 
-def measure(candidate, image, timeout=90):
+def measure(candidate, image, available=(), seq=0, timeout=90):
     """Capture, infer, exercise, classify. Never raises."""
     name = candidate["name"]
     record = {"name": name, "registry": candidate["registry"],
               "version": candidate.get("version", ""),
               "description": candidate.get("description", "")}
 
+    # A stable per-server suffix. hash() is salted per process, so using it
+    # would give the same server a different network name on every run and
+    # make a failure impossible to reproduce.
     the_runner = runner_mod.make("container", image=image,
-                                 tag="-" + abs(hash(name)).__str__()[:8])
+                                 tag="-b{}".format(seq))
 
-    for argv in commands_for(candidate):
+    attempts = commands_for(candidate, available)
+    record["tried"] = [" ".join(a) for a in attempts]
+    for argv in attempts:
         plan = {"container_argv": list(argv), "exercise": [],
                 "call_timeout": 30, "skip_fuzz": True}
         # Capture runs the server directly to read tools/list. It is still
@@ -207,21 +264,30 @@ def main():
         built[registry] = image if ok else None
         print("  image {}: {}".format(image, "built" if ok else "FAILED " + err))
 
+    # What each image actually installed, so a console script is found rather
+    # than guessed.
+    bins = {reg: image_bins(img) for reg, img in built.items() if img}
+    for reg, names in bins.items():
+        print("  {} image provides {} executables".format(reg, len(names)))
+
     results = []
-    for c in batch:
+    for seq, c in enumerate(batch):
         image = built.get(c["registry"])
         if not image:
             results.append({"name": c["name"], "registry": c["registry"],
                             "outcome": "image-unavailable"})
             continue
         try:
-            r = measure(c, image)
+            r = measure(c, image, bins.get(c["registry"], set()), seq)
         except Exception:
             r = {"name": c["name"], "registry": c["registry"],
                  "outcome": "error",
-                 "error": traceback.format_exc(limit=2)[-300:]}
+                 "error": traceback.format_exc(limit=3)[-400:]}
         results.append(r)
-        print("  {:<42} {}".format(c["name"][:42], r.get("outcome")))
+        # The reason is printed, not just the outcome: a sweep whose failures
+        # are invisible in the log cannot be debugged from the log.
+        why = (r.get("error") or "").replace("\n", " ")[-120:]
+        print("  {:<40} {:<14} {}".format(c["name"][:40], r.get("outcome"), why))
 
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
         json.dump({"batch": index, "results": results}, fh, indent=2,
