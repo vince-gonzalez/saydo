@@ -55,7 +55,39 @@ def _phrase(inv_type, params):
         return inv_type
 
 
-def build(receipt_lines, anchor, receipt_url=None):
+def apply_registry(status, entry):
+    """Let the registry override a receipt that is no longer current.
+
+    A receipt is true forever about the moment it describes, which is exactly
+    why it cannot be the last word. Revocation and expiry are facts that
+    arrive AFTER a receipt is written, and an agent reading only the receipt
+    would keep acting on a claim the world has withdrawn. So the registry
+    speaks last, and only ever downward: it can withdraw or age a claim, never
+    promote one.
+    """
+    if not entry:
+        return status
+    state = entry.get("state")
+    if state == "revoked":
+        status["verdict"] = "revoked"
+        status["summary"] = "{}: WITHDRAWN. {}".format(
+            status["subject"]["name"], entry.get("revocationReason", ""))
+        status["advice"] = ("Do not use. The claim in this receipt has been "
+                            "withdrawn since it was issued; the receipt is "
+                            "still authentic, and no longer current.")
+    elif state == "expired":
+        status["verdict"] = "expired"
+        status["summary"] = "{}: claim expired.".format(
+            status["subject"]["name"])
+        status["advice"] = ("Treat as unverified. The last check is too old to "
+                            "describe what is installed today; re-verify "
+                            "before relying on it.")
+    status["registry"] = {"state": state, "checkedAgainst": entry.get("key"),
+                          "expiresAt": entry.get("expiresAt")}
+    return status
+
+
+def build(receipt_lines, anchor, receipt_url=None, registry_entry=None):
     rows = _rows(receipt_lines)
     opening = next((r for r in rows if r.get("type") == "receipt-open"), {})
     monitor = next((r for r in rows if r.get("type") == "monitor"), {})
@@ -143,7 +175,8 @@ def build(receipt_lines, anchor, receipt_url=None):
         "trust": ("This status is a convenience for fast gating, not evidence. "
                   "The evidence is the signed receipt named above; verify it."),
     }
-    return status
+    # The registry speaks last, and only downward.
+    return apply_registry(status, registry_entry)
 
 
 def main():

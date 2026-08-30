@@ -465,8 +465,56 @@ def cmd_status(args):
                                         args.name)}, indent=2))
         return 0
     with open(rec, encoding="utf-8") as fh:
-        st = status_mod.build(fh.readlines(), json.load(open(anc, encoding="utf-8")))
+        st = status_mod.build(fh.readlines(),
+                              json.load(open(anc, encoding="utf-8")),
+                              registry_entry=_registry_entry(anc))
     print(json.dumps(st, indent=2, ensure_ascii=False))
+    return 0
+
+
+REGISTRY_PATH = os.path.join(ROOT, "registry", "saydo-registry.json")
+
+
+def _registry_entry(anchor_path):
+    """What the registry currently says about this receipt's subject, if
+    anything. Consulted so a withdrawn or stale claim cannot keep being
+    reported as current by an artifact an agent trusts."""
+    try:
+        import registry as reg
+        with open(anchor_path, encoding="utf-8") as fh:
+            subject = json.load(fh).get("subject", {})
+        key = subject.get("purl") or subject.get("name")
+        entry = reg.lookup(reg.load(REGISTRY_PATH), key)
+        return entry if entry.get("state") != "unknown" else None
+    except Exception:
+        return None
+
+
+def cmd_publish(args):
+    """Record a receipt in the registry, so others can look it up."""
+    _, anc = _receipt_paths(args.name)
+    if not os.path.exists(anc):
+        raise SystemExit("no receipt for {!r}; verify it first".format(args.name))
+    cmd = [sys.executable, os.path.join(TOOLS, "registry.py"), REGISTRY_PATH,
+           "publish", anc]
+    if args.at:
+        cmd += ["--at", args.at]
+    _run(cmd)
+    return 0
+
+
+def cmd_revoke(args):
+    """Withdraw a claim. Sticky: a later passing receipt will not lift it."""
+    _run([sys.executable, os.path.join(TOOLS, "registry.py"), REGISTRY_PATH,
+          "revoke", args.key, args.reason])
+    print("\nAnyone reading `saydo status` for this subject now sees the "
+          "withdrawal,\nnot the receipt's original verdict.")
+    return 0
+
+
+def cmd_registry(args):
+    _run([sys.executable, os.path.join(TOOLS, "registry.py"), REGISTRY_PATH,
+          "list"])
     return 0
 
 
@@ -573,6 +621,20 @@ def main():
     st = sub.add_parser("status")
     st.add_argument("name")
     st.set_defaults(fn=cmd_status)
+
+    pub = sub.add_parser("publish", help="record a receipt in the registry")
+    pub.add_argument("name")
+    pub.add_argument("--at")
+    pub.set_defaults(fn=cmd_publish)
+
+    rev = sub.add_parser("revoke", help="withdraw a claim; a later passing "
+                                        "receipt will not lift it")
+    rev.add_argument("key", help="the subject purl, as shown by `saydo registry`")
+    rev.add_argument("reason")
+    rev.set_defaults(fn=cmd_revoke)
+
+    sub.add_parser("registry", help="what SayDo currently says, and until when"
+                   ).set_defaults(fn=cmd_registry)
 
     d = sub.add_parser("declare", help="draft a declaration you can sign, "
                                        "from a run that already happened")
