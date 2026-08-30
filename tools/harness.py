@@ -44,6 +44,12 @@ import plans as plans_mod
 from mcp_client import Session
 
 
+#: Lines in a monitor log that could not be parsed since the last reset. A
+#: dropped line is a lost observation, and a lost observation must never be
+#: mistaken for an observation of nothing.
+_UNREADABLE = {"n": 0}
+
+
 def _read_events(log_path):
     events = []
     if not os.path.exists(log_path):
@@ -55,7 +61,7 @@ def _read_events(log_path):
                 try:
                     events.append(json.loads(line))
                 except ValueError:
-                    pass
+                    _UNREADABLE["n"] += 1
     return events
 
 
@@ -147,6 +153,7 @@ class Run:
         # the log during a later one and reads as the tool having RETAINED
         # input across calls -- a serious accusation, and false.
         self.started = time.time()
+        _UNREADABLE["n"] = 0
         open(monitor_log, "w").close()
         env = {}
         appdata = None
@@ -187,7 +194,13 @@ class Run:
             # observations are a sample of unknown size, and "we saw no writes"
             # stops being a finding -- it becomes an absence of one. Recorded
             # here so the verdicts can refuse rather than pass.
-            dropped = getattr(session, "monitor_dropped", 0)
+            dropped = (getattr(session, "monitor_dropped", 0)
+                       + _UNREADABLE["n"]
+                       # The hook itself reports when it could not describe an
+                       # event. A lossy row means the FACT survived and the
+                       # detail did not, which still leaves the record
+                       # incomplete -- so it counts.
+                       + sum(1 for ev in self.events if ev.get("lossy")))
             broke = getattr(session, "monitor_broke", None)
             if dropped or broke:
                 self.monitor_incomplete = (

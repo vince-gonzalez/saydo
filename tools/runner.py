@@ -484,7 +484,7 @@ class ContainerRunner(Runner):
         cmd = ["docker", "run", "--rm", "-i",
                "--network", self.network,
                "--read-only",
-               "--tmpfs", "{}:rw,noexec,nosuid,size=64m".format(self.scratch),
+               "--tmpfs", "{}:rw,noexec,nosuid,size=64m,mode=1777".format(self.scratch),
                # A writable HOME, ephemeral like the scratch. Plenty of servers
                # create a state directory under $HOME as the first thing they
                # do, and with a read-only rootfs they die in their own
@@ -498,13 +498,18 @@ class ContainerRunner(Runner):
                # then it is judged. The directory is tmpfs, noexec, size-capped
                # and destroyed at teardown, so nothing it leaves behind reaches
                # the host or the next run.
-               "--tmpfs", "{}:rw,noexec,nosuid,size=32m".format(self.home),
+               "--tmpfs", "{}:rw,noexec,nosuid,size=32m,mode=1777".format(self.home),
                "--cap-drop", "ALL",
                "--security-opt", "no-new-privileges",
                "--pids-limit", str(self.pids),
                "--memory", self.memory,
                "--workdir", self.scratch,
                "-e", "HOME=" + self.home,
+               # Point the interpreter at the one place it can write.
+               # Without this, tempfile walks /tmp, /var/tmp and /usr/tmp
+               # -- all read-only here -- and each failure is recorded as
+               # the tool attempting a write it never meant to attempt.
+               "-e", "TMPDIR=" + self.scratch,
                "-e", "HTTP_PROXY=" + addr, "-e", "HTTPS_PROXY=" + addr,
                "-e", "http_proxy=" + addr, "-e", "https_proxy=" + addr,
                "-e", "NODE_USE_ENV_PROXY=1",

@@ -90,7 +90,7 @@ def _install():
             if not to_stderr:
                 return
 
-    state = {"busy": False}
+    state = {"busy": False, "lost": 0}
 
     def classify_open(args):
         """(path, intent) for an 'open' event, best effort."""
@@ -108,6 +108,14 @@ def _install():
             intent = "unknown"
         return target, intent
 
+    def emit(row):
+        text = json.dumps(row)
+        if fd >= 0:
+            os.write(fd, (text + "\n").encode("utf-8", "replace"))
+        if to_stderr:
+            os.write(2, (STDERR_PREFIX + text + "\n")
+                     .encode("utf-8", "replace"))
+
     def hook(event, args):
         if event not in _WATCHED or state["busy"]:
             return
@@ -120,14 +128,21 @@ def _install():
                 row["intent"] = intent
             else:
                 row["args"] = [_text(a) for a in args[:4]]
-            text = json.dumps(row)
-            if fd >= 0:
-                os.write(fd, (text + "\n").encode("utf-8", "replace"))
-            if to_stderr:
-                os.write(2, (STDERR_PREFIX + text + "\n")
-                         .encode("utf-8", "replace"))
-        except Exception:
-            pass
+            emit(row)
+        except Exception as exc:
+            # An event that cannot be described in full must still be
+            # reported. This was `pass`, which meant one value that would not
+            # serialise -- an odd path, an exotic argument -- deleted the whole
+            # observation, and the harness downstream saw a tool that had not
+            # done the thing. Losing the DETAIL is survivable. Losing the FACT
+            # is how "no writes were observed" comes to be written about a tool
+            # that wrote.
+            state["lost"] += 1
+            try:
+                emit({"t": time.time(), "event": event, "lossy": True,
+                      "lost": state["lost"], "why": type(exc).__name__})
+            except Exception:
+                pass
         finally:
             state["busy"] = False
 

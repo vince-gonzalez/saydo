@@ -193,6 +193,17 @@ exists, read a contained `no-network` pass as "nothing got out", never as
    a harness marking its own bug as the ecosystem's. The sandbox now mounts an
    ephemeral `tmpfs` home (`noexec`, `nosuid`, 32 MB, destroyed at teardown).
 
+   Both mounts are `mode=1777`, and `TMPDIR` points at the scratch. This is
+   not incidental. The containers run as an unprivileged user (uid 10001) and
+   a tmpfs defaults to root-owned `0755`, so **the sandbox had no writable
+   path at all**: `tempfile.gettempdir()` walked `/tmp`, `/var/tmp`,
+   `/usr/tmp` and `/scratch`, was refused by every one, and raised
+   `FileNotFoundError: No usable temporary directory found`. Any server that
+   touches a temporary file — a large share of them — died before it could do
+   anything, and the failed probes were recorded as *the tool attempting
+   writes*. Every contained run before this fix was measuring a program that
+   could not write, and reporting the result as the program's behaviour.
+
    The trade, stated plainly: the tool can now write in two places instead of
    one, and neither survives the run or reaches the host. Writes to the home
    are **not** exempt from the report — they are recorded and judged against

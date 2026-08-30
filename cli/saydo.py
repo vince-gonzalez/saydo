@@ -164,7 +164,8 @@ def cmd_verify_any(args):
     probe = argv
     if args.runner == "container":
         probe = ["docker", "run", "--rm", "-i", "--network", "none",
-                 "--read-only", "--tmpfs", "/scratch", "--cap-drop", "ALL",
+                 "--read-only", "--tmpfs", "/scratch:rw,noexec,nosuid,size=64m,mode=1777",
+                 "-e", "TMPDIR=/scratch", "--cap-drop", "ALL",
                  "--security-opt", "no-new-privileges", "--memory", "512m",
                  "--workdir", "/scratch", args.image] + argv
     _run([python, os.path.join(TOOLS, "capture_tools.py"),

@@ -224,4 +224,27 @@ class Session:
                 self.proc.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 self.proc.kill()
+
+        # Drain the monitor before anyone reads the events, or the END of the
+        # run is silently missing from them.
+        #
+        # In a container the audit hook reports over stderr and a thread turns
+        # those lines into events. Nothing waited for that thread. The caller
+        # closed the session and read `monitor_events` a moment later, so
+        # whatever was still in the pipe never arrived -- and since the last
+        # tools exercised are the last to report, the losses were exactly the
+        # observations at the end of the run. Four events survived out of a
+        # longer stream, no error was raised at either end, and the harness
+        # went on to report that a tool had performed no writes.
+        #
+        # It never showed on a host because a host run writes the monitor to a
+        # FILE, read after the process has exited, where there is no race. Only
+        # the contained path -- the one whose whole purpose is stronger
+        # evidence -- was losing evidence.
+        if self._errthread is not None:
+            self._errthread.join(timeout=5)
+            if self._errthread.is_alive():
+                self.monitor_broke = ("the monitor stream was still arriving "
+                                      "when the run ended and could not be "
+                                      "drained")
         self.ended_at = time.time()

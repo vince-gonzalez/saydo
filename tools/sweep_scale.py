@@ -189,9 +189,10 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
         # Capture runs the server directly to read tools/list. It is still
         # inside a container, just without the proxy standing up first.
         probe = ["docker", "run", "--rm", "-i", "--network", "none",
-                 "--read-only", "--tmpfs", "/scratch",
-             "--tmpfs", "/home/saydo:rw,noexec,nosuid,size=32m",
-             "-e", "HOME=/home/saydo", "--cap-drop", "ALL",
+                 "--read-only", "--tmpfs", "/scratch:rw,noexec,nosuid,size=64m,mode=1777",
+             "--tmpfs", "/home/saydo:rw,noexec,nosuid,size=32m,mode=1777",
+             "-e", "HOME=/home/saydo", "-e", "TMPDIR=/scratch",
+             "--cap-drop", "ALL",
                  "--security-opt", "no-new-privileges", "--memory", "512m",
                  "--workdir", "/scratch", image] + argv
         try:
@@ -285,9 +286,10 @@ def _diagnose(attempts, image, limit=600):
     try:
         out = subprocess.run(
             ["docker", "run", "--rm", "-i", "--network", "none",
-             "--read-only", "--tmpfs", "/scratch",
-             "--tmpfs", "/home/saydo:rw,noexec,nosuid,size=32m",
-             "-e", "HOME=/home/saydo", "--cap-drop", "ALL",
+             "--read-only", "--tmpfs", "/scratch:rw,noexec,nosuid,size=64m,mode=1777",
+             "--tmpfs", "/home/saydo:rw,noexec,nosuid,size=32m,mode=1777",
+             "-e", "HOME=/home/saydo", "-e", "TMPDIR=/scratch",
+             "--cap-drop", "ALL",
              "--memory", "512m", "--workdir", "/scratch", image] + argv,
             input="", capture_output=True, text=True, timeout=45)
     except subprocess.TimeoutExpired:

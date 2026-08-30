@@ -165,8 +165,9 @@ jobs:
         run: |
           docker run --rm -i \
             --network none --read-only \
-            --tmpfs /scratch --tmpfs /home/saydo:rw,noexec,nosuid,size=32m \
-            -e HOME=/home/saydo -e SAYDO_MONITOR_STDERR=1 \
+            --tmpfs /scratch:rw,noexec,nosuid,size=64m,mode=1777 \
+            --tmpfs /home/saydo:rw,noexec,nosuid,size=32m,mode=1777 \
+            -e HOME=/home/saydo -e TMPDIR=/scratch -e SAYDO_MONITOR_STDERR=1 \
             -e PYTHONDONTWRITEBYTECODE=1 --workdir /scratch \
             saydo/seeded:ci python -c '
           import os, tempfile
