@@ -34,6 +34,37 @@ gets `not-covered`, not a green check it did not earn. A server is reported
 conformant only when there are zero findings, zero fails, and at least one
 pass — so an all-not-covered run is not conformance.
 
+## A negative claim needs conduct, not silence
+
+An invariant of the form *it does not do X* — `no-network`, `no-write`,
+`no-subprocess`, `write-scope`, `read-scope` — can only pass if the run
+observed the tool **doing something**. If no call window produced any
+observable effect, all of them come back `not-covered` with the reason
+attached.
+
+This is not a refinement. Without it, a server that starts, lists its tools and
+declines every call satisfies every negative invariant at once and collects a
+signed receipt reading CONFORMANT. That server made no network request the way
+an unplugged machine makes none. It is also, by a wide margin, the commonest
+server in the public sweep, so the rule decides what the mark means for most of
+the population rather than for a corner case.
+
+A `refusal-tool` pass does not count as conduct. The server answering a
+question about itself is not the server behaving, and a warrant that rests on
+it is a warrant the subject issued to itself. The report carries `established`
+— passes about conduct — beside `conformant`, which only ever meant *nothing
+failed*, and nothing fails in a run where nothing happened.
+
+**The limitation this creates, stated rather than hidden.** A tool that
+genuinely does no I/O — a pure calculation — also produces no observable
+effect, and so cannot establish `no-network` here either. That is the correct
+answer from the evidence: the harness cannot distinguish *computed quietly*
+from *declined to compute*, and both are consistent with what it saw. Such a
+tool earns coverage through invariants that are establishable from its
+outputs — `deterministic`, `error-as-value`, `property` — which are judged on
+what it returned rather than on what it touched. What it cannot do is prove a
+negative by being quiet, and neither can anything else.
+
 ## What the monitor can and cannot do
 
 It observes the Python runtime through the audit hook: it sees `open`,
@@ -49,6 +80,16 @@ tool behavior: reads of the interpreter's own stdlib and site-packages (a
 tool's first call lazily imports; that is the interpreter, not the tool
 reaching into the world), and bytecode writes (turned off via
 PYTHONDONTWRITEBYTECODE so they cannot be mistaken for the tool writing).
+
+**The monitor stream is checked for holes.** In a container the hook reports
+over stderr, and the reader used to swallow both an unparseable line and any
+exception in its loop — so a single provoked error stopped the watching for the
+rest of the run, and the harness went on to report that the tool had performed
+no writes. Unreadable lines are now counted and a stream that ends early keeps
+the reason; any invariant resting on those observations then returns
+`not-covered`, never `pass`. Fails are not withdrawn, because an event that
+arrived really happened. A monitor that can be silenced is a problem. A monitor
+that can be silenced and then issues a clean verdict is worse than none.
 
 ## Event attribution
 
@@ -74,6 +115,22 @@ attributed to the right tool and the right invariant. If the harness ever
 reports the seeded server conformant, or mislabels which invariant each
 violation broke, the harness is broken and no report it produces is worth
 anything.
+
+`seeded/silentserver.py` tests the opposite failure, and it is the one the
+harness actually had. It starts, lists three tools, and answers every call with
+*not configured* — doing nothing at all. Required result: **INCONCLUSIVE**,
+every negative invariant `not-covered`, `established=0`, and a registry state
+of `inconclusive` whose badge reads "checked, but nothing was established".
+
+When it was written, the harness reported that server **CONFORMANT** and signed
+the receipt. Two fixtures are needed because there are two ways to be wrong: a
+harness that misses a tool doing something it promised not to, and a harness
+that credits a tool for not doing anything at all. The second is the easier
+mistake to make and the harder one to notice, because everything looks green.
+
+Both are asserted in CI, on the library (`saydo selfcheck`) and on the Action
+(`.github/workflows/action-selfcheck.yml`): a build must fail on a tool that
+lies, and on a run that shows nothing.
 
 ## Findings the harness surfaced about its own subjects
 
