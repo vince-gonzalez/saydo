@@ -113,13 +113,40 @@ destination, and the harness now reports that address instead of discarding
 it. Demonstrated: the seeded server's `beacon()` connects to `192.0.2.1`
 (TEST-NET-1, RFC 5737, never routed) and is refuted by name.
 
-**So the honest boundary is language, not layer.** A bare-IP attempt by a
-Python tool is recorded. By a non-Python tool it is stopped absolutely and
-*not* recorded. Closing that would require the sandbox to have a route to a
-gateway under our control — giving up the simplicity of an internal network —
-and is not done. A contained `no-network` pass means "nothing resolved,
-nothing reached the boundary, and nothing was seen attempting it in-process",
-not "nothing was attempted by any means".
+**That boundary was language, not layer — and the routed topology removes it.**
+Under the internal network a bare-IP attempt by a Python tool is recorded and
+by a non-Python tool it is stopped invisibly. `--routed` closes that.
+
+## The routed topology (2026-08-30)
+
+The sandbox is given a gateway, so a bare-IP connection becomes a real packet
+instead of dying in the routing table. The packet is logged on the bridge and
+then dropped by a host firewall. Attribution stops depending on the tool's
+language.
+
+**The cost, stated because it is real:** containment now rests on those
+firewall rules being correct, rather than on the absence of any route. Two
+consequences are enforced in code rather than left to documentation:
+
+- Routed mode **refuses to run** if the rules cannot be installed. A routed
+  sandbox without its firewall has a working route to the internet, which
+  would turn the safest part of this system into the most dangerous.
+- The rules are **removed on teardown**, because a stale DROP on a recycled
+  bridge name would silently break unrelated containers on the same host.
+
+Isolated mode remains the default. The trade is opt-in, and `describe()`
+states which topology a run used, so the sentence travels into the receipt.
+
+**Measured, CI run 33303566208.** A Node tool — no Python, no name lookup —
+connecting to `93.184.216.34:80`:
+
+    containment   BLOCKED ETIMEDOUT ... OK: still contained
+    attribution   SAYDO-EGRESS IN=br-3dace5f6e1f8 OUT=eth0 SRC=172.18.0.3
+                  DST=93.184.216.34 PROTO=TCP DPT=80 SYN
+
+Both halves, on the same attempt: it went nowhere, and we know exactly what it
+tried. That is the case neither the DNS sink nor the Python audit hook can
+see, and it is now covered.
 
 ## The original gap, kept for the record
 
