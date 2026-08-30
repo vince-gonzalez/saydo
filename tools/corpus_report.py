@@ -74,7 +74,13 @@ def data_flow_summary(results):
         if r.get("outcome") != "measured":
             continue
         flow = r.get("dataFlow") or {}
-        if not flow:
+        # Two ways to be silent, and both must land here. No data flow means
+        # nothing left. `established == 0` means nothing happened at all -- the
+        # harness's own judgement, which is authoritative and which older
+        # records predate, hence the `is not None` rather than a bare falsy
+        # test: a missing field must not be read as a demonstrated zero.
+        established = r.get("established")
+        if not flow or (established is not None and established == 0):
             silent.append(r["name"])
             continue
         carries = [h for h, v in flow.items()

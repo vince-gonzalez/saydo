@@ -229,6 +229,12 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
 
         record["outcome"] = "measured"
         record["conformant"] = report["conformant"]
+        # `conformant` alone cannot carry this. It means nothing failed, and
+        # nothing fails in a run where nothing happened, so a server that
+        # declined every call is recorded conformant. `established` counts the
+        # invariants about the server's CONDUCT that were demonstrated, and
+        # zero is the honest description of most of this corpus.
+        record["established"] = report.get("established", 0)
         record["tally"] = report["tally"]
         record["dataFlow"] = report.get("dataFlow", {})
         record["findings"] = [
