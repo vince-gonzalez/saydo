@@ -74,13 +74,17 @@ def data_flow_summary(results):
         if r.get("outcome") != "measured":
             continue
         flow = r.get("dataFlow") or {}
-        # Two ways to be silent, and both must land here. No data flow means
-        # nothing left. `established == 0` means nothing happened at all -- the
-        # harness's own judgement, which is authoritative and which older
-        # records predate, hence the `is not None` rather than a bare falsy
-        # test: a missing field must not be read as a demonstrated zero.
-        established = r.get("established")
-        if not flow or (established is not None and established == 0):
+        # ONE definition of silent for the whole table, and it is the one
+        # every record can answer: no observed data flow.
+        #
+        # `established == 0` is the better signal -- it is the harness's own
+        # judgement that nothing happened -- but it was added to the sweep
+        # part-way through a run, so the early batches do not carry it. Using
+        # it where present and falling back where absent would compute the
+        # headline number two different ways within one corpus, which is a
+        # table assembled from two experiments wearing one label. It is
+        # reported separately below, with its own denominator, instead.
+        if not flow:
             silent.append(r["name"])
             continue
         carries = [h for h, v in flow.items()
@@ -144,6 +148,27 @@ def write_report(results, batches, out_md):
       "NOT been shown to be well behaved. Nothing was established about them "
       "in either direction, and they are excluded from every rate below "
       "rather than counted as clean.\n".format(measured, len(silent)))
+
+    # The harness's own coverage judgement, reported beside the figure above
+    # rather than folded into it. `established` counts invariants about a
+    # server's CONDUCT that were demonstrated, so zero means the run showed
+    # nothing whatever else it emitted. It is the better measure of silence.
+    # It is kept separate because it was added to the sweep mid-run, so it is
+    # available for only part of the corpus, and a headline computed one way
+    # for some rows and another way for the rest is a table built from two
+    # experiments. The denominator is stated so the reader can weigh it.
+    scored = [r for r in results
+              if r.get("outcome") == "measured" and r.get("established") is not None]
+    if scored:
+        nothing = [r for r in scored if r["established"] == 0]
+        W("A second, stricter reading, available for {} of the {} exercised "
+          "servers: {} of those {} established NOTHING -- no invariant about "
+          "the server's conduct was demonstrated, whatever traffic it did or "
+          "did not emit. This figure is reported separately rather than merged "
+          "with the one above, because the two are not the same test and "
+          "combining them would describe a corpus that was never measured "
+          "uniformly.\n".format(len(scored), measured, len(nothing),
+                                len(scored)))
 
     if not measured:
         W("No server was exercised, so this run supports no behavioural "
