@@ -83,7 +83,27 @@ every receipt in this repository was produced by the local runner, which
 observes. `Runner.enforcement` carries the level from the run into the
 receipt, so a receipt may only say contained when the run actually was.
 
-## Known gap: under enforcement, silence is ambiguous
+## Closed: under enforcement, silence was ambiguous (2026-08-30)
+
+The gap described below is fixed. The sandbox's only nameserver is now a sink
+that records every query and answers NXDOMAIN, so a lookup that bypasses the
+proxy is on the record before it is refused.
+
+Measured in CI run 33298939994: the seeded server inside the sandbox now
+scores `{pass: 1, fail: 5}` — the same five refutations the host run produces,
+with `network.none` failing on `egress: fetch_quote->example.com`. Previously
+that invariant passed, because the attempt died before anything watched fired.
+Containment no longer costs attribution.
+
+**The remaining, narrower limit.** The sink sees a tool that resolves a
+hostname, which is essentially all ordinary code. It does not see a tool that
+connects to a bare IP address, since that involves no lookup at all: such a
+connection still fails at the network boundary, silently. Catching it needs
+connection-level logging at the bridge rather than DNS, and until that exists
+a contained `no-network` pass means "nothing resolved and nothing reached the
+boundary", not "nothing was attempted by any means".
+
+## The original gap, kept for the record
 
 A full conformance run of the seeded server inside the sandbox catches it
 writing outside scope, spawning a child, returning non-deterministic output,

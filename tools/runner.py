@@ -271,7 +271,15 @@ class ContainerRunner(Runner):
             # is reachable by a hosts entry rather than by DNS, so a tool using
             # the permitted route never depends on resolution -- and a tool
             # bypassing it is caught in the act of trying.
-            cmd += ["--dns", ip, "--add-host", "saydo-proxy:" + ip]
+            #
+            # Search domains are disabled. After an NXDOMAIN a resolver
+            # retries the name with each search suffix appended, and those
+            # synthetic names would land in the receipt as things the tool
+            # asked for. It did not ask for them; the resolver invented them.
+            # Evidence should record the tool's request, not the resolver's
+            # elaboration of it.
+            cmd += ["--dns", ip, "--add-host", "saydo-proxy:" + ip,
+                    "--dns-search", ".", "--dns-opt", "ndots:1"]
         if self.runtime:
             cmd += ["--runtime", self.runtime]
         for k, v in (plan.get("container_env") or {}).items():
