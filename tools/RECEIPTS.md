@@ -29,15 +29,32 @@ from the ledger — published, and in a declared receipt, signed over the head.
 
 ## Rows
 
-    receipt-open   version, declaration serial, subject, harness id, time
+    receipt-open   version, declaration serial, subject, harness id, time,
+                   and priorReceipt: the head this run continues from
     capture        the exact tool definitions and their digests
     monitor        what the monitor observes and, stated plainly, does not
     verdict        one per declared invariant: id, type, verdict, evidence
     finding        one per unanticipated finding (may be none)
-    receipt-close  conformant, tally, row count
+    drift          one per difference from the previous receipt (may be none)
+    receipt-close  conformant, established, tally, row count
 
 Every verdict and every finding is its own row, so a tampered verdict breaks
 the chain at exactly that row and the verifier names it.
+
+`conformant` and `established` are both needed, and reading only the first is
+how the record misleads. `conformant` means nothing failed — and nothing fails
+in a run where nothing happened, so a server that declined every call closes
+its receipt as conformant. `established` counts the invariants about the tool's
+CONDUCT that were demonstrated. Zero means the run showed nothing, whatever the
+first field says, and a reader who stops at `conformant` will reach the
+opposite of the right conclusion.
+
+`drift` rows exist because a single receipt cannot show a rug-pull: a tool
+redefined under an unchanged version looks entirely ordinary on its own, and
+the deception exists only as a difference between two runs. That is also why
+`priorReceipt` is on the opening row — a chain of receipts with a link missing
+is itself the finding, and a reader who cannot see the link cannot notice its
+absence.
 
 ## The browser verifier
 

@@ -200,7 +200,7 @@ jobs:
           fi
           grep -q "wrote /scratch/probe_note.txt" /tmp/sandbox-probe.txt || {
             echo "::error::the scratch write did not happen"; exit 1; }
-          echo "OK: the sandbox has writable paths and they are observed.""
+          echo "OK: the sandbox has writable paths and they are observed."
 
       - name: Run conformance with the CONTAINER runner
         run: |
