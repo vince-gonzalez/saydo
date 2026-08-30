@@ -126,6 +126,14 @@ ordinary in any single receipt; the deception exists only as a difference
 between two runs. Receipts therefore chain to their predecessor, and a
 redefinition with no version change is graded `serious` rather than noted.
 
+This one is **not** unusual, and it was listed here as though it were until a
+proper look at the field turned up several projects doing it — see *Adjacent
+work* below. `askalf/truecopy` pins a vetted tool definition by content hash
+and fails a CI run when the bytes change, which is drift detection by another
+name and shipped before this. The distinctive claim is narrower than it first
+appeared: the counterfactual above, and testing behaviour against a contract
+the author wrote, rather than checking that the bytes are the ones you vetted.
+
 ## Layout
 
     spec/                  the declaration schema and its field semantics
@@ -178,19 +186,40 @@ declaration attaches through TBOM's existing `attestations[]` and reuses its
 
 ## Adjacent work, and where the line is
 
+This section keeps growing, which is the useful thing about it. Each of these
+was found after something here had already been described as unusual, so the
+list is also a record of claims that had to be narrowed.
+
 - **Pipelock**, github.com/luckyPipewrench/pipelock — an agent firewall that
   mediates a running agent's traffic and emits signed receipts.
+- **truecopy**, github.com/askalf/truecopy — vets a tool definition, pins it by
+  content hash with an optional Ed25519 signature, and fails CI when the bytes
+  change. Paired with **redstamp** for runtime containment.
+- **Proofpane**, github.com/Proofpane/releases — a governance proxy recording
+  every tool call to a hash-chained audit log, exported as an Ed25519-signed,
+  offline-verifiable evidence pack. Closed source; that repository is a
+  download mirror.
+- **dcl-webhook**, github.com/Fronesis-Labs/dcl-webhook — policy verdicts
+  written to a tamper-evident SHA-256 hash chain.
 
-It is worth reading, and it solves a neighbouring problem rather than this one.
-Pipelock's receipts record **actions** a deployed agent took; its contracts are
-compiled by observing traffic; its canary is a synthetic environment variable,
-which catches an agent exfiltrating its environment. A SayDo receipt is about
-**an artifact** — one version of one tool, against a contract its author wrote
-and signed before the run — and its canary is the tool's own input, which is
-what separates *your data left* from *a request happened*.
+The line is not the cryptography. A hash-chained, signed, offline-verifiable
+record is now a common design, and this repository does not claim otherwise.
 
-One guards an agent you are already running. The other decides whether a tool
-should be installed at all. They compose, and neither replaces the other.
+The line is **what the record is about**. Pipelock and Proofpane attest to
+**actions** a deployed agent took. truecopy attests that a tool is **the same
+bytes** you vetted — integrity, which catches a silent update and is silent
+about a tool that was always misbehaving. A SayDo receipt attests that **one
+version of one tool did what its author said it would**, tested by running it,
+against a contract written before the run.
+
+Integrity asks *is this the thing I approved?* Conformance asks *does the thing
+do what it claims?* Both are worth having, and neither answers the other.
+
+What still appears to be unshared, on the evidence gathered so far: the
+two-run counterfactual that separates *your data left* from *a request
+happened*, and refusing to call a tool clean when it merely declined to act.
+If either turns out to have prior art, it belongs in this list and the claim
+above should be cut rather than defended.
 
 ## Status
 
