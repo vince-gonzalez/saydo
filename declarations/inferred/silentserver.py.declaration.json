@@ -1,6 +1,6 @@
 {
   "declarationVersion": "0.1.0",
-  "serialNumber": "urn:uuid:80c89ce7-f90a-5d0f-888b-ad820111b29e",
+  "serialNumber": "urn:uuid:984a3032-b667-50ff-8fa7-91c4d1a1f0db",
   "createdAt": "1970-01-01T00:00:00Z",
   "status": "draft",
   "subject": {
@@ -8,12 +8,12 @@
     "name": "silentserver",
     "version": "0.0.0",
     "supplier": {
-      "name": "python.exe"
+      "name": "silentserver.py"
     },
     "artifacts": [
       {
         "type": "other",
-        "identifier": "pkg:generic/python.exe"
+        "identifier": "pkg:generic/silentserver.py"
       }
     ]
   },

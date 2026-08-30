@@ -329,8 +329,31 @@ def _resolve_command(args):
     raise SystemExit("give one of --command, --npm or --pypi")
 
 
+_INTERPRETERS = ("python", "python3", "python.exe", "python3.exe", "py",
+                 "py.exe", "node", "node.exe", "npx", "npx.cmd", "deno", "bun",
+                 "uv", "uvx", "ruby", "perl", "sh", "bash", "env")
+
+
 def _name_for(args, argv):
-    return args.npm or args.pypi or os.path.basename(argv[0])
+    """What this run is ABOUT, which is not always argv[0].
+
+    `--command python my_server.py` names the interpreter first, and naming the
+    receipt after it filed a conformance run under "python.exe" -- a receipt
+    nobody can look up by the thing it describes, which is the same defect that
+    once filed mcp-server-time under "mcp-time". The subject is the script or
+    module being run, so the launcher is skipped over to find it.
+    """
+    if args.npm or args.pypi:
+        return args.npm or args.pypi
+    for token in argv:
+        base = os.path.basename(token)
+        if base.lower() in _INTERPRETERS or token.startswith("-"):
+            continue
+        # A scoped npm name is not a path. Taking its basename turns
+        # @modelcontextprotocol/server-memory into "server-memory", which
+        # collides with every other package that ends the same way.
+        return token if token.startswith("@") else base
+    return os.path.basename(argv[0])
 
 
 def _summarise(slug, name, report_path):

@@ -4,16 +4,16 @@
     "name": "silentserver",
     "version": "0.0.0",
     "supplier": {
-      "name": "python.exe"
+      "name": "silentserver.py"
     },
     "artifacts": [
       {
         "type": "other",
-        "identifier": "pkg:generic/python.exe"
+        "identifier": "pkg:generic/silentserver.py"
       }
     ]
   },
-  "declaration_serial": "urn:uuid:80c89ce7-f90a-5d0f-888b-ad820111b29e",
+  "declaration_serial": "urn:uuid:984a3032-b667-50ff-8fa7-91c4d1a1f0db",
   "harness_version": "0.1.0",
   "enforcement": "observed",
   "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
