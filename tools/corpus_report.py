@@ -60,13 +60,23 @@ def tally(results):
 
 
 def data_flow_summary(results):
-    """Which servers carry their input out, and to where."""
-    exfiltrating, telemetry_only, unexamined = [], [], []
+    """Which servers carry their input out, and to where.
+
+    `silent` is the category that matters most and is easiest to misreport: a
+    server that started, listed its tools, and then did nothing observable at
+    all. Counting those as "not exfiltrating" would turn "we never got it to
+    act" into a clean bill of health, which is the single most dishonest thing
+    this report could do.
+    """
+    exfiltrating, telemetry_only, unexamined, silent = [], [], [], []
     destinations = {}
     for r in results:
         if r.get("outcome") != "measured":
             continue
         flow = r.get("dataFlow") or {}
+        if not flow:
+            silent.append(r["name"])
+            continue
         carries = [h for h, v in flow.items()
                    if v.get("relation") in ("input-dependent",
                                             "retained-across-runs")]
@@ -82,13 +92,15 @@ def data_flow_summary(results):
             unexamined.append((r["name"], opaque))
         elif fixed:
             telemetry_only.append((r["name"], fixed))
-    return exfiltrating, telemetry_only, unexamined, destinations
+    return exfiltrating, telemetry_only, unexamined, destinations, silent
 
 
 def write_report(results, batches, out_md):
     t = tally(results)
-    exfil, telemetry, unexamined, destinations = data_flow_summary(results)
+    exfil, telemetry, unexamined, destinations, silent = \
+        data_flow_summary(results)
     measured = t["measured"]
+    acted = measured - len(silent)
 
     L = []
     W = L.append
@@ -114,15 +126,36 @@ def write_report(results, batches, out_md):
       "anything. Every rate below is over the {} exercised servers, not the "
       "{} discovered ones.\n".format(measured, t["discovered"]))
 
+    W("Of the {} that started, **{} did nothing observable**: they listed "
+      "their tools and then made no network call the harness could see, "
+      "because a tool invoked with placeholder arguments and no credential "
+      "usually rejects the call before it does any work. Those servers have "
+      "NOT been shown to be well behaved. Nothing was established about them "
+      "in either direction, and they are excluded from every rate below "
+      "rather than counted as clean.\n".format(measured, len(silent)))
+
     if not measured:
         W("No server was exercised, so this run supports no behavioural "
           "claim at all.\n")
+    elif not acted:
+        W("## The finding is about auditability, not about safety\n")
+        W("Not one server that started could be made to act. This run "
+          "therefore says nothing about whether any of them exfiltrate data, "
+          "and it would be dishonest to present it as though it did.\n")
+        W("It does say something worth saying: **an MCP server is very hard "
+          "to audit from the outside.** Behaviour appears only when a tool is "
+          "given credentials and inputs it accepts, which an auditor examining "
+          "someone else's server does not have. That is precisely the argument "
+          "for the author DECLARING what a tool does, and for conformance "
+          "being checked where the credentials already are - in the "
+          "publisher's own CI - rather than guessed at from outside.\n")
     else:
         W("## The finding\n")
-        W("Of {} servers exercised, **{} sent the tool's own input to a "
-          "remote host**, {} contacted a host without carrying the input, and "
-          "{} sent payloads that could not be decoded.\n".format(
-              measured, len(exfil), len(telemetry), len(unexamined)))
+        W("Of the {} servers that actually did something, **{} sent the "
+          "tool's own input to a remote host**, {} contacted a host without "
+          "carrying the input, and {} sent payloads that could not be "
+          "decoded.\n".format(acted, len(exfil), len(telemetry),
+                              len(unexamined)))
         W("That distinction is the point. A tool contacting a server and a "
           "tool shipping your data look identical on the wire: same host, "
           "same shape, every call. They are told apart by running each server "
