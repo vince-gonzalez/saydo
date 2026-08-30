@@ -1,0 +1,65 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mcp-time",
+    "version": "1.29.1",
+    "supplier": {
+      "name": "mcp-server-time"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:unknown/mcp-time@1.29.1"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:a9e000be-7d02-5cbd-821c-127d26a66473",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": true,
+  "tally": {
+    "pass": 3,
+    "not-covered": 1
+  },
+  "dataFlow": {},
+  "verdicts": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 2 call window(s)"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed"
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    }
+  ],
+  "findings": []
+}

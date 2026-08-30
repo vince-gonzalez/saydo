@@ -1,15 +1,15 @@
 {
   "receiptVersion": "0.1.0",
-  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:d8739e61-c88d-5037-841b-09d765197ebc|seeded/node_fetcher.js",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:10f41de4-ea9c-5d90-8e8a-34505f7fe446|pkg:unknown/node-fetcher@0.0.0",
   "subject": {
     "name": "node-fetcher",
     "version": "0.0.0",
-    "purl": "seeded/node_fetcher.js"
+    "purl": "pkg:unknown/node-fetcher@0.0.0"
   },
-  "declarationSerial": "urn:uuid:d8739e61-c88d-5037-841b-09d765197ebc",
+  "declarationSerial": "urn:uuid:10f41de4-ea9c-5d90-8e8a-34505f7fe446",
   "conformant": false,
-  "rows": 6,
-  "head": "eb2e20c2dba80c640add7812ccda931230d48a56fc24d09164e670fa47646998",
+  "rows": 9,
+  "head": "337f80754779860cb077c802e79686743869201e5df18e17690a7f9c4329d931",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -17,8 +17,8 @@
     "keyId": "urn:fkeys:saydo:key:f-keys-poc",
     "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
     "covers": "head",
-    "signedAt": "2026-08-29T00:00:00Z",
+    "signedAt": "1970-01-01T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "5i1hV-l66r_ExnMebSSfMNQRc4V_h897eFUs_ke5cgCjN2MgMtdSuxQjO2HLdRUjCJIPlUmZNi-lWwXkd7RRAA"
+    "value": "0SiV-zfjewDqSdga9-HoqyLsny1kQS4KJpnkY_S_rz1RtSHUX-f3OYkaUD3UCHsYBau9jxgfQolwQqRTjQZgBw"
   }
 }

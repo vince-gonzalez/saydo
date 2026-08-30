@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -79,7 +80,12 @@ def _launch_argv(name, python):
 
 
 def _run(argv, quiet=False):
-    result = subprocess.run(argv, cwd=TOOLS, capture_output=True, text=True)
+    # Run from wherever the user is, not from tools/. A command they supply
+    # may contain relative paths, and those must mean what they meant when
+    # they typed them. The scripts are invoked by absolute path, so Python
+    # still puts tools/ on sys.path for their own imports.
+    result = subprocess.run(argv, cwd=os.getcwd(), capture_output=True,
+                            text=True)
     if not quiet:
         out = (result.stdout or "").strip()
         # The interpreter prints a harmless prefix line on this machine; drop
@@ -103,13 +109,158 @@ def cmd_list(args):
     print("\nverify one with:  saydo verify <name>")
 
 
+def _safe(name):
+    return re.sub(r"[^A-Za-z0-9._-]", "_", name)[:80]
+
+
+def cmd_verify_any(args):
+    """Verify ANY MCP server, named by the command that starts it.
+
+    Two ways to arrive here, and the difference is what can be proven rather
+    than which tool is used:
+
+      A publisher runs this on their own server, with the credentials and
+      inputs it needs, and supplies the declaration they are willing to sign.
+      The tool actually does its work, so its behaviour is observable and the
+      receipt is worth something.
+
+      Anyone else runs it on someone else's server, with no credentials. A
+      conservative declaration is inferred, and whatever the server will do
+      for a stranger is measured. Much will come back not-covered, which is
+      the honest answer: a tool that refuses to act has not been shown to be
+      safe, it has simply not been shown.
+
+    Same harness, same receipt format, same verifier. Only the coverage
+    differs, and the receipt says which it was.
+    """
+    python = args.python or sys.executable
+    argv = _resolve_command(args)
+    name = args.name or _name_for(args, argv)
+    slug = _safe(name)
+
+    capture_path = os.path.join(ROOT, "captured", slug + ".json")
+    decl_path = args.declaration or os.path.join(
+        ROOT, "declarations", "inferred", slug + ".declaration.json")
+    report_path = os.path.join(ROOT, "reports", slug + ".report.json")
+    for d in (os.path.dirname(capture_path), os.path.dirname(decl_path),
+              os.path.dirname(report_path), os.path.join(ROOT, "receipts")):
+        os.makedirs(d, exist_ok=True)
+
+    print("saydo verify {}\n  command: {}".format(name, " ".join(argv)))
+
+    print("\n[1/4] capture the live tool definitions")
+    _run([python, os.path.join(TOOLS, "capture_tools.py"),
+          capture_path, "--"] + argv)
+
+    if args.declaration:
+        print("\n[2/4] using the declaration supplied by the author")
+    else:
+        print("\n[2/4] infer a conservative declaration (every invariant is a "
+              "hypothesis, not a finding)")
+        _run([python, os.path.join(TOOLS, "infer_declaration.py"),
+              capture_path, "--supplier", name, "-o", decl_path])
+
+    print("\n[3/4] exercise under the conformance harness")
+    harness_cmd = [python, os.path.join(TOOLS, "harness.py"),
+                   decl_path, capture_path, report_path,
+                   "--python", python, "--plan", "@generic:" + json.dumps(argv)]
+    if args.runner == "container":
+        if not args.image:
+            raise SystemExit("--runner container needs --image")
+        harness_cmd += ["--runner", "container", "--image", args.image]
+        if args.routed:
+            harness_cmd.append("--routed")
+    _run(harness_cmd)
+
+    print("\n[4/4] emit the hash-chained receipt")
+    receipt_cmd = [python, os.path.join(TOOLS, "receipt.py"),
+                   report_path, decl_path, capture_path,
+                   os.path.join(ROOT, "receipts"), "--at", args.at]
+    key = args.sign or _default_key()
+    if key:
+        receipt_cmd += ["--sign", key]
+    _run(receipt_cmd)
+
+    _summarise(slug, name, report_path)
+    return 0
+
+
+def _resolve_command(args):
+    """The argv that starts the server, however the user named it.
+
+    --python names the interpreter that HAS the server installed, which is
+    frequently not the one running SayDo: the harness and the software under
+    test have no business sharing an environment.
+    """
+    if args.command:
+        return args.command
+    if args.npm:
+        return ["npx", "-y", args.npm]
+    if args.pypi:
+        python = args.python or sys.executable
+        module = args.pypi.replace("-", "_")
+        # A console script is the more reliable entry point; -m only works if
+        # the package ships a __main__.
+        exe = os.path.join(os.path.dirname(os.path.abspath(python)),
+                           args.pypi.replace("_", "-"))
+        for candidate in (exe, exe + ".exe"):
+            if os.path.exists(candidate):
+                return [candidate]
+        return [python, "-m", module]
+    raise SystemExit("give one of --command, --npm or --pypi")
+
+
+def _name_for(args, argv):
+    return args.npm or args.pypi or os.path.basename(argv[0])
+
+
+def _summarise(slug, name, report_path):
+    import status as status_mod
+    with open(report_path, encoding="utf-8") as fh:
+        report = json.load(fh)
+    anchor_path = os.path.join(ROOT, "receipts", slug + ".anchor.json")
+    print("\n" + "=" * 62)
+    print("  {}   {}".format(
+        name, "CONFORMANT" if report["conformant"] else "NOT CONFORMANT"))
+    print("  enforcement  {}".format(report.get("enforcement", "observed")))
+    print("  tally        {}".format(report["tally"]))
+    for v in report["verdicts"]:
+        if v["verdict"] == "fail":
+            print("    FAIL  {:<22} {}".format(v["id"], v["evidence"][:70]))
+    notcov = [v["id"] for v in report["verdicts"]
+              if v["verdict"] == "not-covered"]
+    if notcov:
+        print("  not covered  {}".format(", ".join(notcov)))
+        print("               (unproven, NOT clean -- usually because the "
+              "tool\n                would not act without credentials)")
+    if os.path.exists(anchor_path):
+        with open(anchor_path, encoding="utf-8") as fh:
+            anchor = json.load(fh)
+        print("  receipt      {}".format(anchor["head"]))
+        with open(os.path.join(ROOT, "receipts", slug + ".receipt.jsonl"),
+                  encoding="utf-8") as fh:
+            st = status_mod.build(fh.readlines(), anchor)
+        print("  status       {}: {}".format(st["verdict"], st["advice"][:90]))
+    print("=" * 62)
+    print("\nverify it yourself: open verifier/index.html and paste the "
+          "receipt and anchor.")
+
+
 def cmd_verify(args):
+    # An arbitrary server, named by how it starts.
+    if args.command or args.npm or args.pypi:
+        return cmd_verify_any(args)
+
     name = args.name
+    if not name:
+        raise SystemExit("give a server name, or --command/--npm/--pypi")
     python = args.python or sys.executable
     p = _paths(name)
     declaration = _declaration_for(name)
     if not os.path.exists(declaration):
-        raise SystemExit("no declaration for {!r}; try `saydo list`".format(name))
+        raise SystemExit("no declaration for {!r}; try `saydo list`, or point "
+                         "saydo at any server with --command / --npm / --pypi"
+                         .format(name))
     launch = _launch_argv(name, python)
     if not launch:
         raise SystemExit("no exercise plan for {!r}; the harness needs one "
@@ -233,7 +384,22 @@ def main():
     sub.add_parser("list").set_defaults(fn=cmd_list)
 
     v = sub.add_parser("verify")
-    v.add_argument("name")
+    v.add_argument("name", nargs="?",
+                   help="a server from `saydo list`, or omit and use "
+                        "--command/--npm/--pypi to verify anything")
+    v.add_argument("--command", nargs=argparse.REMAINDER,
+                   help="the command that starts any MCP server over stdio")
+    v.add_argument("--npm", help="verify an npm-published MCP server")
+    v.add_argument("--pypi", help="verify a PyPI-published MCP server")
+    v.add_argument("--declaration",
+                   help="the author's declaration; without one a conservative "
+                        "declaration is inferred and tested")
+    v.add_argument("--runner", default="local",
+                   choices=["local", "container"],
+                   help="'container' runs the server in the sandbox")
+    v.add_argument("--image", help="container image for --runner container")
+    v.add_argument("--routed", action="store_true",
+                   help="record bare-IP attempts in any language")
     v.add_argument("--python", help="interpreter that runs the server "
                                     "(default: this one)")
     v.add_argument("--at", default="1970-01-01T00:00:00Z",

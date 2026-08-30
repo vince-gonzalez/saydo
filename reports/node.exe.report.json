@@ -1,0 +1,75 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "node-fetcher",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "node.exe"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:unknown/node-fetcher@0.0.0"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:10f41de4-ea9c-5d90-8e8a-34505f7fe446",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": false,
+  "tally": {
+    "pass": 3,
+    "fail": 1,
+    "not-covered": 1
+  },
+  "dataFlow": {},
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "egress: grab->example.com"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed"
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed"
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    }
+  ],
+  "findings": []
+}

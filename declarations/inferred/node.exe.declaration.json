@@ -1,0 +1,89 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:10f41de4-ea9c-5d90-8e8a-34505f7fe446",
+  "createdAt": "1970-01-01T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "node-fetcher",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "node.exe"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:unknown/node-fetcher@0.0.0"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "scope",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:2531b97ffd9448fc90d6a63aef13c46d6e5625e087fd3cc1e3053b8b21164ad0",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      },
+      {
+        "name": "grab",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:cd1f03f16da3130ee5ead0001c44a170b00c77e8240d4737ba1325b917185191",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "params": {
+        "tool": "scope"
+      },
+      "note": "HYPOTHESIS: assumes scope is a no-I/O refusal tool."
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no egress. Relax to network-allowlist if the tool legitimately calls out."
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no filesystem writes."
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no child processes."
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes malformed input returns an error value rather than crashing the transport."
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Inferred skeleton: every invariant is a conservative HYPOTHESIS, not a finding. Run the harness; the failures are the map of what this tool actually does. Then keep what held, relax what was too strict for a real reason, and sign."
+}

@@ -1020,7 +1020,18 @@ def main():
         capture = json.load(fh)
 
     name = args.plan or declaration["subject"]["name"]
-    plan = plans_mod.PLANS[name]
+    if name.startswith("@generic:"):
+        # An arbitrary server, named by the command that starts it. A generic
+        # exercise is synthesised from its own tools/list, so SayDo can be
+        # pointed at software nobody wrote a plan for -- which is the normal
+        # case for anyone auditing a tool they did not publish.
+        argv = json.loads(name[len("@generic:"):])
+        plan = plans_mod.synth_plan(capture, argv)
+        name = _safe_name(declaration["subject"]["name"])
+        if args.runner == "container":
+            plan["container_argv"] = list(argv)
+    else:
+        plan = plans_mod.PLANS[name]
     import runner as runner_mod
     if args.runner == "container":
         if not args.image:

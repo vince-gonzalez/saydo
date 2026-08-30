@@ -1,0 +1,52 @@
+{
+  "server": {
+    "name": "node-fetcher",
+    "version": "0.0.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report scope. Takes no arguments and does no I/O.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:2531b97ffd9448fc90d6a63aef13c46d6e5625e087fd3cc1e3053b8b21164ad0",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "grab",
+      "definition": {
+        "name": "grab",
+        "description": "Fetch a URL and return its first bytes. Reaches the network.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:cd1f03f16da3130ee5ead0001c44a170b00c77e8240d4737ba1325b917185191",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}
