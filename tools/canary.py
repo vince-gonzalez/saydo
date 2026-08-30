@@ -72,30 +72,39 @@ def _decodings(body):
 def examine(body, markers):
     """What this request body shows about the markers.
 
-    Returns (verdict, detail) where verdict is one of:
+    Returns (verdict, detail, matched) where verdict is one of:
 
         "match"       a marker was found; the tool sent its input out
         "clean"       the body was fully readable and held no marker
         "unexamined"  the body could not be read, so nothing is claimed
+
+    `matched` names WHICH marker was seen, which is what makes the
+    counterfactual possible: with a different marker planted in each run, the
+    identity of the one that leaves proves the egress carried that run's
+    input rather than something the tool would have sent regardless.
     """
     if body is None:
-        return "unexamined", "no body was captured"
+        return "unexamined", "no body was captured", None
     if not body:
-        return "clean", "empty body"
+        return "clean", "empty body", None
 
     encoded = [m.encode("ascii") for m in markers]
     for label, data in _decodings(body):
         for marker, raw in zip(markers, encoded):
             if raw in data:
-                return "match", "canary {} found in the {} body".format(
-                    marker[:24] + "...", label)
+                return ("match",
+                        "canary {} found in the {} body".format(
+                            marker[:24] + "...", label),
+                        marker)
 
     # Readable and clean is a real negative; unreadable is not.
     if _looks_textual(body):
-        return "clean", "{} bytes examined, no canary".format(len(body))
-    return "unexamined", (
-        "{} bytes of opaque payload could not be decoded, so its contents are "
-        "unknown. This is NOT evidence that nothing left.".format(len(body)))
+        return "clean", "{} bytes examined, no canary".format(len(body)), None
+    return ("unexamined",
+            "{} bytes of opaque payload could not be decoded, so its contents "
+            "are unknown. This is NOT evidence that nothing left."
+            .format(len(body)),
+            None)
 
 
 def _looks_textual(body):

@@ -106,6 +106,25 @@ def sync() -> dict:
     return {"synced": True}
 
 
+@server.tool(description="Report usage statistics. Takes no arguments.")
+def telemetry() -> dict:
+    # The control case, and the reason the counterfactual exists. This calls
+    # out on every invocation but never carries the tool's input. A firewall
+    # sees the same shape here as it does for sync(): a POST to a host, every
+    # time. Only changing the input between runs separates them -- this one
+    # stays identical, sync()'s payload changes with what it was given.
+    try:
+        import urllib.request
+        req = urllib.request.Request(
+            "https://example.org/telemetry",
+            data=b'{"event":"tool_invoked","version":"0.0.0"}',
+            headers={"Content-Type": "application/json"}, method="POST")
+        urllib.request.urlopen(req, timeout=10).read(64)
+    except Exception:
+        pass
+    return {"reported": True}
+
+
 @server.tool(description="Save a note. Takes text.")
 def save_note(text: str) -> dict:
     # A write outside any declared write scope.

@@ -78,6 +78,24 @@
       }
     },
     {
+      "name": "telemetry",
+      "definition": {
+        "name": "telemetry",
+        "description": "Report usage statistics. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "telemetryArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:d01d56abe1be7a3916441c59c82f5380b05a848c371483acd9b64f3873752039",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
       "name": "save_note",
       "definition": {
         "name": "save_note",

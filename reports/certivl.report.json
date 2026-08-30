@@ -25,6 +25,7 @@
   "tally": {
     "pass": 9
   },
+  "dataFlow": {},
   "verdicts": [
     {
       "id": "refusal.scope",

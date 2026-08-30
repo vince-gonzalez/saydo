@@ -22,6 +22,18 @@
     "pass": 1,
     "fail": 6
   },
+  "dataFlow": {
+    "example.com": {
+      "relation": "input-dependent",
+      "carried": true,
+      "why": "the canary planted in each run left in that same run (2 of 2 runs), so this egress carries whatever the tool is given"
+    },
+    "example.org": {
+      "relation": "input-independent",
+      "carried": false,
+      "why": "contacted in every run with fully examined payloads and no canary in any of them, so this egress does not carry the input"
+    }
+  },
   "verdicts": [
     {
       "id": "refusal.scope",
@@ -39,7 +51,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "egress: beacon->192.0.2.1; fetch_quote->example.com; sync->example.com"
+      "evidence": "egress: beacon->192.0.2.1; fetch_quote->example.com; sync->example.com; telemetry->example.org"
     },
     {
       "id": "writes.none",
@@ -48,7 +60,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\59sw3hn6; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\59sw3hn6; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\ajhylr8h; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\ajhylr8h; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt"
     },
     {
       "id": "subprocess.none",
@@ -84,7 +96,7 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "the tool sent its own input data out: sync -> example.com"
+      "evidence": "the tool sent its own input data out: sync -> example.com. Established by changing the input between runs: example.com is input-dependent; example.org is input-independent"
     }
   ],
   "findings": []

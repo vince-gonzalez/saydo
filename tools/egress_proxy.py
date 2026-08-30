@@ -292,7 +292,7 @@ class EgressProxy:
             return
         import hashlib
         from canary import examine
-        verdict, detail = examine(body, self.canaries)
+        verdict, detail, matched = examine(body, self.canaries)
         # The method, never the path, and a digest, never the body. A receipt
         # is published: a request path can carry a token and the plaintext can
         # carry the tool's own credentials. The digest is enough to show two
@@ -302,6 +302,11 @@ class EgressProxy:
                "method": method, "bytes": len(body or b""),
                "bodySha256": hashlib.sha256(body or b"").hexdigest()[:32],
                "detail": detail}
+        if matched:
+            # WHICH marker left is the whole counterfactual: a distinct one is
+            # planted per run, so its identity ties the egress to that run's
+            # input rather than to something the tool sends regardless.
+            row["canary"] = matched
         if verdict == "match":
             row["meaning"] = ("the tool sent its own input data to this host")
         elif verdict == "unexamined":

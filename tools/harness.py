@@ -139,6 +139,11 @@ class Run:
         return base
 
     def _launch(self, plan, server_python, monitor_log):
+        # The proxy's log accumulates across runs, so a run must know when it
+        # began. Without this, a canary planted in an earlier run is still in
+        # the log during a later one and reads as the tool having RETAINED
+        # input across calls -- a serious accusation, and false.
+        self.started = time.time()
         open(monitor_log, "w").close()
         env = {}
         appdata = None
@@ -410,10 +415,20 @@ def judge(declaration, capture, run, ctx):
                         unexamined.append((tool, ev.get("host")))
                     elif name == "exfil.clean":
                         clean += 1
+            table = ctx.get("differential") or {}
             if matches:
                 row["verdict"] = "fail"
                 row["evidence"] = "the tool sent its own input data out: " + \
                     "; ".join("{} -> {}".format(t, h) for t, h, _ in matches[:5])
+                # The causal reading, which observation alone cannot supply.
+                # Both classes are reported: naming the destinations that do
+                # NOT carry the input is what stops this being another alarm
+                # that flags every outbound connection.
+                if table:
+                    row["evidence"] += (
+                        ". Established by changing the input between runs: "
+                        + "; ".join("{} is {}".format(h, v["relation"])
+                                    for h, v in sorted(table.items())))
             elif unexamined:
                 # Refusal-first, and the case that matters most: an opaque
                 # payload is not evidence of innocence. Reporting this as a
@@ -429,6 +444,18 @@ def judge(declaration, capture, run, ctx):
                 row["verdict"] = "pass"
                 row["evidence"] = ("{} outbound payload(s) examined in full, "
                                    "none carried the tool's input".format(clean))
+                # A tool can be innocent of exfiltration and still talk to a
+                # server on every call. Saying which is which is the useful
+                # part: it turns "it made a call" into a characterisation.
+                import differential
+                independent = [h for h, v in table.items()
+                               if v["relation"] == differential.INPUT_INDEPENDENT]
+                if independent:
+                    row["evidence"] += (
+                        ". Contact with {} persisted when the input changed, "
+                        "so that egress is independent of what the tool is "
+                        "given -- a fixed backend, not exfiltration"
+                        .format(", ".join(sorted(independent)[:4])))
             else:
                 row["verdict"] = "not-covered"
                 row["evidence"] = ("no outbound payload was examined; content "
@@ -881,7 +908,11 @@ def run_conformance(name, plan, declaration, capture, server_python,
     canaries = []
     if wants_content:
         import canary as canary_mod
-        canaries = [canary_mod.new_marker()]
+        # TWO markers, one per run. Watching a single run can only show that
+        # something left; changing the input between runs is what shows the
+        # egress CARRIES the input rather than happening regardless of it.
+        # The proxy watches for both and reports which one it saw.
+        canaries = [canary_mod.new_marker(), canary_mod.new_marker()]
         os.environ["SAYDO_CANARY"] = canaries[0]
 
     proxy_address = runner.setup(egress_log,
@@ -903,6 +934,25 @@ def run_conformance(name, plan, declaration, capture, server_python,
             "determinism": run_determinism(name, plan, server_python, log),
         }
         ctx["property_results"] = run_properties(plan, server_python, log, ctx)
+
+        if canaries:
+            # The counterfactual. Run 1 already happened above with canary[0];
+            # run 2 repeats the exercise with canary[1] so the two can be
+            # compared. Nothing that only watches traffic can do this, because
+            # it requires changing the input rather than observing it.
+            import differential
+            os.environ["SAYDO_CANARY"] = canaries[1]
+            second = Run(name, plan, server_python, log,
+                         egress_log=egress_log, runner=runner)
+            # Each run is judged only on events it actually produced.
+            def own(run):
+                return [e for e in run.events
+                        if e.get("t", 0) >= run.started - 0.5]
+
+            ctx["differential"] = differential.classify([
+                {"canary": canaries[0], "events": own(main_run)},
+                {"canary": canaries[1], "events": own(second)},
+            ])
     finally:
         _ACTIVE_RUNNER = None
         runner.teardown()
@@ -924,6 +974,10 @@ def run_conformance(name, plan, declaration, capture, server_python,
         "monitor": runner.describe(),
         "conformant": conformant,
         "tally": tally,
+        # Which destinations carry the tool's input and which do not. Empty
+        # unless the declaration claimed no-data-egress, since establishing it
+        # requires intervening on the input rather than observing traffic.
+        "dataFlow": ctx.get("differential") or {},
         "verdicts": verdicts,
         "findings": findings,
     }
