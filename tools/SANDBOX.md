@@ -216,6 +216,51 @@ exists, read a contained `no-network` pass as "nothing got out", never as
    signed by SayDo, the signing key managed (not the proof-of-concept key in
    `keys/`).
 
+## OPEN: a Node MCP server cannot be measured at all (2026-08-31)
+
+Measured, not suspected. The seven official reference servers were run in the
+sandbox four times. Every Python one produced verdicts. Every Node one produced
+`not-covered` across the board, with the honest reason attached: *no monitor
+event of any kind was recorded during this run, so there was no observation
+channel.*
+
+There are three channels and none of them reaches a Node server:
+
+| channel | Python | Node |
+|---|---|---|
+| in-process audit hook | yes | **no** — `sys.addaudithook` is CPython-only |
+| recording proxy | yes | only if a packet is actually emitted |
+| bind-mounted scratch | yes | only if the server writes *there* |
+
+The last two look like they should help and do not, for reasons specific to
+these servers rather than to the design. `server-memory` writes its JSON graph
+beside its own module, not into the scratch. `server-filesystem` takes its
+allowed directories as argv and was given none. `everything` and
+`sequential-thinking` are pure computation and touch nothing. So there is
+nothing for a proxy or a filesystem watcher to catch, and the harness correctly
+declines to score silence it cannot interpret.
+
+Three fixes were tried and none of them addressed this:
+
+- **routed containment** makes a network attempt attributable in any language.
+  Real, and irrelevant here: these servers make no network calls.
+- **`docker diff`** cannot see a tmpfs, and both writable paths were tmpfs. It
+  was incapable of returning anything, in any run.
+- **a bind-mounted scratch** gives the tool a real place to write and lets the
+  host read it back. Also real, and also irrelevant unless the server happens
+  to write there.
+
+**The fix is a Node-side monitor**: a `--require` preload that hooks `fs`,
+`net`, `dns` and `child_process` and reports on the same stderr channel the
+Python hook uses, so the harness needs no new ingestion path. That is a real
+piece of work, not a flag, and it is not done.
+
+**Until it is, SayDo measures Python MCP servers.** A Node server gets
+`not-covered` with the reason stated, which is honest and useless, and no
+corpus that includes them says anything about them. That belongs in any figure
+this project publishes: a sweep is a measurement of the Python half of the
+ecosystem and must be reported as such.
+
 ## What a receipt may and may not say today
 
 May say: what the monitors observed stayed inside the declared envelope, for a
