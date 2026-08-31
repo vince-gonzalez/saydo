@@ -628,7 +628,24 @@ def cmd_selfcheck(args):
     _run([python, os.path.join(TOOLS, "decl_check.py"), "selfcheck",
           SCHEMA, p["declaration"], p["capture"]])
 
-    print("\n[3] schema, spec and every declaration must agree")
+    print("\n[3] the harness must be able to make a picky server ACT")
+    # A harness that cannot get a server to do anything reports not-covered
+    # for everything, and from outside that is indistinguishable from a
+    # harness inspecting a well-behaved ecosystem. Not hypothetical: a sweep of
+    # 280 published servers returned 835 verdict rows, every one not-covered,
+    # and it got written up as a finding about MCP servers rather than as a
+    # limit of this tool. pickyserver states its requirements in its schema and
+    # declines anything else, so if argument synthesis regresses it fails here
+    # rather than six hours into a corpus run.
+    stalled = _check_coverage(python, args)
+    for line in stalled:
+        print("   " + line)
+    if stalled:
+        raise SystemExit("selfcheck FAILED: the harness could not make a "
+                         "cooperative server act, so a not-covered result "
+                         "would say more about us than about any subject")
+
+    print("\n[4] schema, spec and every declaration must agree")
     # Three schema-versus-code divergences turned up in one day: two verdicts
     # and an invariant type that the code emitted and the schema forbade. Each
     # meant an artifact this project hands someone would be rejected by this
@@ -642,7 +659,7 @@ def cmd_selfcheck(args):
                          "declarations in this repository do not describe the "
                          "same program (see above for which)")
 
-    print("\n[4] every status verdict must satisfy the published schema")
+    print("\n[5] every status verdict must satisfy the published schema")
     # The schema is what a consumer validates against, so a verdict the code
     # can emit but the schema forbids makes our own output invalid -- which is
     # what happened when `inconclusive`, `revoked` and `expired` were added to
@@ -661,6 +678,33 @@ def cmd_selfcheck(args):
                          "seeded server")
     print("\nselfcheck passed: the harness can fail, so a pass means something.")
     return 0
+
+
+def _check_coverage(python, args):
+    """Every tool in the picky fixture must be observed doing work. [] = good."""
+    script = os.path.join(ROOT, "seeded", "pickyserver.py")
+    inner = _parser().parse_args(["verify", "--command", python + " " + script])
+    inner.python, inner.at = python, args.at
+    try:
+        cmd_verify(inner)
+    except SystemExit:
+        pass          # the fixture is non-conformant by design; not the test
+    report = os.path.join(ROOT, "reports", "pickyserver.py.report.json")
+    if not os.path.exists(report):
+        return ["the picky fixture produced no report at all"]
+    with open(report, encoding="utf-8") as fh:
+        rep = json.load(fh)
+    writes = next((v.get("observed", []) for v in rep["verdicts"]
+                   if v["id"] == "writes.none"), [])
+    acted = {o["tool"] for o in writes}
+    want = {"convert", "schedule", "lookup", "summarise"}
+    missing = sorted(want - acted)
+    if missing:
+        return ["{} never acted: its schema was not honoured, so the run "
+                "learned nothing about it".format(name) for name in missing]
+    print("   all {} schema-constrained tools acted: {}".format(
+        len(want), ", ".join(sorted(want))))
+    return []
 
 
 def _check_declarations():

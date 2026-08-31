@@ -1,0 +1,103 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "pickyserver",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "pickyserver.py"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/pickyserver.py"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:93444478-97b3-557d-ace5-55c5149bfabf",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": false,
+  "established": 2,
+  "tally": {
+    "pass": 3,
+    "fail": 1,
+    "not-covered": 1
+  },
+  "dataFlow": {},
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 5 call window(s)"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\jd34uxpj; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\jd34uxpj; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt; summarise:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_summarise.txt",
+      "observed": [
+        {
+          "tool": "convert",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\jd34uxpj"
+        },
+        {
+          "tool": "convert",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\jd34uxpj"
+        },
+        {
+          "tool": "convert",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt"
+        },
+        {
+          "tool": "lookup",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt"
+        },
+        {
+          "tool": "schedule",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt"
+        },
+        {
+          "tool": "summarise",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_summarise.txt"
+        }
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed",
+      "observed": []
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    }
+  ],
+  "findings": []
+}

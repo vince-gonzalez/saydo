@@ -309,37 +309,176 @@ PLANS = {
 }
 
 
-def _benign_arg(field_name, schema):
-    """A harmless, plausible value for one argument, from its name and type.
+def _from_pattern(pattern):
+    """A shortest string matching a simple anchored regex, or None.
 
-    The sweep drives tools it has no hand-written plan for. Benign values let
-    a tool actually do its thing so behavior is observable, without handing it
-    anything hostile: a URL points at example.com, a path points at the
-    fixtures directory, everything else is a minimal placeholder.
+    Not a general regex engine and not trying to be. It handles the shapes
+    that actually appear in tool schemas -- a literal prefix, a character
+    class, a repetition count -- because `^rec-[0-9]{4}$` is a tool stating
+    its input format precisely, and answering it with "test" throws away a
+    call the tool would have served.
     """
+    if not pattern:
+        return None
+    body = pattern
+    if body.startswith("^"):
+        body = body[1:]
+    if body.endswith("$"):
+        body = body[:-1]
+    out, i = [], 0
+    CLASSES = {"d": "0", "w": "a", "s": " ", "D": "a", "W": "-", "S": "a"}
+    while i < len(body):
+        ch = body[i]
+        if ch == "\\" and i + 1 < len(body):
+            token, i = CLASSES.get(body[i + 1], body[i + 1]), i + 2
+        elif ch == "[":
+            close = body.find("]", i)
+            if close < 0:
+                return None
+            inside = body[i + 1:close].lstrip("^")
+            token = inside[0] if inside else "a"
+            i = close + 1
+        elif ch == ".":
+            token, i = "a", i + 1
+        elif ch in "()|":
+            return None
+        elif ch in "+*?":
+            i += 1
+            continue
+        else:
+            token, i = ch, i + 1
+        if i < len(body) and body[i] == "{":
+            close = body.find("}", i)
+            if close < 0:
+                return None
+            count = body[i + 1:close].split(",")[0]
+            i = close + 1
+            try:
+                token = token * int(count)
+            except ValueError:
+                return None
+        elif i < len(body) and body[i] == "+":
+            i += 1
+        elif i < len(body) and body[i] in "*?":
+            i += 1
+            token = ""
+        out.append(token)
+    return "".join(out) or None
+
+
+_FORMATS = {
+    "date-time": "2026-01-02T03:04:05Z",
+    "date": "2026-01-02",
+    "time": "03:04:05",
+    "email": "someone@example.com",
+    "hostname": "example.com",
+    "ipv4": "192.0.2.1",
+    "uuid": "00000000-0000-4000-8000-000000000000",
+    "uri": "https://example.com/",
+    "url": "https://example.com/",
+    "iri": "https://example.com/",
+    "duration": "PT1S",
+}
+
+
+def _benign_arg(field_name, schema, depth=0):
+    """A value the tool will actually accept, taken from its own schema.
+
+    The schema is the tool stating what it wants. An earlier version of this
+    read only `type` and the field NAME, and returned the string "test" for
+    anything it did not recognise -- so a tool declaring
+    `enum: [celsius, fahrenheit]` was handed "test", declined, and the harness
+    recorded that the tool had done nothing.
+
+    That is how a sweep of 280 published servers produced 835 verdict rows of
+    which every single one was `not-covered`. The servers were fine. We were
+    knocking with the wrong key and writing down that nobody was home -- and
+    then reporting it as a finding about how hard MCP servers are to audit.
+
+    Order matters: what the schema STATES beats what the schema constrains,
+    which beats what the field is called. A name heuristic is the last resort,
+    never the first.
+    """
+    schema = schema or {}
+
+    # 1. The schema says the value outright.
+    if "const" in schema:
+        return schema["const"]
+    if "default" in schema:
+        return schema["default"]
+    for key in ("examples", "example"):
+        got = schema.get(key)
+        if isinstance(got, list) and got:
+            return got[0]
+        if got not in (None, [], {}):
+            return got
+    if schema.get("enum"):
+        return schema["enum"][0]
+    for combinator in ("anyOf", "oneOf", "allOf"):
+        options = schema.get(combinator)
+        if isinstance(options, list) and options and depth < 3:
+            return _benign_arg(field_name, options[0], depth + 1)
+
     kind = schema.get("type", "string")
     if isinstance(kind, list):
-        kind = kind[0] if kind else "string"
-    n = field_name.lower()
-    if kind == "string":
-        if any(k in n for k in ("url", "uri", "link", "endpoint")):
-            return "https://example.com/"
-        if any(k in n for k in ("repo", "repository")):
-            return GITREPO
-        if any(k in n for k in ("path", "file", "dir", "folder")):
-            return FIXTURES
-        if any(k in n for k in ("timezone", "tz")):
-            return "America/New_York"
-        return "test"
-    if kind in ("integer", "number"):
-        return 1
+        kind = next((k for k in kind if k != "null"), "string")
+
+    if kind == "array":
+        # [] was the old answer for every array, so any tool needing something
+        # to work on refused. Honour minItems, and supply one item regardless:
+        # a summariser handed an empty list has nothing to summarise.
+        items = schema.get("items") or {}
+        count = max(1, int(schema.get("minItems") or 1))
+        return [_benign_arg(field_name, items, depth + 1) for _ in range(count)]
+
+    if kind == "object":
+        props = schema.get("properties") or {}
+        required = schema.get("required") or list(props)
+        if depth >= 3:
+            return {}
+        return {k: _benign_arg(k, props.get(k, {}), depth + 1)
+                for k in required if k in props}
+
     if kind == "boolean":
         return False
-    if kind == "array":
-        return []
-    if kind == "object":
-        return {}
-    return "test"
+
+    if kind in ("integer", "number"):
+        for bound in ("minimum", "exclusiveMinimum"):
+            if isinstance(schema.get(bound), (int, float)):
+                value = schema[bound] + (1 if bound.startswith("exclusive")
+                                         else 0)
+                return int(value) if kind == "integer" else value
+        return 1
+
+    # 2. The schema constrains the value.
+    fmt = (schema.get("format") or "").lower()
+    if fmt in _FORMATS:
+        return _FORMATS[fmt]
+    from_pattern = _from_pattern(schema.get("pattern"))
+    if from_pattern:
+        return from_pattern
+
+    # 3. Last resort: what the field is called.
+    n = (field_name or "").lower()
+    if any(k in n for k in ("url", "uri", "link", "endpoint")):
+        return "https://example.com/"
+    if any(k in n for k in ("repo", "repository")):
+        return GITREPO
+    if any(k in n for k in ("path", "file", "dir", "folder")):
+        return FIXTURES
+    if any(k in n for k in ("timezone", "tz")):
+        return "America/New_York"
+    if any(k in n for k in ("email", "mail")):
+        return "someone@example.com"
+    if any(k in n for k in ("date", "time", "when")):
+        return "2026-01-02T03:04:05Z"
+    if any(k in n for k in ("query", "search", "term", "keyword")):
+        return "example"
+    value = "test"
+    minimum = schema.get("minLength")
+    if isinstance(minimum, int) and minimum > len(value):
+        value = value + "x" * (minimum - len(value))
+    return value
 
 
 def synth_plan(capture, command_argv, timeout=30):
