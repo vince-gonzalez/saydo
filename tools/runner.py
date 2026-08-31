@@ -152,7 +152,10 @@ class ContainerRunner(Runner):
 
       --network <saydo-net>   a network with no route off-host except the proxy
       --read-only             the image filesystem cannot be written
-      --tmpfs /scratch        the one writable path, and the declared write scope
+      -v <host dir>:/scratch  the one writable path, and the declared write scope.
+                              A bind mount rather than a tmpfs so what the tool
+                              wrote can be read afterwards from the host, in any
+                              language -- the in-runtime hook is CPython-only.
       --cap-drop ALL          no capabilities
       --security-opt no-new-privileges
       --pids-limit / --memory / a wall-clock kill
@@ -447,35 +450,40 @@ class ContainerRunner(Runner):
             })
         return events
 
-    def collect_writes(self):
-        """Files the run touched, from the container itself. [] if unavailable.
+    def _workdir(self):
+        """A fresh empty host directory, bind-mounted as the scratch."""
+        if not getattr(self, "_work", None):
+            self._work = tempfile.mkdtemp(prefix="saydo-work" + (self.tag or ""))
+            os.chmod(self._work, 0o777)      # the container user is not root
+        return self._work
 
-        `docker diff` reports A(dded), C(hanged) and D(eleted) paths relative
-        to the image. It carries no timestamps, so these are attributable to
-        the RUN and not to an individual call -- which is stated in the
-        evidence rather than papered over by guessing a window.
+    def collect_writes(self):
+        """What the run left in the bind-mounted scratch. [] if nothing.
+
+        Read from the host side, so it works whatever language the server is
+        written in — which is the entire point, since the in-runtime hook is
+        CPython-only and every Node server was otherwise unobservable.
+
+        There are no timestamps here, so these belong to the RUN rather than to
+        any one call. That is said in the evidence instead of being papered
+        over by guessing which window they fell in.
         """
-        name = getattr(self, "_container", None)
-        if not name:
-            return []
-        out = self._docker("diff", name)
-        if out is None or getattr(out, "returncode", 1) != 0:
+        work = getattr(self, "_work", None)
+        if not work or not os.path.isdir(work):
             return []
         writes = []
-        for line in (out.stdout or "").splitlines():
-            line = line.strip()
-            if len(line) < 3 or line[0] not in "ACD":
-                continue
-            kind, path = line[0], line[2:]
-            # The scratch and the ephemeral home are where a tool is SUPPOSED
-            # to be able to write; they are still reported, and the invariant
-            # decides whether that is in scope. Container plumbing is not.
-            if path in ("/scratch", "/home/saydo") or path.startswith("/proc") \
-                    or path.startswith("/sys") or path.startswith("/dev"):
-                continue
-            writes.append({"t": time.time(), "event": "container.diff",
-                           "path": path, "intent": "write", "change": kind,
-                           "runLevel": True})
+        for root, _dirs, files in os.walk(work):
+            for name in files:
+                full = os.path.join(root, name)
+                inside = os.path.relpath(full, work).replace(os.sep, "/")
+                try:
+                    size = os.path.getsize(full)
+                except OSError:
+                    size = None
+                writes.append({"t": time.time(), "event": "container.write",
+                               "path": self.scratch + "/" + inside,
+                               "intent": "write", "bytes": size,
+                               "runLevel": True})
         return writes
 
     def collect_egress(self):
@@ -499,6 +507,13 @@ class ContainerRunner(Runner):
         return events + self._bridge_events()
 
     def teardown(self):
+        # The bind-mounted scratch is removed FIRST and unconditionally. The
+        # rest of teardown is skipped when setup never completed, and a setup
+        # that failed part-way is exactly when a host directory would be left
+        # behind with someone else's files in it.
+        if getattr(self, "_work", None):
+            shutil.rmtree(self._work, ignore_errors=True)
+            self._work = None
         if not self._up:
             return
         self._remove_bridge_log()
@@ -548,7 +563,21 @@ class ContainerRunner(Runner):
         cmd = ["docker", "run", "--name", self._container, "-i",
                "--network", self.network,
                "--read-only",
-               "--tmpfs", "{}:rw,noexec,nosuid,size=64m,mode=1777".format(self.scratch),
+               # A bind mount, not a tmpfs, and the difference decides whether
+               # anything can be observed at all.
+               #
+               # `docker diff` excludes tmpfs and volume mounts, so with both
+               # writable paths on tmpfs and the rootfs read-only it was
+               # guaranteed to return nothing — the observation it was added
+               # for could not have worked in any run. Worse, a server whose
+               # state file sits beside its own code (server-memory's does)
+               # cannot write at all under a read-only rootfs, so there was
+               # nothing to see even in principle.
+               #
+               # A host directory gives the tool somewhere real to work, and
+               # gives us a way to read what it did afterwards in any language.
+               # Created empty per run, removed at teardown.
+               "-v", "{}:{}:rw".format(self._workdir(), self.scratch),
                # A writable HOME, ephemeral like the scratch. Plenty of servers
                # create a state directory under $HOME as the first thing they
                # do, and with a read-only rootfs they die in their own
