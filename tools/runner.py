@@ -59,6 +59,10 @@ class Runner:
     def collect_egress(self):
         raise NotImplementedError
 
+    def collect_writes(self):
+        """Filesystem changes observed from OUTSIDE the process. [] if none."""
+        return []
+
     def teardown(self):
         pass
 
@@ -426,6 +430,37 @@ class ContainerRunner(Runner):
             })
         return events
 
+    def collect_writes(self):
+        """Files the run touched, from the container itself. [] if unavailable.
+
+        `docker diff` reports A(dded), C(hanged) and D(eleted) paths relative
+        to the image. It carries no timestamps, so these are attributable to
+        the RUN and not to an individual call -- which is stated in the
+        evidence rather than papered over by guessing a window.
+        """
+        name = getattr(self, "_container", None)
+        if not name:
+            return []
+        out = self._docker("diff", name)
+        if out is None or getattr(out, "returncode", 1) != 0:
+            return []
+        writes = []
+        for line in (out.stdout or "").splitlines():
+            line = line.strip()
+            if len(line) < 3 or line[0] not in "ACD":
+                continue
+            kind, path = line[0], line[2:]
+            # The scratch and the ephemeral home are where a tool is SUPPOSED
+            # to be able to write; they are still reported, and the invariant
+            # decides whether that is in scope. Container plumbing is not.
+            if path in ("/scratch", "/home/saydo") or path.startswith("/proc") \
+                    or path.startswith("/sys") or path.startswith("/dev"):
+                continue
+            writes.append({"t": time.time(), "event": "container.diff",
+                           "path": path, "intent": "write", "change": kind,
+                           "runLevel": True})
+        return writes
+
     def collect_egress(self):
         """The proxy's decisions plus anything that tried to leave around it.
 
@@ -450,6 +485,10 @@ class ContainerRunner(Runner):
         if not self._up:
             return
         self._remove_bridge_log()
+        # The subject container was kept alive past its exit so `docker diff`
+        # could read it. Nothing else needs it.
+        if getattr(self, "_container", None):
+            self._docker("rm", "-f", self._container)
         self._docker("rm", "-f", self.proxy_name)
         self._docker("network", "rm", self.network)
         self._docker("network", "rm", self.outside)
@@ -481,7 +520,16 @@ class ContainerRunner(Runner):
         # The server's environment has to be set INSIDE the container, so the
         # proxy variables are -e flags here rather than host process env.
         addr = getattr(self, "_proxy_addr", "http://saydo-proxy:8888")
-        cmd = ["docker", "run", "--rm", "-i",
+        # NOT --rm. The container has to survive its own exit for one command:
+        # `docker diff`, which lists every file the run added, changed or
+        # deleted. That is the only filesystem observation that works in any
+        # language. The in-runtime audit hook is CPython-only, so a Node server
+        # was producing no filesystem evidence whatsoever -- @modelcontextprotocol
+        # /server-memory writes a JSON graph to disk and came back with "no
+        # observation channel", which is true and useless.
+        self._container = "saydo-subject" + (self.tag or "")
+        self._docker("rm", "-f", self._container)          # a stale one, if any
+        cmd = ["docker", "run", "--name", self._container, "-i",
                "--network", self.network,
                "--read-only",
                "--tmpfs", "{}:rw,noexec,nosuid,size=64m,mode=1777".format(self.scratch),

@@ -140,6 +140,9 @@ class Run:
         #: Tools whose answer changed when the argument changed. Proof the tool
         #: did work, for tools that do their work without touching anything.
         self.varied = set()
+        #: Files the container reports changed, attributable to the run rather
+        #: than to any one call.
+        self.container_writes = []
         self.egress_log = egress_log
         self.runner = runner
         self._launch(plan, server_python, monitor_log)
@@ -230,6 +233,12 @@ class Run:
             # whether the proxy was a local listener or a container.
             if self.runner:
                 self.events += self.runner.collect_egress()
+                # Filesystem changes read from the container itself. This is
+                # the only write observation that survives the tool not being
+                # written in Python, and without it every Node server reported
+                # no observation channel at all.
+                self.container_writes = self.runner.collect_writes()
+                self.events += self.container_writes
             elif self.egress_log:
                 self.events += _read_events(self.egress_log)
 
