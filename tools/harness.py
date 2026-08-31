@@ -512,17 +512,26 @@ def judge(declaration, capture, run, ctx):
                                    "{} resolved across {} call window(s)"
                                    .format(obs, windows))
                 if ctx.get("enforcement") == "contained" and not observed:
-                    # Under enforcement, silence is ambiguous. A tool that
-                    # bypasses the proxy with a raw socket fails at DNS before
-                    # any watched event fires, so "nothing observed" can mean
-                    # "was prevented" rather than "never tried" -- and those
-                    # are very different facts about a tool. Say so rather
-                    # than letting the pass imply good behaviour.
-                    row["evidence"] += (
-                        "; NOTE: egress was enforced at the boundary, so an "
-                        "attempt that failed before reaching it is not "
-                        "individually attributable. This pass means no egress "
-                        "reached the boundary, NOT that none was attempted.")
+                    # Under enforcement, silence is ambiguous: a tool that
+                    # fails at DNS before any watched event fires looks exactly
+                    # like one that never tried. That is not a pass with a
+                    # note, it is an absence of evidence, and it was returning
+                    # `pass` with the note appended -- which mcp-server-fetch
+                    # then rode to CONFORMANT, in a sandbox, as a URL-fetching
+                    # server. Locally, where the boundary is not in the way, the
+                    # same server fails this invariant on real egress.
+                    #
+                    # A caveat inside an evidence string does not survive the
+                    # summary. status, the registry, the badge and any agent
+                    # reading `verdict` all saw "conformant" and none of them
+                    # saw the sentence explaining why that was not established.
+                    row["verdict"] = "not-covered"
+                    row["evidence"] = (
+                        "no egress reached the boundary, but egress was "
+                        "ENFORCED here, so an attempt that failed before "
+                        "reaching it leaves no trace. This does not "
+                        "distinguish a tool that made no request from one that "
+                        "was prevented, and it is not evidence of either.")
 
         elif vtype == "no-data-egress":
             # The strongest claim a tool can make and the strongest finding
