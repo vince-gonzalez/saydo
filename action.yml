@@ -76,7 +76,7 @@ runs:
 
     - name: Install the harness
       shell: bash
-      run: pip install --quiet jsonschema cryptography "mcp==1.29.1"
+      run: pip install --quiet -r "${{ github.action_path }}/seeded/requirements.txt"
 
     - name: Run conformance
       id: saydo

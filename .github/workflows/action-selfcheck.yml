@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install the fixtures' SDK
-        run: pip install --quiet "mcp==1.29.1" jsonschema cryptography
+        run: pip install --quiet -r "seeded/requirements.txt"
 
       # 1. A server built to lie. The Action must fail the build.
       - name: 'A tool that breaks its declaration (must FAIL)'

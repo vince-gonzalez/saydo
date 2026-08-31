@@ -1,0 +1,11 @@
+# What the seeded fixtures need to run. ONE place, because this pin lives in
+# an action, three workflows and a Dockerfile, and it drifted: CI installed
+# mcp 1.29.1 on the runner while the fixtures are written against the 2.x API
+# (mcp.server.MCPServer). Fourteen action-selfcheck runs failed in a day on an
+# ImportError that no log surfaced.
+#
+# container/Dockerfile.seeded pins the same version for the contained runs,
+# which is why those kept working while the runner ones did not.
+mcp==2.1.1
+jsonschema>=4
+cryptography>=42

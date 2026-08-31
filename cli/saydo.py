@@ -281,7 +281,13 @@ def _autobuild(args, slug):
 
 def _warn_unsandboxed(args):
     """Say plainly what is about to happen, when it is about to happen."""
-    what = args.npm or args.pypi or " ".join(args.command or [])
+    # --command is a single string now. Joining it as though it were still a
+    # list of tokens spelled the command out one character at a time in the
+    # safety banner -- "p y t h o n   s e e d e d / . . ." -- which is the
+    # warning a person is meant to read before running untrusted code.
+    what = args.npm or args.pypi or (
+        args.command if isinstance(args.command, str)
+        else " ".join(args.command or []))
     print("\n" + "!" * 62)
     print("  About to run UNTRUSTED code on THIS MACHINE, not in a sandbox.")
     print("    {}".format(what[:70]))
