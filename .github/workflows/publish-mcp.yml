@@ -65,7 +65,16 @@ jobs:
           required."
             exit 1
           fi
-          echo "OK: manifest, working tree and live PyPI description agree."
+          # The registry caps the description at 100 characters and rejects
+          # the whole submission over it. Cheap to check here; a 422 after the
+          # fact is a wasted run and a confusing error.
+          DESC_LEN=$(jq -r '.description | length' server.json)
+          if [ "$DESC_LEN" -gt 100 ]; then
+            echo "::error::server.json description is $DESC_LEN characters;           the registry rejects anything over 100."
+            exit 1
+          fi
+
+          echo "OK: manifest, working tree and live PyPI description agree;           description $DESC_LEN/100 characters."
 
       - name: Install mcp-publisher
         run: |
