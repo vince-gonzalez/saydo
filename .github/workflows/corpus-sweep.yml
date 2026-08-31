@@ -24,6 +24,9 @@ on:
       size:
         description: 'Packages per batch'
         default: '20'
+      corpus:
+        description: 'Which candidate list to measure'
+        default: 'corpus/candidates.json'
       offset:
         description: 'Skip this many batches from the start'
         default: '0'
@@ -78,7 +81,7 @@ jobs:
           OFFSET=${{ github.event.inputs.offset }}
           INDEX=$(( ${{ matrix.batch }} + OFFSET ))
           python tools/sweep_scale.py \
-            corpus/candidates.json "$INDEX" ${{ github.event.inputs.size }} \
+            "${{ github.event.inputs.corpus }}" "$INDEX" ${{ github.event.inputs.size }} \
             "corpus-batch-$INDEX.json"
 
       - name: Keep the results

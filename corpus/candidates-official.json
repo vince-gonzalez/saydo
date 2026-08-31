@@ -1,0 +1,51 @@
+{
+  "source": {
+    "list": "https://github.com/modelcontextprotocol/servers",
+    "note": "The official reference servers. Chosen because they RUN without credentials, which is the precondition for measuring anything at all. Names and versions read from each package manifest in that repository, not guessed."
+  },
+  "discovered": 7,
+  "candidates": [
+    {
+      "registry": "npm",
+      "name": "@modelcontextprotocol/server-everything",
+      "version": "2.0.0",
+      "description": "Reference server exercising every MCP feature."
+    },
+    {
+      "registry": "npm",
+      "name": "@modelcontextprotocol/server-memory",
+      "version": "0.6.3",
+      "description": "Knowledge-graph memory over a local JSON file."
+    },
+    {
+      "registry": "npm",
+      "name": "@modelcontextprotocol/server-sequential-thinking",
+      "version": "0.6.2",
+      "description": "Structured step-by-step reasoning; pure computation."
+    },
+    {
+      "registry": "npm",
+      "name": "@modelcontextprotocol/server-filesystem",
+      "version": "0.6.3",
+      "description": "Filesystem access scoped to directories given on the command line."
+    },
+    {
+      "registry": "pypi",
+      "name": "mcp-server-fetch",
+      "version": "0.6.3",
+      "description": "Fetches a URL and converts it for model consumption."
+    },
+    {
+      "registry": "pypi",
+      "name": "mcp-server-git",
+      "version": "0.6.2",
+      "description": "Read and search a git repository."
+    },
+    {
+      "registry": "pypi",
+      "name": "mcp-server-time",
+      "version": "0.6.2",
+      "description": "Time and timezone conversion; pure computation."
+    }
+  ]
+}
