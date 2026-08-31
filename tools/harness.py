@@ -375,11 +375,33 @@ def judge(declaration, capture, run, ctx):
     # pure-computation server silent -- most well-written tools -- and the
     # harness established nothing about any of them. That was written up as a
     # limitation. It was the majority case.
-    acted = _acted() or bool(run.varied)
-    silent = None if acted else (
-        "the server neither produced an observable effect nor changed its "
-        "answer when its input changed, so a well-behaved tool and one that "
-        "declined to act look the same")
+    # A tool that computed proves the TOOL did something. It proves nothing
+    # about whether we were watching, and those are different questions.
+    #
+    # If not one monitor event arrived all run -- not a socket, not a file
+    # open, not even the interpreter importing its own modules -- then there
+    # is no observation channel, and "no egress observed" describes the
+    # channel rather than the tool. Varying the input cannot rescue that: the
+    # answer changed, and we still saw nothing either way.
+    #
+    # This was not hypothetical for an hour. Seven official servers came back
+    # from the sandbox with three passes each, identical down to the tally,
+    # including npm servers the Python audit hook cannot observe at all, and
+    # including mcp-server-fetch passing no-network while failing it locally.
+    # Those passes were silence wearing a verdict.
+    watching = bool(run.events)
+    acted = _acted() or (bool(run.varied) and watching)
+    if not watching:
+        silent = ("no monitor event of any kind was recorded during this run, "
+                  "so there was no observation channel; nothing here describes "
+                  "the tool")
+    elif acted:
+        silent = None
+    else:
+        silent = ("the server neither produced an observable effect nor "
+                  "changed its answer when its input changed, so a "
+                  "well-behaved tool and one that declined to act look the "
+                  "same")
 
     for inv in declaration["invariants"]:
         tools = _tools_of(inv, bound_names)

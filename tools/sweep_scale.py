@@ -241,6 +241,16 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
             {"invariant": v["id"], "type": v["type"],
              "evidence": v["evidence"][:300]}
             for v in report["verdicts"] if v["verdict"] == "fail"]
+        # Every verdict with its evidence, not only the failures. Seven servers
+        # came back with identical tallies and the record could not say why:
+        # working out whether those passes were observations or silence meant
+        # re-deriving it from the code. A result that cannot explain itself is
+        # not much of a result.
+        record["verdicts"] = [
+            {"invariant": v["id"], "verdict": v["verdict"],
+             "evidence": (v.get("evidence") or "")[:220]}
+            for v in report["verdicts"]]
+        record["enforcement"] = report.get("enforcement")
         return record
 
     record["outcome"] = "unstartable"
