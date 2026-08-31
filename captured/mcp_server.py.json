@@ -1,0 +1,123 @@
+{
+  "server": {
+    "name": "saydo",
+    "version": "0.1.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "What SayDo can and cannot settle. CALL THIS FIRST. Takes no arguments and does no I/O.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:ef17eb19bde34e43647cdbdab0e165506d3d84209ab274c7c7b0dd49f51b55e7",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "status",
+      "definition": {
+        "name": "status",
+        "description": "Whether a package has a SayDo conformance receipt. Takes a package URL such as pkg:npm/some-server or pkg:pypi/some-server. Returns 'unknown' when nobody has checked it, which is the usual answer.",
+        "inputSchema": {
+          "properties": {
+            "purl": {
+              "title": "Purl",
+              "type": "string"
+            }
+          },
+          "required": [
+            "purl"
+          ],
+          "type": "object",
+          "title": "statusArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:c2822fbe6fc6e48b445305bb0fb84774ddf6c63538092f707f0bb5c9d6c71d2e",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "inspect_definition",
+      "definition": {
+        "name": "inspect_definition",
+        "description": "Hash a tool definition and read its wording. Takes the tool's JSON definition. Does no I/O and takes no network. Static analysis only -- it catches obvious instruction-injection wording, never careful wording.",
+        "inputSchema": {
+          "properties": {
+            "definition": {
+              "additionalProperties": true,
+              "title": "Definition",
+              "type": "object"
+            }
+          },
+          "required": [
+            "definition"
+          ],
+          "type": "object",
+          "title": "inspect_definitionArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:92904778bc7b4b6d63a48f8eb998c3dfd4c0c58fd3e7eb0cb4ceaef2ee91e7df",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "check_now",
+      "definition": {
+        "name": "check_now",
+        "description": "Actually run a package in a sandbox and report what it did. Slow -- minutes, not seconds -- and needs Docker. Refuses rather than running unsandboxed.",
+        "inputSchema": {
+          "properties": {
+            "registry": {
+              "enum": [
+                "npm",
+                "pypi"
+              ],
+              "title": "Registry",
+              "type": "string"
+            },
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "timeout_seconds": {
+              "default": 600,
+              "maximum": 1800,
+              "minimum": 60,
+              "title": "Timeout Seconds",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "registry",
+            "name"
+          ],
+          "type": "object",
+          "title": "check_nowArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:8ea872a176187aa79ffc5a9248146fa3bc17e6503ac172f35e729ac168704eba",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}

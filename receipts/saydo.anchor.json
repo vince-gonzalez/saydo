@@ -1,0 +1,25 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:35dcb33b-c868-5002-8a73-5bab03f9dcaa|pkg:generic/mcp_server.py",
+  "subject": {
+    "name": "saydo",
+    "version": "0.1.0",
+    "purl": "pkg:generic/mcp_server.py"
+  },
+  "declarationSerial": "urn:uuid:35dcb33b-c868-5002-8a73-5bab03f9dcaa",
+  "conformant": false,
+  "rows": 9,
+  "head": "0b9d107fcd96d13307e1093449c2de2c7e8382f4b4e451740b174b829b406947",
+  "priorReceipt": null,
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "1970-01-01T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "p8dGpB4lKe_f9w1oTdrzLwvU6tqKAwow666G-7eoVqj3bFa_8DZLYjhWhABKObZgzEChKbyYjhcvmzQShZPuBw"
+  }
+}

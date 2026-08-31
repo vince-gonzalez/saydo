@@ -1,0 +1,68 @@
+{
+  "subject": {
+    "name": "saydo-mcp",
+    "version": "0.1.0",
+    "purl": "pkg:generic/saydo-mcp"
+  },
+  "declaration_serial": "urn:uuid:35dcb33b-c868-5002-8a73-5bab03f9dcaa",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": true,
+  "established": 3,
+  "tally": {
+    "pass": 4,
+    "not-covered": 1
+  },
+  "dataFlow": {},
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 4 call window(s)"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed",
+      "observed": []
+    },
+    {
+      "id": "subprocess.scope",
+      "type": "subprocess-scope",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no out-of-scope subprocess observed",
+      "observed": []
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    }
+  ],
+  "findings": []
+}

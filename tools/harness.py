@@ -543,6 +543,25 @@ def judge(declaration, capture, run, ctx):
             row.update(_binary_verdict(window_ran(tools), hits, "subprocess",
                                        run.monitor_incomplete or silent))
 
+        elif vtype == "subprocess-scope":
+            # A tool that legitimately runs other programs could previously say
+            # nothing at all about them: the spec had no-network/allowlist and
+            # no-write/write-scope, but only no-subprocess. So the honest
+            # declaration for anything that shells out was silence, and silence
+            # is what this project exists to stop accepting. Found by running
+            # the harness against SayDo's own MCP server, which spawns docker.
+            allowed = {str(x).lower() for x in params.get("programs", [])}
+            hits = []
+            for tool in tools:
+                for ev in run.events_for(tool):
+                    if ev["event"] in PROC_EVENTS:
+                        program = _program_of(ev)
+                        if program not in allowed:
+                            hits.append((tool, program or "an unnamed program"))
+            row.update(_binary_verdict(window_ran(tools), hits,
+                                       "out-of-scope subprocess",
+                                       run.monitor_incomplete or silent))
+
         elif vtype == "no-write":
             hits = [(t, p) for t, p, _d in _write_hits(run, tools, ctx)]
             row.update(_binary_verdict(window_ran(tools), hits, "write",
@@ -632,6 +651,47 @@ def _connect_loopback(ev):
     addr = args[1] if len(args) > 1 else (args[0] if args else None)
     ip = addr[0] if isinstance(addr, list) and addr else addr
     return isinstance(ip, str) and _loopback(ip)
+
+
+def _program_of(event):
+    """The program a spawn event names, as a bare lowercase basename.
+
+    The audit event carries (executable, command, cwd, env). CPython leaves
+    the executable None when it was not given explicitly, so the command is
+    the fallback -- a list whose head is the program, or a joined string.
+    """
+    args = event.get("args") or []
+    candidate = args[0] if args and isinstance(args[0], str) else None
+    if not candidate and len(args) > 1:
+        command = args[1]
+        if isinstance(command, list) and command:
+            candidate = command[0] if isinstance(command[0], str) else None
+        elif isinstance(command, str) and command.strip():
+            # A joined command line. Take the first token, honouring a quoted
+            # path, since program paths contain spaces more often than not.
+            text = command.strip()
+            if text[0] in "\"'":
+                end = text.find(text[0], 1)
+                candidate = text[1:end] if end > 0 else text[1:]
+            else:
+                # An unquoted path containing spaces is the normal case on
+                # Windows -- "C:\Program Files\Docker\docker.exe version"
+                # splits at the first space and yields "Program", which would
+                # accuse a tool of running something it never ran. Prefer the
+                # prefix ending at an executable extension.
+                candidate = None
+                lowered = text.lower()
+                for extension in (".exe", ".cmd", ".bat", ".com"):
+                    cut = lowered.find(extension)
+                    if cut > 0:
+                        candidate = text[:cut + len(extension)]
+                        break
+                if not candidate:
+                    candidate = text.split()[0]
+    if not candidate:
+        return ""
+    base = os.path.basename(candidate).lower()
+    return base[:-4] if base.endswith(".exe") else base
 
 
 def _binary_verdict(ran, hits, label, incomplete=None):

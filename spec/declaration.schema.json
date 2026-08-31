@@ -216,6 +216,7 @@
             "write-scope",
             "read-scope",
             "no-subprocess",
+            "subprocess-scope",
             "deterministic",
             "error-as-value",
             "refusal-tool",

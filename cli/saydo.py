@@ -300,20 +300,20 @@ def _resolve_command(args):
     test have no business sharing an environment.
     """
     if args.command:
-        # Both shapes work, because both get typed:
+        # ONE quoted string, split the way a shell would split it.
         #
-        #   --command python my_server.py       (REMAINDER, several tokens)
-        #   --command "python my_server.py"     (one quoted token)
-        #
-        # The second is what anyone writes in a YAML file or a shell variable,
-        # and it used to arrive as a single argv entry -- a program literally
-        # named "python my_server.py", which does not exist. It failed with a
-        # file-not-found naming a string nobody could act on. A quoted command
-        # is split the way a shell would split it.
-        if len(args.command) == 1 and re.search(r"\s", args.command[0]):
-            import shlex
-            return shlex.split(args.command[0], posix=(os.name != "nt"))
-        return args.command
+        # This used to be nargs=REMAINDER, which swallowed every later flag:
+        # `--command "python srv.py" --declaration mine.json` put the flag
+        # INSIDE the command and started a server with two arguments it had
+        # never heard of. That combination is the one the README documents, and
+        # it could not work in any invocation. REMAINDER cannot be fixed with
+        # care -- it is defined to consume the rest of the line -- so the
+        # option now takes a single value and the ambiguity is gone.
+        import shlex
+        command = args.command
+        if isinstance(command, list):                # tolerate older callers
+            command = " ".join(command)
+        return shlex.split(command, posix=(os.name != "nt"))
     if args.npm:
         return ["npx", "-y", args.npm]
     if args.pypi:
@@ -820,8 +820,9 @@ def _parser():
     v.add_argument("name", nargs="?",
                    help="a server from `saydo list`, or omit and use "
                         "--command/--npm/--pypi to verify anything")
-    v.add_argument("--command", nargs=argparse.REMAINDER,
-                   help="the command that starts any MCP server over stdio")
+    v.add_argument("--command",
+                   help="the command that starts any MCP server over stdio, "
+                        "as one quoted string: --command \"python srv.py\"")
     v.add_argument("--npm", help="verify an npm-published MCP server")
     v.add_argument("--pypi", help="verify a PyPI-published MCP server")
     v.add_argument("--declaration",
