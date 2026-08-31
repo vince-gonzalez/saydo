@@ -104,30 +104,45 @@ runs:
         # whether a failing tool fails the BUILD is decided below, from the
         # report, so the reason is legible instead of an opaque exit code.
         set +e
-        python "$SAYDO_HOME/cli/saydo.py" verify "${args[@]}"
+        python "$SAYDO_HOME/cli/saydo.py" verify "${args[@]}"           | tee "$RUNNER_TEMP/saydo.out"
         set -e
 
+        # Read what the run SAID it produced, rather than guessing which file
+        # in reports/ is newest. The guess held only while this repository
+        # contained no committed reports; it now contains receipts for real
+        # third-party servers, a fresh checkout gives every file the same
+        # mtime, and the Action began reading a report belonging to a
+        # different server and failing on an anchor that does not exist under
+        # that name. Fourteen runs failed that way in a day.
         python - <<'PY' >> "$GITHUB_OUTPUT"
-        import glob, json, os, sys
+        import json, os, sys
         home = os.environ["SAYDO_HOME"]
-        reports = sorted(glob.glob(os.path.join(home, "reports", "*.report.json")),
-                         key=os.path.getmtime)
-        if not reports:
-            print("::error::no report was produced; the run did not complete", file=sys.stderr)
+        line = None
+        with open(os.path.join(os.environ["RUNNER_TEMP"], "saydo.out"),
+                  encoding="utf-8", errors="replace") as fh:
+            for text in fh:
+                if text.startswith("SAYDO_RESULT "):
+                    line = text[len("SAYDO_RESULT "):].strip()
+        if not line:
+            print("::error::the run produced no SAYDO_RESULT line, so it did "
+                  "not complete a verification", file=sys.stderr)
             raise SystemExit(1)
-        rep = json.load(open(reports[-1], encoding="utf-8"))
-        slug = os.path.basename(reports[-1])[:-len(".report.json")]
-        anchor_path = os.path.join(home, "receipts", slug + ".anchor.json")
-        anchor = json.load(open(anchor_path, encoding="utf-8"))
-        est = rep.get("established", 0)
-        print("verdict=" + ("failing" if not rep["conformant"] else
-                            "inconclusive" if not est else "warranted"))
-        print("conformant=" + str(bool(rep["conformant"])).lower())
-        print("enforcement=" + rep.get("enforcement", "observed"))
-        print("receipt_head=" + str(anchor.get("head")))
-        print("receipt_path=" + os.path.join(home, "receipts", slug + ".receipt.jsonl"))
-        print("established=" + str(est))
-        print("slug=" + slug)
+        got = json.loads(line)
+        rep = json.load(open(os.path.join(home, got["report"]),
+                             encoding="utf-8"))
+        head = ""
+        if got.get("anchor"):
+            with open(os.path.join(home, got["anchor"]), encoding="utf-8") as fh:
+                head = json.load(fh).get("head") or ""
+        print("verdict=" + got["verdict"])
+        print("conformant=" + str(bool(got["conformant"])).lower())
+        print("enforcement=" + got["enforcement"])
+        print("receipt_head=" + head)
+        print("receipt_path=" + os.path.join(
+            home, "receipts", got["slug"] + ".receipt.jsonl"))
+        print("established=" + str(got.get("established", 0)))
+        print("slug=" + got["slug"])
+        print("report_path=" + got["report"])
         PY
 
     - name: Judge the run
@@ -135,6 +150,7 @@ runs:
       env:
         SAYDO_HOME: ${{ github.action_path }}
         SAYDO_SLUG: ${{ steps.saydo.outputs.slug }}
+        SAYDO_REPORT: ${{ steps.saydo.outputs.report_path }}
         SAYDO_HEAD: ${{ steps.saydo.outputs.receipt_head }}
         REQUIRE_COVERAGE: ${{ inputs.require-coverage }}
         FAIL_ON_DRIFT: ${{ inputs.fail-on-drift }}
@@ -143,7 +159,7 @@ runs:
         import json, os, sys
         home = os.environ["SAYDO_HOME"]
         slug = os.environ["SAYDO_SLUG"]
-        rep = json.load(open(os.path.join(home, "reports", slug + ".report.json"),
+        rep = json.load(open(os.path.join(home, os.environ["SAYDO_REPORT"]),
                              encoding="utf-8"))
         rows = rep["verdicts"]
         failed = [v for v in rows if v["verdict"] == "fail"]

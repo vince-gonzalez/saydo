@@ -361,7 +361,21 @@ def _summarise(slug, name, report_path):
     import status as status_mod
     with open(report_path, encoding="utf-8") as fh:
         report = json.load(fh)
+    # The receipt is named from the subject the report records, which is the
+    # server's own name; the report is named from the slug, which comes from
+    # the command that started it. For `saydo verify <name>` those agree. For
+    # `--command python silentserver.py` they do not -- slug "silentserver.py"
+    # against receipt "silentserver" -- so the CLI has been quietly failing to
+    # find its own receipt and printing neither the head nor the status.
+    subject = ((report.get("subject") or {}).get("name") or "").strip()
+    candidates = [slug] + ([_safe(subject)] if subject else [])
     anchor_path = os.path.join(ROOT, "receipts", slug + ".anchor.json")
+    for candidate in candidates:
+        path = os.path.join(ROOT, "receipts", candidate + ".anchor.json")
+        if os.path.exists(path):
+            anchor_path = path
+            slug = candidate          # the receipt pair is named consistently
+            break
     print("\n" + "=" * 62)
     print("  {}   {}".format(
         name, _headline(report)))
@@ -387,6 +401,33 @@ def _summarise(slug, name, report_path):
     print("=" * 62)
     print("\nverify it yourself: open verifier/index.html and paste the "
           "receipt and anchor.")
+
+    # One machine-readable line naming exactly what this run produced.
+    #
+    # The GitHub Action used to find its own output by globbing reports/ and
+    # taking the most recently modified file. That worked only while the
+    # repository contained no committed reports. It now does -- receipts for
+    # real third-party servers were added deliberately -- and on a fresh
+    # checkout every file carries the same mtime, so the Action started reading
+    # a committed report belonging to a different server and then looking for
+    # an anchor that does not exist under that name. Fourteen runs failed that
+    # way in one day.
+    #
+    # A caller should never have to guess which file a command it just ran
+    # wrote. This says so.
+    print("SAYDO_RESULT " + json.dumps({
+        "slug": slug,
+        "name": name,
+        "verdict": ("failing" if not report["conformant"] else
+                    "inconclusive" if not report.get("established") else
+                    "warranted"),
+        "conformant": bool(report["conformant"]),
+        "established": report.get("established", 0),
+        "enforcement": report.get("enforcement", "observed"),
+        "report": os.path.relpath(report_path, ROOT).replace(os.sep, "/"),
+        "anchor": (os.path.relpath(anchor_path, ROOT).replace(os.sep, "/")
+                   if os.path.exists(anchor_path) else None),
+    }, sort_keys=True))
 
 
 def _headline(report):
