@@ -137,6 +137,9 @@ class Run:
         self.events = []
         #: Set when the in-runtime monitor stream did not arrive intact.
         self.monitor_incomplete = None
+        #: Tools whose answer changed when the argument changed. Proof the tool
+        #: did work, for tools that do their work without touching anything.
+        self.varied = set()
         self.egress_log = egress_log
         self.runner = runner
         self._launch(plan, server_python, monitor_log)
@@ -180,9 +183,23 @@ class Run:
                 self.init_failure = init.kind
                 return
             self.init_failure = None
+            first = {}
             for tool, args, _det in plan["exercise"]:
                 out = session.call(tool, args, timeout)
                 self.windows.append((tool, out.t0, out.t1, out))
+                first.setdefault(tool, out)
+            # The same tools again with DIFFERENT valid arguments, to find out
+            # which of them actually computed something. This is the egress
+            # counterfactual pointed at coverage: intervene on the input and
+            # see whether the output follows.
+            for tool, args in plan.get("variation", []):
+                out = session.call(tool, args, timeout)
+                self.windows.append((tool, out.t0, out.t1, out))
+                before = first.get(tool)
+                if before is not None and before.kind == "result" == out.kind:
+                    if json.dumps(before.value, sort_keys=True) != \
+                            json.dumps(out.value, sort_keys=True):
+                        self.varied.add(tool)
             self._run_chain(session, plan, timeout)
         finally:
             session.close()
@@ -350,10 +367,19 @@ def judge(declaration, capture, run, ctx):
                         return True
         return False
 
-    acted = _acted()
+    # Two ways to have acted, and the second one was missing entirely.
+    #
+    # A side effect is one. The other is COMPUTING: mcp-server-time returns a
+    # different, correct answer for America/New_York and for Asia/Tokyo and
+    # touches nothing at all doing it. Requiring a syscall declared every
+    # pure-computation server silent -- most well-written tools -- and the
+    # harness established nothing about any of them. That was written up as a
+    # limitation. It was the majority case.
+    acted = _acted() or bool(run.varied)
     silent = None if acted else (
-        "the server produced no observable effect of any kind during the run, "
-        "so a well-behaved tool and one that declined to act look the same")
+        "the server neither produced an observable effect nor changed its "
+        "answer when its input changed, so a well-behaved tool and one that "
+        "declined to act look the same")
 
     for inv in declaration["invariants"]:
         tools = _tools_of(inv, bound_names)

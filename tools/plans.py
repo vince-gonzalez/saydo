@@ -481,6 +481,76 @@ def _benign_arg(field_name, schema, depth=0):
     return value
 
 
+def _alternate_arg(field_name, schema, depth=0):
+    """A DIFFERENT valid value for the same argument.
+
+    Paired with `_benign_arg`, this is how the harness finds out whether a tool
+    computed anything. A tool that returns the same bytes for "America/
+    New_York" and for "Asia/Tokyo" is not answering the question; a tool whose
+    answer moves with the argument did real work, whether or not it touched a
+    socket or a file.
+    """
+    schema = schema or {}
+    if "const" in schema:
+        return schema["const"]                      # genuinely has one value
+    enum = schema.get("enum")
+    if enum:
+        return enum[1] if len(enum) > 1 else enum[0]
+
+    kind = schema.get("type", "string")
+    if isinstance(kind, list):
+        kind = next((k for k in kind if k != "null"), "string")
+
+    if kind == "array":
+        items = schema.get("items") or {}
+        count = max(1, int(schema.get("minItems") or 1))
+        return [_alternate_arg(field_name, items, depth + 1)
+                for _ in range(count)]
+    if kind == "object":
+        props = schema.get("properties") or {}
+        required = schema.get("required") or list(props)
+        if depth >= 3:
+            return {}
+        return {k: _alternate_arg(k, props.get(k, {}), depth + 1)
+                for k in required if k in props}
+    if kind == "boolean":
+        return True                                  # _benign_arg gives False
+    if kind in ("integer", "number"):
+        base = _benign_arg(field_name, schema, depth)
+        try:
+            return base + 1
+        except TypeError:
+            return 2
+
+    fmt = (schema.get("format") or "").lower()
+    alternates = {
+        "date-time": "2019-07-08T09:10:11Z", "date": "2019-07-08",
+        "time": "09:10:11", "email": "other@example.net",
+        "hostname": "example.net", "ipv4": "198.51.100.7",
+        "uuid": "11111111-1111-4111-8111-111111111111",
+        "uri": "https://example.net/other", "url": "https://example.net/other",
+        "iri": "https://example.net/other", "duration": "PT2S",
+    }
+    if fmt in alternates:
+        return alternates[fmt]
+    if schema.get("pattern"):
+        # A pattern usually pins the shape exactly; varying it risks becoming
+        # invalid, and an invalid second call proves nothing. Reuse it and let
+        # the other arguments carry the variation.
+        return _benign_arg(field_name, schema, depth)
+
+    n = (field_name or "").lower()
+    if any(k in n for k in ("timezone", "tz")):
+        return "Asia/Tokyo"
+    if any(k in n for k in ("url", "uri", "link", "endpoint")):
+        return "https://example.net/other"
+    if any(k in n for k in ("email", "mail")):
+        return "other@example.net"
+    if any(k in n for k in ("date", "time", "when")):
+        return "2019-07-08T09:10:11Z"
+    return "second"
+
+
 def synth_plan(capture, command_argv, timeout=30):
     """A generic exercise for a server with no hand-written plan: call each
     tool once with benign arguments, behind the boundary proxy and the audit
@@ -491,7 +561,7 @@ def synth_plan(capture, command_argv, timeout=30):
     pass invariants it would fail with real input. The sweep reports it as
     such rather than as a clean bill.
     """
-    exercise = []
+    exercise, variation = [], []
     for t in capture["tools"]:
         name = t["name"]
         schema = t["definition"].get("inputSchema", {}) or {}
@@ -501,7 +571,17 @@ def synth_plan(capture, command_argv, timeout=30):
         deterministic = (name.lower() in ("scope", "guard", "about")
                          and not required)
         exercise.append((name, args, deterministic))
+        # A second call with DIFFERENT valid arguments. Its only purpose is to
+        # find out whether the tool computes: an answer that moves with the
+        # input is work, even when nothing was written and no socket opened.
+        # Without it, every pure-computation server -- which is most good ones
+        # -- looked identical to a server that declines everything.
+        if required:
+            other = {k: _alternate_arg(k, props.get(k, {})) for k in required}
+            if other != args:
+                variation.append((name, other))
     return {"command_argv": list(command_argv), "exercise": exercise,
+            "variation": variation,
             "call_timeout": timeout, "skip_fuzz": True, "synthetic": True}
 
 
