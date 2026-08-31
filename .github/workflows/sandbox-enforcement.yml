@@ -323,11 +323,13 @@ jobs:
         run: |
           python tools/harness.py             declarations/leakserver.declaration.json             captured/leakserver.json             /tmp/leak.report.json             --python python --plan leakserver             --runner container --image saydo/seeded:ci
 
-          # Every decision the proxy made, before judging anything. Three
-          # separate causes have already been guessed at in this chain and two
-          # were wrong; the proxy knows what it did and was not being asked.
-          echo "--- proxy decisions ---"
-          docker logs $(docker ps -aq --filter "name=saydo-proxy") 2>&1 | tail -40 || true
+          # Every event the run actually collected, before judging anything.
+          # Three causes have been guessed at in this chain and two were wrong.
+          # The proxy container is torn down by the time this step runs, so its
+          # own logs are gone -- but the harness copies what it collected into
+          # the egress log, and that survives.
+          echo "--- egress events collected by the run ---"
+          cat /tmp/saydo-egress-leakserver.log 2>/dev/null | tail -40 ||             echo "(no egress log at /tmp/saydo-egress-leakserver.log)"
           echo "--- end ---"
 
           python - <<'PY'
