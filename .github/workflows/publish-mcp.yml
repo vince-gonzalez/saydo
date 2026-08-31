@@ -1,0 +1,88 @@
+# Submit SayDo to the official MCP registry.
+#
+# Authentication is GitHub OIDC, not a token. The runner proves it is acting
+# for this repository, the registry checks that against the `io.github.<owner>`
+# namespace in server.json, and no credential is stored, pasted, or handled by
+# anyone. That is also why this cannot be run from a laptop: the proof is the
+# workflow's own identity.
+#
+# The PyPI package is published separately and deliberately. Ownership of the
+# package is proved by an `mcp-name: io.github.vince-gonzalez/saydo` marker in
+# the PyPI README, which is why it took a 0.1.1 -- a PyPI README only changes
+# by uploading a new version.
+name: publish to MCP registry
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write        # the OIDC token IS the authentication
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Refuse before publishing rather than discovering it after. The registry
+      # verifies the marker against server.json, and a mismatch is a rejection
+      # that costs another PyPI version to fix.
+      - name: The manifest and the published README must agree
+        run: |
+          NAME=$(jq -r .name server.json)
+          VERSION=$(jq -r .version server.json)
+          PKG_VERSION=$(jq -r '.packages[0].version' server.json)
+          echo "server.json: $NAME $VERSION (package $PKG_VERSION)"
+
+          if [ "$VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::server.json version ($VERSION) and package version \
+          ($PKG_VERSION) disagree"
+            exit 1
+          fi
+
+          if ! grep -q "mcp-name: $NAME" PACKAGE.md; then
+            echo "::error::PACKAGE.md is missing the ownership marker \
+          'mcp-name: $NAME'. The registry reads it from the PUBLISHED PyPI \
+          description, so fixing it needs a new PyPI release, not just a commit."
+            exit 1
+          fi
+
+          # The marker must be in what PyPI is actually serving, not only in
+          # the working tree. These are different things and only one is
+          # checked by the registry.
+          LIVE=$(curl -sf "https://pypi.org/pypi/saydo/$PKG_VERSION/json" \
+                 | jq -r '.info.description // ""')
+          if [ -z "$LIVE" ]; then
+            echo "::error::saydo $PKG_VERSION is not on PyPI yet. Publish the \
+          package before registering the server."
+            exit 1
+          fi
+          if ! printf '%s' "$LIVE" | grep -q "mcp-name: $NAME"; then
+            echo "::error::the marker is in the repository but NOT in the \
+          description PyPI is serving for $PKG_VERSION. A new PyPI release is \
+          required."
+            exit 1
+          fi
+          echo "OK: manifest, working tree and live PyPI description agree."
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher --version || true
+
+      - name: Authenticate by OIDC
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish
+        run: ./mcp-publisher publish
+
+      - name: Confirm the registry is actually serving it
+        run: |
+          NAME=$(jq -r .name server.json)
+          sleep 10
+          curl -sf "https://registry.modelcontextprotocol.io/v0/servers?search=$NAME" \
+            | jq -r '.servers[]? | "listed: \(.name) \(.version)"' || {
+              echo "::warning::published, but the registry did not return it \
+          yet. Indexing may lag; check manually before claiming it is listed."; }
