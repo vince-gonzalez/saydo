@@ -178,8 +178,23 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
     # A stable per-server suffix. hash() is salted per process, so using it
     # would give the same server a different network name on every run and
     # make a failure impossible to reproduce.
+    # routed=True, and this is the difference between measuring the ecosystem
+    # and measuring half of it.
+    #
+    # Unrouted, the sandbox network has no gateway: a connection dies in the
+    # routing table and never becomes a packet, so the only record of an
+    # attempt is the in-runtime audit hook -- which is CPython-only. Every
+    # Node server therefore reported no observation channel at all, and four
+    # of the seven official reference servers came back not-covered across the
+    # board for that reason alone.
+    #
+    # Routed, the packet is really emitted, a host firewall rule logs it and
+    # drops it, and the attempt is attributable whatever language made it. The
+    # containment claim then rests on those rules being installed, so the
+    # runner REFUSES to run if it cannot install them rather than quietly
+    # downgrading to an open network.
     the_runner = runner_mod.make("container", image=image,
-                                 tag="-b{}".format(seq))
+                                 tag="-b{}".format(seq), routed=True)
 
     attempts = commands_for(candidate, available)
     record["tried"] = [" ".join(a) for a in attempts]
