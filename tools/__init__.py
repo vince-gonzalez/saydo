@@ -15,7 +15,7 @@ the proven import paths keep working, installed or not.
 import os
 import sys
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # The bridge described above. Idempotent, and it appends nothing that is not
 # already this package's own directory.

@@ -13,6 +13,8 @@
 ╚════════════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
+<!-- mcp-name: io.github.vince-gonzalez/saydo -->
+
 **Does the tool do what it says?** Not is it safe, not is it good. A publisher
 declares what an MCP tool does in a signed contract; SayDo runs the tool in a
 sandbox, checks it against that contract, and emits a hash-chained receipt

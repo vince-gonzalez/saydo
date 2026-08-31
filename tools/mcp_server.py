@@ -59,8 +59,16 @@ import registry as registry_mod                           # noqa: E402
 
 REGISTRY_PATH = os.path.join(ROOT, "registry", "saydo-registry.json")
 
+# The version is read, never restated. Hardcoding it here made this a fifth
+# place the number lives, and it drifted on the very first bump: the wheel said
+# 0.1.1 while the server announced 0.1.0 to every client that asked.
+try:
+    from saydo import __version__ as _VERSION       # installed as a package
+except ImportError:                                  # running from the repo
+    _VERSION = "0.0.0+repo"
+
 server = MCPServer(
-    name="saydo", version="0.1.0",
+    name="saydo", version=_VERSION,
     instructions="Reports what an MCP tool was observed doing, against a "
                  "contract its author signed. Answers 'unknown' for anything "
                  "nobody has checked, and means it.")

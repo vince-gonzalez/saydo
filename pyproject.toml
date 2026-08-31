@@ -1,6 +1,6 @@
 [project]
 name = "saydo"
-version = "0.1.0"
+version = "0.1.1"
 description = "Does the tool do what it says? A conformance harness for MCP servers, and an MCP server that reports what it found."
 readme = "PACKAGE.md"
 requires-python = ">=3.11"

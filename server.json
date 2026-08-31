@@ -3,7 +3,7 @@
   "name": "io.github.vince-gonzalez/saydo",
   "title": "SayDo",
   "description": "Does the tool do what it says? Reports whether an MCP tool was observed behaving the way its author declared, and answers 'unknown' for anything nobody has checked.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "websiteUrl": "https://github.com/vince-gonzalez/saydo",
   "repository": {
     "url": "https://github.com/vince-gonzalez/saydo",
@@ -14,7 +14,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "saydo",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "runtimeHint": "uvx",
       "runtimeArguments": [
         {
