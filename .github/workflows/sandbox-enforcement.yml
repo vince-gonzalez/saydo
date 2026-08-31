@@ -329,7 +329,19 @@ jobs:
           # own logs are gone -- but the harness copies what it collected into
           # the egress log, and that survives.
           echo "--- egress events collected by the run ---"
-          cat /tmp/saydo-egress-leakserver.log 2>/dev/null | tail -40 ||             echo "(no egress log at /tmp/saydo-egress-leakserver.log)"
+          wc -l /tmp/saydo-egress-leakserver.log 2>/dev/null || echo "(no egress log)"
+          tail -30 /tmp/saydo-egress-leakserver.log 2>/dev/null || true
+          echo "--- in-runtime monitor events ---"
+          wc -l /tmp/saydo-monitor-leakserver.log 2>/dev/null || echo "(no monitor log)"
+          tail -30 /tmp/saydo-monitor-leakserver.log 2>/dev/null || true
+          echo "--- what the tools actually returned ---"
+          python - <<'INNER'
+          import json
+          r = json.load(open('/tmp/leak.report.json'))
+          print('subject :', (r.get('subject') or {}).get('name'))
+          print('tally   :', r.get('tally'))
+          print('monitor :', r.get('monitor'))
+          INNER
           echo "--- end ---"
 
           python - <<'PY'
