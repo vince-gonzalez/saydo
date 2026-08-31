@@ -46,13 +46,34 @@ def _notify(method):
     return (json.dumps({"jsonrpc": "2.0", "method": method}) + "\n").encode("utf-8")
 
 
-def _read_response(stream, want_id):
+def _read_response(stream, want_id, proc=None):
     """Next response with the given id; notifications in between are skipped."""
     while True:
         line = stream.readline()
         if not line:
-            raise RuntimeError("server closed stdout before answering id {}"
-                               .format(want_id))
+            # A server that dies on startup closes stdout, and reporting only
+            # that says nothing about WHY. The reason is on its stderr -- an
+            # ImportError, a missing environment variable, a stack trace -- and
+            # without it a CI failure is a mystery that has to be reproduced
+            # locally to diagnose. It is quoted here instead.
+            detail = ""
+            if proc is not None:
+                try:
+                    proc.stdin.close()
+                except Exception:
+                    pass
+                try:
+                    err = (proc.stderr.read() or b"").decode("utf-8", "replace")
+                except Exception:
+                    err = ""
+                err = err.strip()
+                if err:
+                    detail = "; the server said:\n" + err[-1500:]
+                elif proc.poll() is not None:
+                    detail = ("; it exited {} and said nothing"
+                              .format(proc.returncode))
+            raise RuntimeError("server closed stdout before answering id {}{}"
+                               .format(want_id, detail))
         line = line.strip()
         if not line:
             continue
@@ -80,14 +101,14 @@ def capture(command):
             "clientInfo": {"name": "saydo-capture", "version": "0.1.0"},
         }))
         proc.stdin.flush()
-        init = _read_response(proc.stdout, 1)
+        init = _read_response(proc.stdout, 1, proc)
 
         proc.stdin.write(_notify("notifications/initialized"))
         proc.stdin.flush()
 
         proc.stdin.write(_rpc(2, "tools/list", {}))
         proc.stdin.flush()
-        listed = _read_response(proc.stdout, 2)
+        listed = _read_response(proc.stdout, 2, proc)
     finally:
         proc.stdin.close()
         proc.terminate()
