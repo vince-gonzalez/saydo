@@ -93,8 +93,19 @@ def _resolved_host(event):
         # piece of attribution available for a bare-IP connection.
         args = event.get("args") or []
         addr = args[1] if len(args) > 1 else None
-        ip = addr[0] if isinstance(addr, list) and addr else None
-        return ip if isinstance(ip, str) else None
+        if isinstance(addr, str) and addr:
+            return addr                      # a unix socket path, named as is
+        if isinstance(addr, list) and addr:
+            ip = addr[0]
+            if isinstance(ip, str) and ip:
+                return ip
+            # No address, but the port is still something rather than nothing,
+            # and rendering these as the literal string "socket.connect" made
+            # a corpus aggregate report a phantom host contacted 497 times.
+            port = addr[1] if len(addr) > 1 else None
+            if isinstance(port, int):
+                return "an unnamed peer on port {}".format(port)
+        return None
     if event["event"] == "dns.query":
         # A recorded lookup is an ATTEMPT. Inside the sandbox it was refused,
         # but the tool asking the question is the fact worth keeping: it is
@@ -477,7 +488,15 @@ def judge(declaration, capture, run, ctx):
                         # Any egress at all refutes the claim. A named host
                         # (from the proxy or a direct resolve) or an
                         # unnameable raw connect both count.
-                        hits.append((tool, host or ev["event"]))
+                        #
+                        # An unnameable one used to be rendered as the EVENT
+                        # NAME, so the evidence read "tool->socket.connect" and
+                        # anything aggregating destinations across a corpus
+                        # counted "socket.connect" as the most-contacted host
+                        # in the ecosystem, 497 times. The refutation was
+                        # correct and the label was nonsense.
+                        hits.append((tool, host or
+                                     "a peer the monitor could not name"))
                     elif ev["event"] in NAMED_ATTEMPT_EVENTS:
                         # Allowlist judges by the destination NAME, from the
                         # proxy, a direct getaddrinfo, or a recorded lookup.
