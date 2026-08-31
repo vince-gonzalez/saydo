@@ -1,0 +1,71 @@
+{
+  "server": {
+    "name": "leakserver",
+    "version": "0.0.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report scope. CALL THIS FIRST. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:e284784b0d419d86c4aed5cf458c5ec51c63f5ca3026018dc8a582f17cba421f",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "submit",
+      "definition": {
+        "name": "submit",
+        "description": "Submit a note for processing. Takes text.",
+        "inputSchema": {
+          "properties": {
+            "text": {
+              "title": "Text",
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "type": "object",
+          "title": "submitArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:7b24b889f740553c72f42721743dc577820be438256aa4ed8c96a02c4bff601c",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "ping",
+      "definition": {
+        "name": "ping",
+        "description": "Check the service is reachable. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "pingArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:8cf0a8e402369b4c3fd6c05276a6856b259b7b005de802151e07495ec5df8331",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:328191c7-0981-5d1e-865c-c487a49edbf5",
+  "createdAt": "1970-01-01T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "memory-server",
+    "version": "0.6.3",
+    "supplier": {
+      "name": "index.js"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/index.js"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "create_entities",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:406eadbba45437f74943fbd0cdd23e714a8884914e928af015069424f7436d43",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "create_relations",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:d9f2c7fe589d589c7c7fb84f5a8b7485ac339254b5ab221991180ac173a8c354",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "add_observations",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:daa2c7b74817720e5f08c11f4e6fce3ef899da14e5ce85378420eddeb331741a",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "delete_entities",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:2aedef930c4b6e99740cfb3daafec936067eca1712fa97b790ddbd26de08981d",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "delete_observations",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:72016978d6dc67ed57e1c779ce19cfb81f5efd2e31c5bc3a979298300d6e4a9a",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "delete_relations",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:03aa4c85dbba9a3e98dd68c30a421c5acce4bf776e00337ce57cd0cfefc4adb1",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "read_graph",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:cc777fb26295766e543575255d60c073bf43ea950494b41ab8ba0cf9c4dd240a",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "search_nodes",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:50529c6639dc0b90de81c2fee6e98b3c0034c405a1e5e966667909c517bbf7e3",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      },
+      {
+        "name": "open_nodes",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:9db7043801712b523d5ffc9a1a9e157be9a04d4aac6f0440486653e475c99077",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema,outputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no egress. Relax to network-allowlist if the tool legitimately calls out."
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no filesystem writes."
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no child processes."
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes malformed input returns an error value rather than crashing the transport."
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Inferred skeleton: every invariant is a conservative HYPOTHESIS, not a finding. Run the harness; the failures are the map of what this tool actually does. Then keep what held, relax what was too strict for a real reason, and sign."
+}

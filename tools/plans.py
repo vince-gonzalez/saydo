@@ -551,7 +551,40 @@ def _alternate_arg(field_name, schema, depth=0):
     return "second"
 
 
-def synth_plan(capture, command_argv, timeout=30):
+def _mark(value, marker):
+    """Put the canary INSIDE a value the tool is given.
+
+    This is the whole counterfactual. Watching a request tells you a request
+    happened; finding the marker you put in the tool's INPUT inside that
+    request is what tells you the request carried your data.
+
+    It was previously planted only in SAYDO_CANARY, an environment variable,
+    and the seeded fixture read it from there and exfiltrated it. So the test
+    demonstrated that a fixture reads an env var -- the same mechanism the
+    prior art uses -- and never once looked at whether a real tool passes its
+    ARGUMENTS out. Across 279 third-party servers the proxy was hunting a
+    string that had never been in any data any tool was given, and every one
+    came back unexamined.
+
+    Strings carry it inline so they stay plausible input. Structures carry it
+    in their members. Numbers and booleans cannot carry it and are left alone.
+    """
+    if not marker:
+        return value
+    if isinstance(value, str):
+        # Appended rather than substituted, so an enum, a date or a pattern
+        # stays valid and the tool still accepts the call. A tool that
+        # validates strictly may reject the marked value; that shows up as the
+        # call failing, which is visible, rather than as a silent non-result.
+        return value + "-" + marker if value else marker
+    if isinstance(value, list):
+        return [_mark(v, marker) for v in value]
+    if isinstance(value, dict):
+        return {k: _mark(v, marker) for k, v in value.items()}
+    return value
+
+
+def synth_plan(capture, command_argv, timeout=30, marker=None):
     """A generic exercise for a server with no hand-written plan: call each
     tool once with benign arguments, behind the boundary proxy and the audit
     hook, so egress / writes / subprocess are observed under normal use.
@@ -567,7 +600,8 @@ def synth_plan(capture, command_argv, timeout=30):
         schema = t["definition"].get("inputSchema", {}) or {}
         props = schema.get("properties", {}) or {}
         required = schema.get("required", list(props))
-        args = {k: _benign_arg(k, props.get(k, {})) for k in required}
+        args = {k: _mark(_benign_arg(k, props.get(k, {})), marker)
+                for k in required}
         deterministic = (name.lower() in ("scope", "guard", "about")
                          and not required)
         exercise.append((name, args, deterministic))
@@ -577,7 +611,8 @@ def synth_plan(capture, command_argv, timeout=30):
         # Without it, every pure-computation server -- which is most good ones
         # -- looked identical to a server that declines everything.
         if required:
-            other = {k: _alternate_arg(k, props.get(k, {})) for k in required}
+            other = {k: _mark(_alternate_arg(k, props.get(k, {})), marker)
+                     for k in required}
             if other != args:
                 variation.append((name, other))
     return {"command_argv": list(command_argv), "exercise": exercise,

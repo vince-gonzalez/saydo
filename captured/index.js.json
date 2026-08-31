@@ -1,0 +1,702 @@
+{
+  "server": {
+    "name": "memory-server",
+    "version": "0.6.3"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "create_entities",
+      "definition": {
+        "name": "create_entities",
+        "description": "Create multiple new entities in the knowledge graph",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the entity"
+                  },
+                  "entityType": {
+                    "type": "string",
+                    "description": "The type of the entity"
+                  },
+                  "observations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observation contents associated with the entity"
+                  }
+                },
+                "required": [
+                  "name",
+                  "entityType",
+                  "observations"
+                ]
+              }
+            }
+          },
+          "required": [
+            "entities"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the entity"
+                  },
+                  "entityType": {
+                    "type": "string",
+                    "description": "The type of the entity"
+                  },
+                  "observations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observation contents associated with the entity"
+                  }
+                },
+                "required": [
+                  "name",
+                  "entityType",
+                  "observations"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "entities"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:406eadbba45437f74943fbd0cdd23e714a8884914e928af015069424f7436d43",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "create_relations",
+      "definition": {
+        "name": "create_relations",
+        "description": "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation starts"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation ends"
+                  },
+                  "relationType": {
+                    "type": "string",
+                    "description": "The type of the relation"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "relationType"
+                ]
+              }
+            }
+          },
+          "required": [
+            "relations"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation starts"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation ends"
+                  },
+                  "relationType": {
+                    "type": "string",
+                    "description": "The type of the relation"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "relationType"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "relations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:d9f2c7fe589d589c7c7fb84f5a8b7485ac339254b5ab221991180ac173a8c354",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "add_observations",
+      "definition": {
+        "name": "add_observations",
+        "description": "Add new observations to existing entities in the knowledge graph",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "observations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entityName": {
+                    "type": "string",
+                    "description": "The name of the entity to add the observations to"
+                  },
+                  "contents": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observation contents to add"
+                  }
+                },
+                "required": [
+                  "entityName",
+                  "contents"
+                ]
+              }
+            }
+          },
+          "required": [
+            "observations"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entityName": {
+                    "type": "string"
+                  },
+                  "addedObservations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "entityName",
+                  "addedObservations"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "results"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:daa2c7b74817720e5f08c11f4e6fce3ef899da14e5ce85378420eddeb331741a",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "delete_entities",
+      "definition": {
+        "name": "delete_entities",
+        "description": "Delete multiple entities and their associated relations from the knowledge graph",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "entityNames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "An array of entity names to delete"
+            }
+          },
+          "required": [
+            "entityNames"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:2aedef930c4b6e99740cfb3daafec936067eca1712fa97b790ddbd26de08981d",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "delete_observations",
+      "definition": {
+        "name": "delete_observations",
+        "description": "Delete specific observations from entities in the knowledge graph",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "deletions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entityName": {
+                    "type": "string",
+                    "description": "The name of the entity containing the observations"
+                  },
+                  "observations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observations to delete"
+                  }
+                },
+                "required": [
+                  "entityName",
+                  "observations"
+                ]
+              }
+            }
+          },
+          "required": [
+            "deletions"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:72016978d6dc67ed57e1c779ce19cfb81f5efd2e31c5bc3a979298300d6e4a9a",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "delete_relations",
+      "definition": {
+        "name": "delete_relations",
+        "description": "Delete multiple relations from the knowledge graph",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation starts"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation ends"
+                  },
+                  "relationType": {
+                    "type": "string",
+                    "description": "The type of the relation"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "relationType"
+                ]
+              },
+              "description": "An array of relations to delete"
+            }
+          },
+          "required": [
+            "relations"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "success",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:03aa4c85dbba9a3e98dd68c30a421c5acce4bf776e00337ce57cd0cfefc4adb1",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "read_graph",
+      "definition": {
+        "name": "read_graph",
+        "description": "Read the entire knowledge graph",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the entity"
+                  },
+                  "entityType": {
+                    "type": "string",
+                    "description": "The type of the entity"
+                  },
+                  "observations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observation contents associated with the entity"
+                  }
+                },
+                "required": [
+                  "name",
+                  "entityType",
+                  "observations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation starts"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation ends"
+                  },
+                  "relationType": {
+                    "type": "string",
+                    "description": "The type of the relation"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "relationType"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "entities",
+            "relations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:cc777fb26295766e543575255d60c073bf43ea950494b41ab8ba0cf9c4dd240a",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "search_nodes",
+      "definition": {
+        "name": "search_nodes",
+        "description": "Search for nodes in the knowledge graph based on a query",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The search query to match against entity names, types, and observation content"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the entity"
+                  },
+                  "entityType": {
+                    "type": "string",
+                    "description": "The type of the entity"
+                  },
+                  "observations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observation contents associated with the entity"
+                  }
+                },
+                "required": [
+                  "name",
+                  "entityType",
+                  "observations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation starts"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation ends"
+                  },
+                  "relationType": {
+                    "type": "string",
+                    "description": "The type of the relation"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "relationType"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "entities",
+            "relations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:50529c6639dc0b90de81c2fee6e98b3c0034c405a1e5e966667909c517bbf7e3",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    },
+    {
+      "name": "open_nodes",
+      "definition": {
+        "name": "open_nodes",
+        "description": "Open specific nodes in the knowledge graph by their names",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "An array of entity names to retrieve"
+            }
+          },
+          "required": [
+            "names"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the entity"
+                  },
+                  "entityType": {
+                    "type": "string",
+                    "description": "The type of the entity"
+                  },
+                  "observations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of observation contents associated with the entity"
+                  }
+                },
+                "required": [
+                  "name",
+                  "entityType",
+                  "observations"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation starts"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "The name of the entity where the relation ends"
+                  },
+                  "relationType": {
+                    "type": "string",
+                    "description": "The type of the relation"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "relationType"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "entities",
+            "relations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:9db7043801712b523d5ffc9a1a9e157be9a04d4aac6f0440486653e475c99077",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema,outputSchema}"
+      }
+    }
+  ]
+}

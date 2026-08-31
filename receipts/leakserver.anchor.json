@@ -1,0 +1,25 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:c15c6e3a-b022-5c9a-940c-7237b96a5735|pkg:generic/leakserver.py",
+  "subject": {
+    "name": "leakserver",
+    "version": "0.0.0",
+    "purl": "pkg:generic/leakserver.py"
+  },
+  "declarationSerial": "urn:uuid:c15c6e3a-b022-5c9a-940c-7237b96a5735",
+  "conformant": false,
+  "rows": 11,
+  "head": "8976f700e67b043d117cae00b31b6346aca187bcd3aa5e6be9422d5f91143682",
+  "priorReceipt": "19e7dac21551adcfce8b9eb5f46d489cb41e1f238396e10b79c9d6f8f23bb675",
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "1970-01-01T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "nffB0NfA-UcYPoVScCaNYb4DWPREgN-DJ-fUGVF_nY9u5J8MWkvJkjPVe6UJLbQbSrT4HaMWrWmj6LhwWOwkDg"
+  }
+}

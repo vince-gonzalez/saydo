@@ -1148,6 +1148,24 @@ def _safe_name(name):
     return re.sub(r"[^A-Za-z0-9._-]", "_", name)[:80]
 
 
+def _plan_marked(plan, marker):
+    """The same plan with the canary placed INSIDE every tool argument.
+
+    The marker used to live only in SAYDO_CANARY, so the only thing that ever
+    carried it out was a fixture written to read that variable. A real tool
+    passes its ARGUMENTS around, and nothing was putting the marker there --
+    which is why 279 third-party servers all came back unexamined.
+    """
+    if not marker:
+        return plan
+    marked = dict(plan)
+    marked["exercise"] = [(tool, plans_mod._mark(args, marker), det)
+                          for tool, args, det in plan.get("exercise", [])]
+    marked["variation"] = [(tool, plans_mod._mark(args, marker))
+                           for tool, args in plan.get("variation", [])]
+    return marked
+
+
 def run_conformance(name, plan, declaration, capture, server_python,
                     runner=None):
     """Exercise one server behind the boundary proxy and judge it. Returns a
@@ -1190,7 +1208,8 @@ def run_conformance(name, plan, declaration, capture, server_python,
     _ACTIVE_RUNNER = runner
 
     try:
-        main_run = Run(name, plan, server_python, log, egress_log=egress_log,
+        main_run = Run(name, _plan_marked(plan, canaries[0] if canaries else None),
+                       server_python, log, egress_log=egress_log,
                        runner=runner)
         appdata = main_run.appdata or tempfile.mkdtemp(prefix="saydo-prop-")
         ctx = {
@@ -1212,8 +1231,8 @@ def run_conformance(name, plan, declaration, capture, server_python,
             # it requires changing the input rather than observing it.
             import differential
             os.environ["SAYDO_CANARY"] = canaries[1]
-            second = Run(name, plan, server_python, log,
-                         egress_log=egress_log, runner=runner)
+            second = Run(name, _plan_marked(plan, canaries[1]), server_python,
+                         log, egress_log=egress_log, runner=runner)
             # Each run is judged only on events it actually produced.
             def own(run):
                 return [e for e in run.events

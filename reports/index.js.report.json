@@ -1,0 +1,118 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "memory-server",
+    "version": "0.6.3",
+    "supplier": {
+      "name": "index.js"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/index.js"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:328191c7-0981-5d1e-865c-c487a49edbf5",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": false,
+  "established": 2,
+  "tally": {
+    "pass": 2,
+    "fail": 1,
+    "not-covered": 1
+  },
+  "dataFlow": {},
+  "verdicts": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no hosts resolved across 17 call window(s)"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "write: add_observations:C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json; add_observations:C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json; create_entities:C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json; create_entities:C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json; create_relations:C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json; delete_entities:C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json",
+      "observed": [
+        {
+          "tool": "add_observations",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "add_observations",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "create_entities",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "create_entities",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "create_relations",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "delete_entities",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "delete_entities",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "delete_entities",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "delete_entities",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "delete_observations",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "delete_relations",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        },
+        {
+          "tool": "open_nodes",
+          "detail": "C:/Users/Admin/AppData/Local/Temp/claude/C--Users-Admin-OneDrive-Desktop-Pro-Categories-Application-Prompt/b6e9415b-4f3a-463e-a494-51593b82b642/scratchpad/mem.json"
+        }
+      ]
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed",
+      "observed": []
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    }
+  ],
+  "findings": []
+}

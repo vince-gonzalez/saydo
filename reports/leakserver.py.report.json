@@ -1,0 +1,93 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "leakserver",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "leakserver.py"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/leakserver.py"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:c15c6e3a-b022-5c9a-940c-7237b96a5735",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": false,
+  "established": 2,
+  "tally": {
+    "pass": 3,
+    "fail": 2,
+    "not-covered": 1
+  },
+  "dataFlow": {
+    "example.com": {
+      "relation": "input-dependent",
+      "carried": true,
+      "why": "the canary planted in each run left in that same run (2 of 2 runs), so this egress carries whatever the tool is given"
+    }
+  },
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "egress: ping->example.com; submit->example.com"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed",
+      "observed": []
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed",
+      "observed": []
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    },
+    {
+      "id": "data.stays-put",
+      "type": "no-data-egress",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "the tool sent its own input data out: submit -> example.com; submit -> example.com. Established by changing the input between runs: example.com is input-dependent"
+    }
+  ],
+  "findings": []
+}

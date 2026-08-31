@@ -121,6 +121,27 @@ reported `unexamined` rather than clean. *It sent your input to example.com* is
 a different sentence from *it made a request*, and only the first one is worth
 anything to the person deciding.
 
+Demonstrated by `seeded/leakserver.py`, which exists because this was claimed
+here before it was tested. Two tools contact the same host on every call.
+`submit` posts the text it was given; `ping` posts a fixed body:
+
+    FAIL  network.none     egress: ping->example.com; submit->example.com
+    FAIL  data.stays-put   the tool sent its own input data out:
+                           submit -> example.com. Established by changing the
+                           input between runs: example.com is input-dependent
+
+`network.none` sees both and cannot separate them, which is what watching
+traffic gets you. `data.stays-put` names only `submit`.
+
+**The correction that made this real.** Until 2026-08-31 the marker was planted
+only in `SAYDO_CANARY`, an environment variable, and the only fixture that ever
+carried it out read it from there — which is the mechanism the prior art
+already uses, not a different one. Nothing put the marker into a tool's
+arguments, so across 279 third-party servers the proxy searched for a string
+that had never been in any input, and all 279 came back `unexamined`. The
+marker now goes into the arguments each run is given, one per run, which is
+what the paragraph above always said it did.
+
 **Drift.** A tool redefined under an unchanged version number looks completely
 ordinary in any single receipt; the deception exists only as a difference
 between two runs. Receipts therefore chain to their predecessor, and a
@@ -220,6 +241,12 @@ two-run counterfactual that separates *your data left* from *a request
 happened*, and refusing to call a tool clean when it merely declined to act.
 If either turns out to have prior art, it belongs in this list and the claim
 above should be cut rather than defended.
+
+That first claim was overstated here for a week. The difference from Pipelock
+was given as *their canary is an environment variable, ours is the tool's own
+input* — and ours was also an environment variable. It is the tool's input as
+of 2026-08-31, with a fixture that demonstrates the argument case, and the
+sentence is kept honest by that fixture rather than by this paragraph.
 
 ## Status
 
