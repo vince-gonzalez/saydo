@@ -288,6 +288,23 @@ PLANS = {
         ],
         "skip_fuzz": True,
     },
+    # The counterfactual fixture: submit posts what it was handed, ping posts
+    # a fixed body to the same host. The harness marks these arguments with a
+    # different canary per run, which is what makes the two distinguishable.
+    "leakserver": {
+        "script": "seeded/leakserver.py",
+        "container_argv": ["python", "-u", "/app/leakserver.py"],
+        "exercise": [
+            ("scope", {}, True),
+            ("submit", {"text": "a note"}, False),
+            ("ping", {}, False),
+        ],
+        "variation": [
+            ("submit", {"text": "a different note"}),
+        ],
+        "call_timeout": 30,
+        "skip_fuzz": True,
+    },
     "malserver": {
         "launch": None,  # run as a script
         "script": MALSERVER,

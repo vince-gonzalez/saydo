@@ -23,6 +23,10 @@ ARG MCP_SPEC=mcp==2.1.1
 RUN pip install --no-cache-dir "$MCP_SPEC"
 
 COPY seeded/malserver.py /app/malserver.py
+# The counterfactual fixture. It posts the ARGUMENT it was
+# given, which is the case the two-run test exists for and
+# the one nothing was exercising under enforcement.
+COPY seeded/leakserver.py /app/leakserver.py
 # The audit hook travels with the image and is activated by
 # SAYDO_MONITOR_STDERR, so a blocked attempt is still recorded as an attempt.
 COPY tools/monitor_boot /saydo/monitor_boot

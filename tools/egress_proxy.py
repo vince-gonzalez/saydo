@@ -152,6 +152,22 @@ class EgressProxy:
                 port = int(port or 443)
                 scheme = "https" if port == 443 else "tcp"
                 if not self._permitted(host):
+                    # Refusing at CONNECT means never seeing what the tool was
+                    # about to send — and with a conservative declaration,
+                    # which allows no hosts at all, that is every request. It
+                    # is why data.stays-put came back not-covered for 279
+                    # servers and then 100 more: enforcement was blocking the
+                    # observation it exists to make possible.
+                    #
+                    # With a CA and a marker to look for, the request is
+                    # terminated here instead: the handshake completes, the
+                    # body is read and examined, and 403 is returned WITHOUT
+                    # any upstream connection. The tool's data enters this
+                    # proxy and stops. Nothing leaves, and we learn what it
+                    # tried to send, which refusing blind never told us.
+                    if self.ca and self.canaries:
+                        self._examine_and_refuse(client, host, port, scheme)
+                        return
                     self._emit(host, port, scheme, "CONNECT",
                                event="proxy.refused")
                     client.sendall(b"HTTP/1.1 403 Forbidden\r\n"
@@ -181,6 +197,59 @@ class EgressProxy:
                 client.close()
             except OSError:
                 pass
+
+    def _examine_and_refuse(self, client, host, port, scheme):
+        """Read what the tool was going to send, then refuse it anyway.
+
+        The containment guarantee is unchanged: no upstream connection is made
+        and nothing is forwarded. What changes is that the refusal is
+        informed. The body is examined for the marker planted in the tool's
+        input, so a blocked call still answers *was it carrying your data*
+        rather than only *it tried to reach somewhere it should not*.
+        """
+        import ssl
+        import tempfile
+
+        self._emit(host, port, scheme, "CONNECT", event="proxy.refused")
+        tls_client = None
+        try:
+            client.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
+            cert_pem, key_pem = self.ca.leaf_pem(host)
+            with tempfile.TemporaryDirectory() as tmp:
+                cert_path = os.path.join(tmp, "leaf.pem")
+                key_path = os.path.join(tmp, "leaf.key")
+                with open(cert_path, "wb") as fh:
+                    fh.write(cert_pem)
+                with open(key_path, "wb") as fh:
+                    fh.write(key_pem)
+                ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                ctx.load_cert_chain(cert_path, key_path)
+                tls_client = ctx.wrap_socket(client, server_side=True)
+            tls_client.settimeout(30)
+            request = _read_http_request(tls_client)
+            if request is not None:
+                head, body = request
+                self._examine(host, head, body)
+            try:
+                tls_client.sendall(b"HTTP/1.1 403 Forbidden\r\n"
+                                   b"Content-Length: 0\r\n\r\n")
+            except OSError:
+                pass
+        except Exception as exc:
+            # A client that will not accept the inspection certificate is a
+            # coverage gap, not a clean result, and says so.
+            self._note({"event": "exfil.unexamined", "host": host,
+                        "detail": str(exc)[:120],
+                        "meaning": "the request was refused before its body "
+                                   "could be read, so nothing is claimed "
+                                   "about what it carried"})
+        finally:
+            for sock in (tls_client, client):
+                if sock is not None:
+                    try:
+                        sock.close()
+                    except OSError:
+                        pass
 
     def _intercept(self, client, host, port):
         """Terminate TLS, examine what is being sent, then forward it on.

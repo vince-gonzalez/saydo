@@ -51,15 +51,15 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\bzbr_mlu; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\bzbr_mlu; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt",
+      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\9j33et4j; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\9j33et4j; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt",
       "observed": [
         {
           "tool": "convert",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\bzbr_mlu"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\9j33et4j"
         },
         {
           "tool": "convert",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\bzbr_mlu"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\9j33et4j"
         },
         {
           "tool": "convert",

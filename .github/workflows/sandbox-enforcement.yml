@@ -310,6 +310,52 @@ jobs:
           print('OK: contained run, and the seeded server was still caught.')
           PY
 
+      # The counterfactual, under enforcement, which is where it had never
+      # been tested. Locally the allowlist is off and every request is
+      # forwarded, so the body gets examined on the way through; contained,
+      # the proxy refuses at CONNECT and used to see nothing at all. That is
+      # why data.stays-put came back not-covered for 379 third-party servers.
+      #
+      # leakserver posts the argument it was handed. ping contacts the same
+      # host every call carrying nothing it was given. Only the first may be
+      # named.
+      - name: 'COUNTERFACTUAL: a refused request must still be examined'
+        run: |
+          python tools/harness.py             declarations/leakserver.declaration.json             captured/leakserver.json             /tmp/leak.report.json             --python python --plan leakserver             --runner container --image saydo/seeded:ci
+
+          python - <<'PY'
+          import json, sys
+          r = json.load(open('/tmp/leak.report.json'))
+          by = {v['id']: v for v in r['verdicts']}
+          flow = r.get('dataFlow') or {}
+          print('enforcement:', r['enforcement'])
+          print('dataFlow   :', json.dumps(flow))
+          for v in r['verdicts']:
+              print('  {:<12} {:<18} {}'.format(v['verdict'], v['id'],
+                                                v.get('evidence','')[:110]))
+
+          problems = []
+          egress = by.get('data.stays-put', {})
+          if egress.get('verdict') != 'fail':
+              problems.append(
+                  'data.stays-put came back {!r}. A refused request must still '
+                  'have its body examined, or enforcement silently destroys '
+                  'the measurement it exists to enable.'
+                  .format(egress.get('verdict')))
+          elif 'submit' not in (egress.get('evidence') or ''):
+              problems.append('the tool that carried the input was not named: '
+                              + (egress.get('evidence') or '')[:200])
+          if 'ping' in (egress.get('evidence') or ''):
+              problems.append('ping was accused of carrying input it never '
+                              'received; the counterfactual is not '
+                              'discriminating, it is just flagging egress')
+          if problems:
+              for p in problems:
+                  print('::error::' + p)
+              sys.exit(1)
+          print('OK: refused, examined, and only the input-carrying tool named.')
+          PY
+
       - name: Emit the receipt and check it earns the word "contained"
         run: |
           python tools/receipt.py /tmp/malserver.report.json \
