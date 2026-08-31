@@ -185,6 +185,7 @@ class ContainerRunner(Runner):
         self.routed = routed
         self.image = image
         self.runtime = runtime          # "runsc" for gVisor, None for default
+        self.tag = tag
         self.network = network + tag
         self.outside = outside + tag
         self.proxy_image = proxy_image
@@ -199,9 +200,19 @@ class ContainerRunner(Runner):
 
     # -- lifecycle ---------------------------------------------------------
 
+    class _NoDocker:
+        """What a docker call returns when there is no docker to call."""
+        returncode, stdout, stderr = 127, "", "docker is not on PATH"
+
     def _docker(self, *args, **kw):
-        return subprocess.run(["docker", *args], capture_output=True,
-                              text=True, timeout=kw.get("timeout", 120))
+        # Tolerate a missing binary. Callers already branch on returncode, and
+        # several are best-effort cleanup that must not raise -- an exception
+        # out of teardown loses the real failure that caused it.
+        try:
+            return subprocess.run(["docker", *args], capture_output=True,
+                                  text=True, timeout=kw.get("timeout", 120))
+        except (OSError, subprocess.SubprocessError):
+            return self._NoDocker()
 
     def setup(self, egress_log, allow=None, ca=None, canaries=None):
         """Stand up the two networks and the proxy, then hand back the address
@@ -209,6 +220,12 @@ class ContainerRunner(Runner):
         inside `network` the proxy is simply the only thing there."""
         self._ca = ca
         self._canaries = list(canaries or [])
+        # The subject container is named rather than --rm, so it survives its
+        # own exit long enough for `docker diff` to read what it wrote. A
+        # leftover from a killed run would collide with that name, so it is
+        # cleared here -- in setup, which is allowed to touch docker, rather
+        # than in argv, which only builds a command line.
+        self._docker("rm", "-f", "saydo-subject" + (self.tag or ""))
         if self.routed:
             # A gateway exists, so packets are emitted and observable. What
             # stops them is the firewall installed below, not the topology.
@@ -528,7 +545,6 @@ class ContainerRunner(Runner):
         # /server-memory writes a JSON graph to disk and came back with "no
         # observation channel", which is true and useless.
         self._container = "saydo-subject" + (self.tag or "")
-        self._docker("rm", "-f", self._container)          # a stale one, if any
         cmd = ["docker", "run", "--name", self._container, "-i",
                "--network", self.network,
                "--read-only",

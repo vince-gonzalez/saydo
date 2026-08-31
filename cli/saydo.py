@@ -645,7 +645,15 @@ def cmd_selfcheck(args):
                          "cooperative server act, so a not-covered result "
                          "would say more about us than about any subject")
 
-    print("\n[4] schema, spec and every declaration must agree")
+    print("\n[4] the container path must hold together without Docker")
+    broken = _check_container_runner()
+    for line in broken:
+        print("   " + line)
+    if broken:
+        raise SystemExit("selfcheck FAILED: the sandbox runner is broken in a "
+                         "way that would only show up in CI")
+
+    print("\n[5] schema, spec and every declaration must agree")
     # Three schema-versus-code divergences turned up in one day: two verdicts
     # and an invariant type that the code emitted and the schema forbade. Each
     # meant an artifact this project hands someone would be rejected by this
@@ -659,7 +667,7 @@ def cmd_selfcheck(args):
                          "declarations in this repository do not describe the "
                          "same program (see above for which)")
 
-    print("\n[5] every status verdict must satisfy the published schema")
+    print("\n[6] every status verdict must satisfy the published schema")
     # The schema is what a consumer validates against, so a verdict the code
     # can emit but the schema forbids makes our own output invalid -- which is
     # what happened when `inconclusive`, `revoked` and `expired` were added to
@@ -705,6 +713,58 @@ def _check_coverage(python, args):
     print("   all {} schema-constrained tools acted: {}".format(
         len(want), ", ".join(sorted(want))))
     return []
+
+
+def _check_container_runner():
+    """The container path must hold together without Docker. [] = ok.
+
+    Everything about ContainerRunner is invisible on a machine with no Docker,
+    so a plain AttributeError inside it reaches CI and then a whole corpus run
+    before anyone notices. That is not hypothetical: `self.tag` was referenced
+    and never assigned, and seven servers came back as `error` after a full
+    sweep because of one missing line. None of the checks below need a daemon,
+    and any of them would have caught it in about a second.
+    """
+    import runner as runner_mod
+    problems = []
+    try:
+        r = runner_mod.make("container", image="x:y", tag="-t1", routed=True)
+    except Exception as exc:
+        return ["ContainerRunner will not even construct: {}: {}".format(
+            type(exc).__name__, exc)]
+
+    for attribute in ("tag", "image", "network", "outside", "proxy_name"):
+        if not hasattr(r, attribute):
+            problems.append("ContainerRunner has no .{} — something builds a "
+                            "name out of it".format(attribute))
+    if getattr(r, "enforcement", None) != "contained":
+        problems.append("a container runner must report enforcement "
+                        "'contained', got {!r}".format(
+                            getattr(r, "enforcement", None)))
+    try:
+        if r.collect_writes() != []:
+            problems.append("collect_writes invented writes with no container")
+    except Exception as exc:
+        problems.append("collect_writes raises without Docker: {}: {}".format(
+            type(exc).__name__, exc))
+    try:
+        r._docker("version")
+    except Exception as exc:
+        problems.append("a docker call raises instead of reporting failure: "
+                        "{}: {}".format(type(exc).__name__, exc))
+    try:
+        runner_mod.make("nonsense")
+        problems.append("make() accepted an unknown runner kind rather than "
+                        "refusing")
+    except ValueError:
+        pass
+    except Exception as exc:
+        problems.append("make() raised {} for an unknown kind; it should "
+                        "refuse with ValueError".format(type(exc).__name__))
+
+    if not problems:
+        print("   container runner holds together with no Docker present")
+    return problems
 
 
 def _check_declarations():
