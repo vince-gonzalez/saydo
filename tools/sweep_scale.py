@@ -86,6 +86,12 @@ def write_dockerfiles(batch, out_dir):
                 "RUN useradd --create-home --uid 10001 saydo\n"
                 "RUN for p in {}; do npm install -g --omit=dev \"$p\" "
                 "|| echo \"SAYDO-INSTALL-FAILED $p\"; done\n"
+                # The Node monitor, loaded before the server's own code. Without
+                # it a Node server has no observation channel whatsoever and
+                # every invariant comes back not-covered, which is what four of
+                # the seven official reference servers did, four runs running.
+                "COPY tools/monitor_boot /saydo/monitor_boot\n"
+                "ENV NODE_OPTIONS=--require=/saydo/monitor_boot/node_monitor.js\n"
                 "USER saydo\nWORKDIR /scratch\nENTRYPOINT []\n".format(specs))
         made["npm"] = (path, NODE_IMAGE)
 

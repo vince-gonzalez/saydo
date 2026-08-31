@@ -17,6 +17,8 @@ RUN test -n "$SERVER_SPEC" \
  && npm install -g --omit=dev "$SERVER_SPEC" \
  && npm cache clean --force
 
+COPY tools/monitor_boot /saydo/monitor_boot
+ENV NODE_OPTIONS=--require=/saydo/monitor_boot/node_monitor.js
 ENV SAYDO_SERVER_SPEC=${SERVER_SPEC}
 
 USER saydo

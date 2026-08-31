@@ -216,7 +216,41 @@ exists, read a contained `no-network` pass as "nothing got out", never as
    signed by SayDo, the signing key managed (not the proof-of-concept key in
    `keys/`).
 
-## OPEN: a Node MCP server cannot be measured at all (2026-08-31)
+## CLOSED: a Node MCP server can now be measured (2026-08-31)
+
+`tools/monitor_boot/node_monitor.js` is the Node equivalent of the
+audit hook: a `--require` preload that wraps `fs`, `dns`, `net`,
+`http`/`https` and `child_process`, and reports on the same stderr
+channel with the same event names, so the harness ingests it with no
+new code path.
+
+Measured against @modelcontextprotocol/server-memory, which had
+returned not-covered on everything four runs running:
+
+    [ ok  ] network.none      no hosts resolved across 17 call windows
+    [ FAIL] writes.none       add_observations, create_entities,
+                              create_relations, delete_entities
+                              -> memory.json
+    [ ok  ] subprocess.none   no subprocess observed
+
+Per-tool attribution on a TypeScript server. It reports a
+`monitor.ready` event at load so the harness can tell "watched and
+saw nothing" from "was never watching" -- deliberately not a
+network, write or process event, so it can never be mistaken for
+the tool having acted.
+
+Reads are NOT reported. A Node process opens hundreds of files
+loading its own modules, and emitting those would make every server
+look busy and violate read-scope on its own dependencies. So
+read-scope is not covered for Node, which is stated rather than
+guessed at.
+
+Same limit as the Python hook, for the same reason: it observes the
+runtime, not the kernel. A native addon calling the OS directly
+walks past it exactly as ctypes does past the Python one.
+
+### What it took, kept for the record
+
 
 Measured, not suspected. The seven official reference servers were run in the
 sandbox four times. Every Python one produced verdicts. Every Node one produced
@@ -250,16 +284,11 @@ Three fixes were tried and none of them addressed this:
   host read it back. Also real, and also irrelevant unless the server happens
   to write there.
 
-**The fix is a Node-side monitor**: a `--require` preload that hooks `fs`,
-`net`, `dns` and `child_process` and reports on the same stderr channel the
-Python hook uses, so the harness needs no new ingestion path. That is a real
-piece of work, not a flag, and it is not done.
-
-**Until it is, SayDo measures Python MCP servers.** A Node server gets
-`not-covered` with the reason stated, which is honest and useless, and no
-corpus that includes them says anything about them. That belongs in any figure
-this project publishes: a sweep is a measurement of the Python half of the
-ecosystem and must be reported as such.
+The fix was the monitor above. The last obstacle was not the hook but
+the wiring: `runner.env()` is called with `monitor_boot_dir=None`, so
+the NODE_OPTIONS it set never ran. The Python monitor is injected in
+`Session.__init__` rather than through the runner, and the Node one
+had to go in beside it.
 
 ## What a receipt may and may not say today
 

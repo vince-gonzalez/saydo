@@ -137,6 +137,13 @@ class LocalRunner(Runner):
             prior = os.environ.get("PYTHONPATH")
             env["PYTHONPATH"] = monitor_boot_dir + (
                 os.pathsep + prior if prior else "")
+            # The Node monitor lives in the same directory. A local run of a
+            # Node server had no observation channel at all before this, in
+            # exactly the way the contained runs did.
+            node_monitor = os.path.join(monitor_boot_dir, "node_monitor.js")
+            if os.path.exists(node_monitor):
+                env["NODE_OPTIONS"] = "--require=" + node_monitor.replace(
+                    os.sep, "/")
         return env
 
     def describe(self):
@@ -189,6 +196,10 @@ class ContainerRunner(Runner):
         self.image = image
         self.runtime = runtime          # "runsc" for gVisor, None for default
         self.tag = tag
+        #: Where the Node monitor sits inside the image. The Python monitor
+        #: rides on PYTHONPATH; Node has no equivalent, so it is required by
+        #: absolute path.
+        self.node_monitor = "/saydo/monitor_boot/node_monitor.js"
         self.network = network + tag
         self.outside = outside + tag
         self.proxy_image = proxy_image
@@ -613,7 +624,13 @@ class ContainerRunner(Runner):
                # Bytecode caching is the interpreter's housekeeping, not the
                # tool's behaviour. Left on, every Python server appears to
                # write files it never asked to write.
-               "-e", "PYTHONDONTWRITEBYTECODE=1"]
+               "-e", "PYTHONDONTWRITEBYTECODE=1",
+               # The Node equivalent of the audit hook, loaded before the
+               # server's own code and reporting on the same stderr channel.
+               # Harmless when the image has no Node; NODE_OPTIONS is simply
+               # never read. Set here rather than only in the image so a
+               # caller's own image gets it too.
+               "-e", "NODE_OPTIONS=--require=" + self.node_monitor]
 
         ip = getattr(self, "_proxy_ip", "")
         if ip:

@@ -67,12 +67,24 @@ class Session:
         full_env = dict(os.environ)
         if env:
             full_env.update(env)
+        boot = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "monitor_boot")
         if monitor_log:
             full_env["SAYDO_MONITOR_LOG"] = monitor_log
-            boot = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "monitor_boot")
             prior = full_env.get("PYTHONPATH")
             full_env["PYTHONPATH"] = boot + (os.pathsep + prior if prior else "")
+        # The Node monitor, injected unconditionally and independently of the
+        # Python one. It reports on stderr, which is drained on every run, so
+        # it needs no log path -- and it was previously gated behind an
+        # argument the harness passes as None, so it never loaded at all and a
+        # local Node server stayed exactly as unobservable as a contained one.
+        node_monitor = os.path.join(boot, "node_monitor.js")
+        if os.path.exists(node_monitor):
+            existing = full_env.get("NODE_OPTIONS", "")
+            require = "--require=" + node_monitor.replace(os.sep, "/")
+            if require not in existing:
+                full_env["NODE_OPTIONS"] = (
+                    (existing + " " + require).strip() if existing else require)
         # Bytecode writing during import would appear as filesystem writes by
         # the tool. It is interpreter housekeeping, not tool behavior, so it
         # is turned off rather than filtered out afterwards.
