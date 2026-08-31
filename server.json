@@ -1,0 +1,41 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.vince-gonzalez/saydo",
+  "title": "SayDo",
+  "description": "Does the tool do what it says? Reports whether an MCP tool was observed behaving the way its author declared, and answers 'unknown' for anything nobody has checked.",
+  "version": "0.1.0",
+  "websiteUrl": "https://github.com/vince-gonzalez/saydo",
+  "repository": {
+    "url": "https://github.com/vince-gonzalez/saydo",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "saydo",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "--from",
+          "value": "saydo[mcp]",
+          "isRequired": true,
+          "description": "The MCP server sits behind an optional dependency so the library and harness stay installable without the SDK."
+        },
+        {
+          "type": "positional",
+          "value": "saydo-mcp",
+          "isRequired": true,
+          "description": "The stdio server entry point. Full command: uvx --from 'saydo[mcp]' saydo-mcp"
+        }
+      ],
+      "packageArguments": [],
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": []
+    }
+  ]
+}

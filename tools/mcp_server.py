@@ -184,6 +184,24 @@ def check_now(
     name: Annotated[str, Field(min_length=1)],
     timeout_seconds: Annotated[int, Field(ge=60, le=1800)] = 600,
 ) -> dict:
+    # Installed from a wheel, only the package ships -- the CLI and the
+    # container definitions live in the repository. Saying so is better than
+    # discovering it as a stack trace, and far better than quietly running
+    # something weaker and reporting the result as if it were a sandboxed run.
+    cli = os.path.join(ROOT, "cli", "saydo.py")
+    if not os.path.exists(cli):
+        return {
+            "refused": True,
+            "reason": "this is the installed package, which ships the library "
+                      "and this server but not the harness's container "
+                      "definitions. Measuring a package requires the "
+                      "repository.",
+            "alternative": "git clone https://github.com/vince-gonzalez/saydo "
+                           "and run `python cli/saydo.py verify --{} {} "
+                           "--sandbox`. `status` and `inspect_definition` work "
+                           "here without it.".format(registry, name),
+        }
+
     have_docker = subprocess.run(
         ["docker", "version", "--format", "{{.Server.Version}}"],
         capture_output=True, text=True).returncode == 0

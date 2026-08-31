@@ -1,31 +1,54 @@
 [project]
-name = "saydo-tools"
+name = "saydo"
 version = "0.1.0"
-description = "Behavioral-conformance warranty layer for MCP tools (reference tooling)"
+description = "Does the tool do what it says? A conformance harness for MCP servers, and an MCP server that reports what it found."
+readme = "PACKAGE.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
-# Runtime dependency is the MCP SDK for the servers under test; the harness
-# and receipt engine use only the standard library. jsonschema is needed for
-# declaration validation.
+authors = [{ name = "F-Keys Creative LLC" }]
+keywords = [
+  "mcp", "model-context-protocol", "mcp-server", "conformance",
+  "ai-security", "agent-security", "supply-chain-security", "sandbox",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Security",
+  "Topic :: Software Development :: Testing",
+  "Programming Language :: Python :: 3",
+]
+
+# The harness and the receipt engine use only the standard library. jsonschema
+# validates declarations against the published schema.
 dependencies = ["jsonschema>=4"]
 
-# The CLI runs as `python cli/saydo.py <cmd>`. A console-script entry point
-# is deferred until the package layout is finalized, rather than declared here
-# before it resolves.
-
 [project.optional-dependencies]
-# The five covered servers, so `saydo verify <name>` has something to run.
-dogfood = [
-  "authorecon[mcp]==1.1.0",
-  "certivl[mcp]==0.2.0",
-  "loadbearing[mcp,formal]==0.2.0",
-  "mmforge[mcp]==0.2.0",
-  "remapwrap[mcp]==0.6.0",
-]
+# The MCP server is optional so the library stays installable without the SDK,
+# per the house pattern. `pip install saydo[mcp]` gets you saydo-mcp.
+mcp = ["mcp>=1.29", "pydantic>=2"]
+
+[project.scripts]
+saydo-mcp = "saydo.mcp_server:main"
+
+[project.urls]
+Homepage = "https://github.com/vince-gonzalez/saydo"
+Source = "https://github.com/vince-gonzalez/saydo"
+Issues = "https://github.com/vince-gonzalez/saydo/issues"
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
-# Not published. This exists so the CLI can be installed locally
-# (`pip install -e .`) and so the dependency set is recorded in one place.
+[tool.setuptools]
+# The repository's tools/ IS the package. Mapping it rather than moving it
+# means the modules ship exactly as CI runs them.
+#
+# Declared explicitly, not discovered. `packages.find` scans the filesystem for
+# a directory literally named saydo/, does not find one because the mapping is
+# virtual, and silently produces a wheel containing no module at all -- which
+# installs, reports success, and fails on import.
+package-dir = { saydo = "tools" }
+packages = ["saydo"]
+
+[tool.setuptools.package-data]
+saydo = ["monitor_boot/*.py", "*.md"]

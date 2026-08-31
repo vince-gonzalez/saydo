@@ -8,3 +8,6 @@ fixtures/gitrepo/
 corpus/*.db
 corpus/candidates-pypi.json
 corpus-batch-*.json
+dist/
+build/
+*.egg-info/
