@@ -1,0 +1,69 @@
+{
+  "server": {
+    "name": "mcp-time",
+    "version": "1.29.1"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "get_current_time",
+      "definition": {
+        "name": "get_current_time",
+        "description": "Get current time in a specific timezone",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone name (e.g., 'America/New_York', 'Europe/London'). Use 'America/New_York' as local timezone if no timezone provided by the user."
+            }
+          },
+          "required": [
+            "timezone"
+          ]
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:b9b46e76c409c48fc8a58eec1f8fd319a2b8c440a40439fd8de1385100993ba8",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "convert_time",
+      "definition": {
+        "name": "convert_time",
+        "description": "Convert time between timezones",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "source_timezone": {
+              "type": "string",
+              "description": "Source IANA timezone name (e.g., 'America/New_York', 'Europe/London'). Use 'America/New_York' as local timezone if no source timezone provided by the user."
+            },
+            "time": {
+              "type": "string",
+              "description": "Time to convert in 24-hour format (HH:MM)"
+            },
+            "target_timezone": {
+              "type": "string",
+              "description": "Target IANA timezone name (e.g., 'Asia/Tokyo', 'America/San_Francisco'). Use 'America/New_York' as local timezone if no target timezone provided by the user."
+            }
+          },
+          "required": [
+            "source_timezone",
+            "time",
+            "target_timezone"
+          ]
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:04fd622b4f3efe7be57b346f7f942e97609c2f014256950c67a811f503b7bd8b",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}

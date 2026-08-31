@@ -1,16 +1,16 @@
 {
   "receiptVersion": "0.1.0",
-  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:b9517156-bd4d-5482-8ded-7e139a93b810|pkg:pypi/mcp-server-time",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:fe43d30c-68f2-5276-825e-8bd9cdd4fc1d|pkg:generic/mcp-server-time.exe",
   "subject": {
     "name": "mcp-time",
     "version": "1.29.1",
-    "purl": "pkg:pypi/mcp-server-time"
+    "purl": "pkg:generic/mcp-server-time.exe"
   },
-  "declarationSerial": "urn:uuid:b9517156-bd4d-5482-8ded-7e139a93b810",
+  "declarationSerial": "urn:uuid:fe43d30c-68f2-5276-825e-8bd9cdd4fc1d",
   "conformant": true,
   "rows": 8,
-  "head": "a9ad1809ef4d82d51e42a6d7dc595760c92adedf9a8057b0066b6cded8369a94",
-  "priorReceipt": "0b04cea261bdff6dac5db3f3ce29a508910742e486501f76f6e98bb07f7e1186",
+  "head": "10e87fdc193124a92ffd0390dbc3cab2965a8a10012d480099ed8ec0f9abaee9",
+  "priorReceipt": "cd29c3d0f4a9d02d357f6e86889b5f0f26c4a95582f142524bef214f0c55d457",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -18,8 +18,8 @@
     "keyId": "urn:fkeys:saydo:key:f-keys-poc",
     "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
     "covers": "head",
-    "signedAt": "2026-08-30T00:00:00Z",
+    "signedAt": "1970-01-01T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "VKw3gODfigWtXjBOxzRuirNk7HSnpaRZ9taLHDL7xyQu5jaZNf7dOkJM34FEWS9_7CtORkjBywqHG-cgVs6xDQ"
+    "value": "ZCB57AveqsSE2sbr9m3r6YoXN1naYRwGJt-MtzDJpyFR5U53t0syf-iJIBc4JyaQBs9rUVxtky2_2D_BXV8FBA"
   }
 }

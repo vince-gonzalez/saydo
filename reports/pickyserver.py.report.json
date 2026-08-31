@@ -42,7 +42,7 @@
         "*"
       ],
       "verdict": "pass",
-      "evidence": "no hosts resolved across 5 call window(s)"
+      "evidence": "no hosts resolved across 8 call window(s)"
     },
     {
       "id": "writes.none",
@@ -51,15 +51,19 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\j1uuark7; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\j1uuark7; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt; summarise:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_summarise.txt",
+      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\wn7yv6mc; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\wn7yv6mc; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt",
       "observed": [
         {
           "tool": "convert",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\j1uuark7"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\wn7yv6mc"
         },
         {
           "tool": "convert",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\j1uuark7"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\wn7yv6mc"
+        },
+        {
+          "tool": "convert",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt"
         },
         {
           "tool": "convert",
@@ -72,6 +76,14 @@
         {
           "tool": "schedule",
           "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt"
+        },
+        {
+          "tool": "schedule",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt"
+        },
+        {
+          "tool": "summarise",
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_summarise.txt"
         },
         {
           "tool": "summarise",

@@ -41,7 +41,7 @@
         "*"
       ],
       "verdict": "not-covered",
-      "evidence": "no egress observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing"
+      "evidence": "no egress observed, but the server neither produced an observable effect nor changed its answer when its input changed, so a well-behaved tool and one that declined to act look the same, so this establishes nothing"
     },
     {
       "id": "writes.none",
@@ -50,7 +50,7 @@
         "*"
       ],
       "verdict": "not-covered",
-      "evidence": "no write observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
+      "evidence": "no write observed, but the server neither produced an observable effect nor changed its answer when its input changed, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
       "observed": []
     },
     {
@@ -60,7 +60,7 @@
         "*"
       ],
       "verdict": "not-covered",
-      "evidence": "no subprocess observed, but the server produced no observable effect of any kind during the run, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
+      "evidence": "no subprocess observed, but the server neither produced an observable effect nor changed its answer when its input changed, so a well-behaved tool and one that declined to act look the same, so this establishes nothing",
       "observed": []
     },
     {

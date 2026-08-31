@@ -1,0 +1,25 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:3387d6a5-3239-51a0-b91e-833f71b04fbf|pkg:generic/mcp-server-fetch.exe",
+  "subject": {
+    "name": "mcp-fetch",
+    "version": "1.29.1",
+    "purl": "pkg:generic/mcp-server-fetch.exe"
+  },
+  "declarationSerial": "urn:uuid:3387d6a5-3239-51a0-b91e-833f71b04fbf",
+  "conformant": false,
+  "rows": 8,
+  "head": "088fea7c00d3e9a093a6d6ec3b45a5e6652a5564dce5479a029a0d9008419229",
+  "priorReceipt": "725020371e12e28e1e89ae439366a423ffa468c832763a48c13f9b8ec80882cd",
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "1970-01-01T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "pZv3gb9lf2pWjJ2Kqi32NQPnhRcMrgRkakTpRCu7Yq5ltsGab4sys86dk-cEgig_Wc6lzY2pmhT9sjbuHYhbAw"
+  }
+}

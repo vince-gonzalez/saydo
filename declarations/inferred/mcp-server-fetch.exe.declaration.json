@@ -1,0 +1,69 @@
+{
+  "declarationVersion": "0.1.0",
+  "serialNumber": "urn:uuid:3387d6a5-3239-51a0-b91e-833f71b04fbf",
+  "createdAt": "1970-01-01T00:00:00Z",
+  "status": "draft",
+  "subject": {
+    "kind": "mcp-server",
+    "name": "mcp-fetch",
+    "version": "1.29.1",
+    "supplier": {
+      "name": "mcp-server-fetch.exe"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/mcp-server-fetch.exe"
+      }
+    ]
+  },
+  "binding": {
+    "tools": [
+      {
+        "name": "fetch",
+        "definitionDigest": {
+          "algorithm": "sha256",
+          "value": "sha256:fe1e2fdaac56b133fb09efde4bd0d856f340f41f8e0deff6d0d63a664ad045c8",
+          "canonicalization": "rfc8785",
+          "covers": "{name,description,inputSchema}"
+        }
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no egress. Relax to network-allowlist if the tool legitimately calls out."
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no filesystem writes."
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes no child processes."
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "note": "HYPOTHESIS: assumes malformed input returns an error value rather than crashing the transport."
+    }
+  ],
+  "canonicalization": "rfc8785",
+  "notes": "Inferred skeleton: every invariant is a conservative HYPOTHESIS, not a finding. Run the harness; the failures are the map of what this tool actually does. Then keep what held, relax what was too strict for a real reason, and sign."
+}
