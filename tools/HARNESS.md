@@ -55,15 +55,26 @@ it is a warrant the subject issued to itself. The report carries `established`
 — passes about conduct — beside `conformant`, which only ever meant *nothing
 failed*, and nothing fails in a run where nothing happened.
 
-**The limitation this creates, stated rather than hidden.** A tool that
-genuinely does no I/O — a pure calculation — also produces no observable
-effect, and so cannot establish `no-network` here either. That is the correct
-answer from the evidence: the harness cannot distinguish *computed quietly*
-from *declined to compute*, and both are consistent with what it saw. Such a
-tool earns coverage through invariants that are establishable from its
-outputs — `deterministic`, `error-as-value`, `property` — which are judged on
-what it returned rather than on what it touched. What it cannot do is prove a
-negative by being quiet, and neither can anything else.
+**Computing counts as acting.** A tool can do real work without touching
+anything. `mcp-server-time` returns a different, correct answer for
+`America/New_York` than for `Asia/Tokyo`, opens no socket and writes no file.
+
+So every tool is called twice, with DIFFERENT valid arguments, and an answer
+that changes with the input is proof the tool computed. This is the egress
+counterfactual pointed at coverage instead: intervene on the input and see
+whether the output follows.
+
+It has to be this rather than "did the call succeed", because a server that
+declines every call also succeeds — it returns the same refusal whatever you
+ask. Varying the input separates the two without reading the content of either
+answer.
+
+This paragraph used to say the opposite. It called the syscall requirement a
+limitation affecting pure-calculation tools, which was wrong twice over: those
+are most well-written tools, and the harness was establishing nothing about any
+of them while that was reported as a fact about the ecosystem.
+`mcp-server-time` — official, credential-free, entirely cooperative — returned
+four `not-covered` verdicts until this was fixed.
 
 ## What the monitor can and cannot do
 
