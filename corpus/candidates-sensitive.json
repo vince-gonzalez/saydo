@@ -1,0 +1,2631 @@
+{
+  "selectedBy": "sensitive",
+  "candidates": [
+    {
+      "registry": "npm",
+      "name": "@0xshariq/email-mcp-server",
+      "version": "2.0.1",
+      "description": "A MCP Server + CLI Tool that perform email operations",
+      "links": "git+https://github.com/0xshariq/email-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@a-bonus/google-docs-mcp",
+      "version": "1.11.3",
+      "description": "MCP server for Google Docs, Sheets, Drive, Gmail, and Calendar",
+      "links": "",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Gmail",
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@activecampaign/postmark-mcp",
+      "version": "2.1.1",
+      "description": "Official Postmark MCP server for sending emails via Claude and AI assistants",
+      "links": "git+https://github.com/activecampaign/postmark-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "postmark"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@agent-infra/mcp-server-filesystem",
+      "version": "1.2.29",
+      "description": "MCP server for filesystem access",
+      "links": "git+https://github.com/bytedance/UI-TARS-desktop.git",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "filesystem"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@agentdeskai/browser-tools-mcp",
+      "version": "2.0.2",
+      "description": "MCP server exposing live browser telemetry (console logs, network requests, screenshots, Lighthouse audits) from your real Chrome session",
+      "links": "git+https://github.com/AgentDeskAI/browser-tools-mcp.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "screenshots"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@agenttrust/mcp-server",
+      "version": "1.2.1",
+      "description": "Free email for AI agents, instant messaging between agents, and cloud file storage — all through one MCP server",
+      "links": "git+https://github.com/agenttrust/mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@aibtc/mcp-server",
+      "version": "1.68.0",
+      "description": "Bitcoin-native MCP server for AI agents: BTC/STX wallets, DeFi yield, sBTC peg, NFTs, and x402 payments.",
+      "links": "git+https://github.com/aibtcdev/aibtc-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@aipost/mcp-server",
+      "version": "1.1.7",
+      "description": "MCP Server for AIPost.email — typed, structured messaging for AI agents with Ed25519 identities",
+      "links": "git+https://github.com/AIPOST-EMAIL/mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@aiwerk/mcp-server-imap",
+      "version": "1.2.2",
+      "description": "IMAP/SMTP MCP server for listing, reading, searching and sending email",
+      "links": "git+https://github.com/AIWerk/mcp-server-imap.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "imap"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@alanse/mcp-server-google-workspace",
+      "version": "1.0.2",
+      "description": "The most comprehensive MCP server for Google Workspace - Complete integration for Sheets (57 tools), Drive, and future Docs, Calendar, Forms support",
+      "links": "git+https://github.com/alanse-inc/mcp-server-google-workspace.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@alipay/mcp-server-alipay",
+      "version": "2.0.0",
+      "description": "由支付宝开放平台提供的支付创建和管理 MCP 服务。A mcp server to create and process payment with Alipay open APIs.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payment"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@alludium/affinity-mcp-server",
+      "version": "1.0.4",
+      "description": "MCP server for Affinity CRM API",
+      "links": "git+https://github.com/alludium/affinity-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@andrewkimjoseph/celina-mcp",
+      "version": "0.18.24",
+      "description": "Celina — MCP server for Celo mainnet. Balances, transfers, DeFi, Self Agent ID, and chain reads for LLM agents.",
+      "links": "git+https://github.com/andrewkimjoseph/celina-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "DeFi"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@artymclabin/gmail-mcp",
+      "version": "1.2.3",
+      "description": "Lean Gmail MCP server with auto authentication support (maintained fork of GongRzhe/Gmail-MCP-Server)",
+      "links": "git+https://github.com/ArtyMcLabin/Gmail-MCP-Server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "gmail"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@battlegrid/mcp-server",
+      "version": "31.1.0",
+      "description": "BattleGrid MCP server — play crypto prediction games from AI agents",
+      "links": "git+https://github.com/playbattlegrid/battlegrid-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "crypto"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@bitwarden/mcp-server",
+      "version": "2026.7.0",
+      "description": "Bitwarden MCP Server",
+      "links": "git+https://github.com/bitwarden/mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "bitwarden"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@ckalima/pipedrive-mcp-server",
+      "version": "2.7.0",
+      "description": "MCP server for Pipedrive CRM integration with Claude Code",
+      "links": "git+https://github.com/ckalima/pipedrive-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@clawallex/mcp-server",
+      "version": "1.0.9",
+      "description": "MCP Server for Clawallex payment API",
+      "links": "git+https://github.com/clawallex/clawallex-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payment"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@cocal/google-calendar-mcp",
+      "version": "2.6.2",
+      "description": "Google Calendar MCP Server with extensive support for calendar management",
+      "links": "git+https://github.com/nspady/google-calendar-mcp.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@codefuturist/email-mcp",
+      "version": "0.2.3",
+      "description": "Email MCP server with IMAP + SMTP support",
+      "links": "git+https://github.com/codefuturist/email-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@coherenceos/mcp-server",
+      "version": "0.2.3",
+      "description": "MCP server exposing the Coherence platform (CRM records, collab docs, AI agents) as tools for Claude Desktop, Cursor, Cline, and other MCP-compatible clients.",
+      "links": "git+https://github.com/getcoherence/mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@contextstream/mcp-server",
+      "version": "0.4.82",
+      "description": "MCP server that gives AI coding assistants persistent memory, semantic code search, a dependency graph, grounded Q&A, and team context (GitHub/Slack/Notion) — works with Claude Cod",
+      "links": "git+https://github.com/contextstream/mcp-server.git",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Slack",
+        "Notion"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@creatrip/mcp-server",
+      "version": "1.1.0",
+      "description": "Creatrip internal MCP server for Jira, Notion, and Slack integrations",
+      "links": "git+https://github.com/creatrip/mcp-server.git",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Slack",
+        "Notion"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@dudztroyer/slack-mcp-server",
+      "version": "0.0.5",
+      "description": "MCP server for interacting with Slack",
+      "links": "git+https://github.com/dudztroyer/slack-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@dwlf/mcp-server",
+      "version": "0.43.0",
+      "description": "MCP server for DWLF market analysis platform — exposes market data, indicators, signals, strategies, backtests, portfolio, trade journal, and more as AI-accessible tools",
+      "links": "git+https://github.com/andywilliams/dwlf-mcp-server.git",
+      "categories": [
+        "finance",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "portfolio",
+        "journal"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@e2a/mcp-server",
+      "version": "0.4.0",
+      "description": "MCP server for e2a — email for AI agents",
+      "links": "git+https://github.com/Mnexa-AI/e2a.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@enterpret/zendesk-mcp-server",
+      "version": "0.2.0",
+      "description": "MCP server for Zendesk Support & Help Center APIs. Forked from @fruggr/zendesk-mcp-server; adds ZENDESK_OAUTH_BEARER env mode for headless broker-supplied OAuth tokens.",
+      "links": "git+https://github.com/aavaz-ai/zendesk-mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@expensebot/mcp-server-auth",
+      "version": "0.6.22",
+      "description": "ExpenseBot MCP server for receipt and income capture, Gmail scans, spending analytics, and reviewed expense reports from AI assistants.",
+      "links": "git+https://github.com/TotesMagotes/expensebot-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Gmail"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@eztexting/mcp-server",
+      "version": "1.0.4",
+      "description": "Official EZTexting MCP server bridge — connects local MCP clients to https://mcp.eztexting.com via Streamable HTTP + OAuth 2.1 PKCE.",
+      "links": "git+https://github.com/eztexting/mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@fhirfly-io/mcp-server",
+      "version": "0.9.0",
+      "description": "FHIRfly MCP server for Claude Desktop - Healthcare reference data via Model Context Protocol",
+      "links": "git+https://github.com/FHIRfly-io/fhirfly-mcp-server.git",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "Healthcare"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@floriscornel/teams-mcp",
+      "version": "0.9.0",
+      "description": "MCP server for Microsoft Graph Teams integration",
+      "links": "git+https://github.com/floriscornel/teams-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "teams"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@frihet/mcp-server",
+      "version": "1.16.6",
+      "description": "AI-native MCP server for Frihet ERP — 157 tools: invoicing, expenses, CRM, banking, POS + ES/EU fiscal compliance (VeriFactu, TicketBAI, Facturae). Zero-install at mcp.frihet.io. W",
+      "links": "git+https://github.com/Frihet-io/frihet-mcp.git",
+      "categories": [
+        "finance",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "invoicing",
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@gongrzhe/server-gmail-autoauth-mcp",
+      "version": "1.1.11",
+      "description": "Gmail MCP server with auto authentication support",
+      "links": "git+https://github.com/gongrzhe/server-gmail-autoauth-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "gmail"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@helm-ai/mcp-server",
+      "version": "0.18.0",
+      "description": "MCP server for Helm — run your business operations (projects, CRM, billing, automations, AI agents) from Claude or any MCP client",
+      "links": "",
+      "categories": [
+        "finance",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "billing",
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@icoretech/warden-mcp",
+      "version": "0.2.35",
+      "description": "Vaultwarden/Bitwarden MCP server backed by Bitwarden CLI (bw).",
+      "links": "git+https://github.com/icoretech/warden-mcp.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "Bitwarden"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@infomaniak/mcp-server-calendar",
+      "version": "1.2.1",
+      "description": "MCP server for interacting with Infomaniak Calendar",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@iuk-ink/binance-mcp-server",
+      "version": "3.1.0",
+      "description": "Binance USDS-M Futures MCP server: 61 tools across market / indicator / analysis / trading domains, built on MCP server v2 + official Binance SDK",
+      "links": "git+https://github.com/iuk-ink/binance-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "trading"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@jsamuel1/xero-mcp-server",
+      "version": "0.0.17",
+      "description": "A MCP server for Xero (fork of @xeroapi/xero-mcp-server with OAuth2 Web App support)",
+      "links": "git+https://github.com/jsamuel1/xero-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "xero"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@kamacrm/mcp-server",
+      "version": "2.0.9",
+      "description": "MCP server for Kama CRM — talk to your AI agent instead of clicking. Auto-discovers all API endpoints via OpenAPI spec.",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@kevinwatt/shell-mcp",
+      "version": "0.4.17",
+      "description": "Shell command execution MCP server",
+      "links": "git+https://github.com/kevinwatt/shell-mcp.git",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "shell"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@kirjapro/mcp-server",
+      "version": "0.7.0",
+      "description": "MCP server for Finnish accounting — exposes Kirjapro bookkeeping, invoicing, and reporting tools to Claude, ChatGPT, Mistral, and other MCP clients.",
+      "links": "git+https://github.com/Jaollo/kirja-pro.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "invoicing"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@klever/mcp-server",
+      "version": "1.3.0",
+      "description": "MCP server for Klever blockchain smart contract development",
+      "links": "git+https://github.com/klever-io/mcp-klever-vm.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "blockchain"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@lazyants/lexware-mcp-server",
+      "version": "5.2.0",
+      "description": "MCP server for the Lexware Office API — manage invoices, contacts, articles, vouchers, and more",
+      "links": "git+https://github.com/lazyants/lexware-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "contacts"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@leadloadz/mcp-server",
+      "version": "1.1.3",
+      "description": "MCP server for Leadloadz B2B lead search and email verification",
+      "links": "git+https://github.com/Ali1041/leadloadz-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@leonardocrdso/office365-mcp-server",
+      "version": "1.3.0",
+      "description": "MCP server for Microsoft 365 — Outlook, Calendar, OneDrive, SharePoint & Teams via Graph API",
+      "links": "git+https://github.com/leonardocrdso/office365-mcp-server.git",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Teams",
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@lizzythelizard/whatsapp-mcp",
+      "version": "1.3.0",
+      "description": "MCP server for WhatsApp integration",
+      "links": "git+https://github.com/lizzyTheLizard/whatsapp-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "whatsapp"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@luminarylane/wordpress-mcp-server",
+      "version": "1.0.4",
+      "description": "WordPress MCP Server — blog publishing via REST API + Application Passwords",
+      "links": "git+https://github.com/luminarylane/wordpress-mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "Passwords"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mailgun/mcp-server",
+      "version": "2.1.2",
+      "description": "An MCP server that gives AI agents a practical interface to Mailgun workflows for sending, diagnosing deliverability, and taking account actions safely.",
+      "links": "git+https://github.com/mailgun/mailgun-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "mailgun"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mcpfun/mcp-server-ccxt",
+      "version": "1.2.1",
+      "description": "High-performance CCXT MCP server for cryptocurrency exchange integration",
+      "links": "git+https://github.com/doggybee/mcp-server-ccxt.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "cryptocurrency"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mieubrisse/notion-mcp-server",
+      "version": "2.1.2",
+      "description": "A maintained fork of the official Notion MCP server",
+      "links": "git+https://github.com/mieubrisse/notion-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "notion"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-google-workspace",
+      "version": "0.4.1",
+      "description": "Google Workspace MCP server for Gmail, Calendar, Drive, Docs, Sheets, Slides, Contacts, Tasks, and Forms",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Gmail",
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-hubspot",
+      "version": "0.4.1",
+      "description": "HubSpot MCP server — CRM objects, associations, properties, marketing, files, workflows, and account diagnostics",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-mixmax",
+      "version": "0.3.1",
+      "description": "Mixmax email productivity MCP server for Model Context Protocol hosts",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-quickbooks",
+      "version": "0.4.2",
+      "description": "QuickBooks Online MCP server for Model Context Protocol hosts — invoices, bills, customers, vendors, accounts",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "quickbooks"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-salesforce",
+      "version": "0.2.2",
+      "description": "Salesforce CRM MCP server — accounts, contacts, opportunities, leads, tasks, and custom objects via Salesforce API",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-slack",
+      "version": "0.3.0",
+      "description": "Slack workspace MCP server — channels, messages, threads, reactions, users, files, bookmarks, scheduling via Slack Web API",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mindstone/mcp-server-xero",
+      "version": "0.1.1",
+      "description": "Xero MCP server for invoices, contacts, payments, quotes, and financial reports",
+      "links": "git+https://github.com/mindstone/mcp-servers.git",
+      "categories": [
+        "finance",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "payments",
+        "contacts"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@mintmcp/slack-mcp-server",
+      "version": "0.1.1",
+      "description": "MCP server for interacting with Slack, with file upload and download tools",
+      "links": "git+https://github.com/mintmcp/slack-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@muhammadmustafa18/whatsapp-mcp-server",
+      "version": "0.4.1",
+      "description": "WhatsApp MCP server (stdio) backed by Baileys + SQLite",
+      "links": "git+https://github.com/MuhammadMustafa18/whatsapp-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "whatsapp"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@myspec/mcp-server",
+      "version": "0.3.0",
+      "description": "MySpec MCP server — exposes MySpec platform projects, files and attachments to MCP-aware clients via OAuth-authenticated access tokens.",
+      "links": "git+https://github.com/myspecs/myspec-monorepo.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@neiltron/apple-health-mcp",
+      "version": "1.4.1",
+      "description": "MCP server for querying Apple Health data with DuckDB",
+      "links": "git+https://github.com/neiltron/apple-health-mcp.git",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "health"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@nirholas/binance-mcp-server",
+      "version": "1.0.4",
+      "description": "MCP server for Binance exchange - spot trading, staking, wallet, NFT, pay, mining, and more",
+      "links": "git+https://github.com/nirholas/universal-crypto-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "trading"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@nirholas/binance-us-mcp-server",
+      "version": "1.0.5",
+      "description": "MCP server for Binance.US exchange - spot trading, wallet management, and US-specific features",
+      "links": "git+https://github.com/nirholas/universal-crypto-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "trading"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@notionhq/notion-mcp-server",
+      "version": "2.5.1",
+      "description": "Official MCP server for Notion API",
+      "links": "git+ssh://git@github.com/makenotion/notion-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "notion"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@omniology/mcp-server",
+      "version": "2.3.4",
+      "description": "Autonomous MCP server for Omniology — real-USDC AI agent skill contests on Solana mainnet. A live benchmark against real agents, every 88 seconds, 24/7.",
+      "links": "git+https://github.com/omniologynow-rgb/mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Solana"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@paddle/paddle-mcp",
+      "version": "0.1.6",
+      "description": "MCP Server for Paddle Billing",
+      "links": "git+https://github.com/PaddleHQ/paddle-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Billing"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@pasympa/discord-mcp",
+      "version": "2.1.1",
+      "description": "A lightweight, multi-guild Discord MCP server with 95+ tools",
+      "links": "git+https://github.com/PaSympa/discord-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "discord"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@phantom/mcp-server",
+      "version": "1.2.7",
+      "description": "MCP Server for Phantom Wallet",
+      "links": "git+https://github.com/phantom/phantom-connect-sdk.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Wallet"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@privacyscrubber/mcp-server",
+      "version": "2.0.2",
+      "description": "CISO-Approved Zero-Trust PII & Secrets Redaction MCP Server for Cursor, Windsurf, and Claude Desktop. Prevent API leaks and comply with HIPAA/SOC 2 locally.",
+      "links": "git+https://github.com/moxno/privacyscrubber-mcp.git",
+      "categories": [
+        "health",
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "HIPAA",
+        "Secrets"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@ractermx/mcp-server",
+      "version": "4.0.0",
+      "description": "MCP server for managing RacterMX email forwarding via AI assistants",
+      "links": "git+https://github.com/racter-ciso/ractermx-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@remindlo/mcp-server",
+      "version": "1.1.0",
+      "description": "MCP server for Remindlo SMS Reminder API",
+      "links": "git+https://github.com/piotrekbednus/remindlo-open-source.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "SMS"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@rsksmart/rsk-mcp-server",
+      "version": "0.2.7",
+      "description": "MCP Server for Rootstock Blockchain",
+      "links": "git+https://github.com/rsksmart/rsk-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Blockchain"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@rubric-protocol/mcp-server",
+      "version": "2.2.2",
+      "description": "Rubric Protocol MCP server — attest, verify, ZK proofs, compliance tagging, framework detection. Free local tier, Hedera mainnet anchoring with API key.",
+      "links": "git+https://github.com/0xsims/rubric-mcp.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "API key"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@rustledger/mcp-server",
+      "version": "0.22.0",
+      "description": "MCP server for rustledger - validate, query, and format Beancount ledgers",
+      "links": "git+https://github.com/rustledger/rustledger.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "ledgers"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@sargonpiraev/google-calendar-mcp-server",
+      "version": "0.4.0",
+      "description": "MCP server for Google Calendar API",
+      "links": "git+https://github.com/sargonpiraev/shared.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@sargonpiraev/notion-mcp-server",
+      "version": "0.4.0",
+      "description": "MCP server for Notion API",
+      "links": "git+https://github.com/sargonpiraev/shared.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "notion"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@sargonpiraev/slack-mcp-server",
+      "version": "1.5.0",
+      "description": "MCP server for Slack interactions",
+      "links": "git+https://github.com/sargonpiraev/shared.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@shegerpay/mcp-server",
+      "version": "2.1.0",
+      "description": "MCP server for ShegerPay. No API key needed — the agent asks, the user approves with one click.",
+      "links": "git+https://github.com/shegerpay/sdk-js.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "API key"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@sigmacomputing/slack-mcp-server",
+      "version": "0.1.1",
+      "description": "MCP server for interacting with Slack",
+      "links": "git+https://github.com/sigmacomputing/slack-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@signaliz/mcp-server",
+      "version": "3.0.38",
+      "description": "Signaliz MCP server for Campaign OS, Signals Everything, Signaliz Flow, Signal Awareness, Find Email, Verify Email, Company Signal Enrichment, and Signal to Copy AI.",
+      "links": "git+https://github.com/signaliz/signaliz-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@sparkdesk/mcp-server",
+      "version": "1.0.0",
+      "description": "MCP server for SparkDesk — CRM, project management, time tracking, and finance",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@sylphlab/pdf-reader-mcp",
+      "version": "0.3.23",
+      "description": "An MCP server providing tools to read PDF files.",
+      "links": "git+https://github.com/sylphlab/pdf-reader-mcp.git",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "read PDF files"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@synapse-network-ai/mcp-server",
+      "version": "0.1.5",
+      "description": "Official stateless MCP server for SynapseNetwork agent payments.",
+      "links": "git+ssh://git@github.com/SynapseNetworkAI/Synapse-Network-MCP-Server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@truncus/mcp-server",
+      "version": "0.1.3",
+      "description": "MCP server for Truncus Email API - send transactional emails from AI agents",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@trylighthouse/mcp-server",
+      "version": "0.1.87",
+      "description": "MCP server for the Lighthouse CRM API",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@vkhanhqui/figma-mcp-go",
+      "version": "0.1.3",
+      "description": "A zero-cost, unlimited Figma MCP server — no API key, no rate limits",
+      "links": "git+https://github.com/vkhanhqui/figma-mcp-go.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "API key"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@walletap/mcp-server",
+      "version": "0.3.7",
+      "description": "MCP server for Walletap — issue and manage Apple Wallet & Google Wallet passes from AI assistants",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Wallet"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@web4w3/msteams-mcp-server",
+      "version": "1.0.4",
+      "description": "MCP server for Microsoft Teams via MS Graph API",
+      "links": "git+https://github.com/andrey-karasev-gmail/msteams-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Teams"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@wundervault/mcp-server",
+      "version": "1.7.0",
+      "description": "MCP server for Wundervault zero-knowledge secret management",
+      "links": "git+https://github.com/wundervault/wundervault-mcp.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "secret"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@xeroapi/xero-mcp-server",
+      "version": "0.0.17",
+      "description": "MCP server implementation for Xero integration",
+      "links": "git://github.com/XeroAPI/xero-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "xero"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@zencoderai/slack-mcp-server",
+      "version": "0.0.1",
+      "description": "MCP server for interacting with Slack",
+      "links": "git+https://github.com/zencoderai/slack-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "@zy_zhou/vps-mcp-server",
+      "version": "1.1.2",
+      "description": "MCP Server for VPS sandbox execution — run commands, scripts, and manage sessions remotely via MCP protocol. Supports stdio and SSE transports.",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "run commands"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "agentphone-mcp",
+      "version": "0.7.0",
+      "description": "MCP server for AgentPhone — give AI agents phone numbers, SMS, and voice calls",
+      "links": "git+https://github.com/AgentPhone-AI/agentphone-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "SMS"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "aiquila-mcp",
+      "version": "0.4.7",
+      "description": "Nextcloud MCP server — files, calendar, contacts, mail, maps, notes, tasks & 120+ more tools",
+      "links": "git+https://github.com/elgorro/aiquila.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "alibabacloud-devops-mcp-server",
+      "version": "0.3.60",
+      "description": "MCP Server for using the alibabacloud-devops API: allows AI assistants to directly participate in development collaboration, helping teams optimize development processes and improv",
+      "links": "git+ssh://git@github.com/aliyun/alibabacloud-devops-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "teams"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "anonsec-mcp-server",
+      "version": "1.0.0",
+      "description": "Firefox Relay MCP Server for Anonymous Email Management",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "apple-health-mcp-unofficial",
+      "version": "0.7.4",
+      "description": "Unofficial local-first MCP server for Apple Health export data.",
+      "links": "git+https://github.com/davidmosiah/apple-health-mcp.git",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "health"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "apple-mail-mcp",
+      "version": "2.17.2",
+      "description": "MCP server for Apple Mail - read, search, send, and manage emails via Claude and other AI assistants",
+      "links": "git+https://github.com/sweetrb/apple-mail-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "emails"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "ato-mcp",
+      "version": "2.1.4",
+      "description": "Your AI agent, fluent in Australian tax. MCP server with cited answers from 34,500+ ATO documents, the income tax and GST Acts and 4,900+ rulings, plus deduction, depreciation, BAS",
+      "links": "git+https://github.com/william-laverty/ato-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "tax"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "bagos-mcp-server",
+      "version": "2.6.0",
+      "description": "MCP server for Bags on Solana: token analytics, trade quotes, and gated write operations.",
+      "links": "git+https://github.com/edycutjong/bagos.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Solana"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "binance-mcp-server",
+      "version": "1.1.2",
+      "description": "MCP server for Binance market data and trading integration",
+      "links": "git+https://github.com/ethancod1ng/binance-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "trading"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "blocklens-mcp-server",
+      "version": "0.5.1",
+      "description": "MCP server for Blocklens crypto on-chain analytics",
+      "links": "git+https://github.com/blocklens/blocklens-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "crypto"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "boondmanager-mcp-server",
+      "version": "2.14.0",
+      "description": "MCP Server for BoondManager API - 182 tools, 12 prompts, 22 resources (ERP/CRM)",
+      "links": "git+https://github.com/fauguste/boondmanager-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "bws-mcp-server",
+      "version": "1.0.1",
+      "description": "MCP server for Bitwarden Secrets Manager via bws CLI",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "Secrets"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "calendly-mcp-server",
+      "version": "1.0.0",
+      "description": "MCP server for Calendly API integration with email automation support",
+      "links": "git+https://github.com/meAmitPatil/calendly-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "cartography-mcp-server",
+      "version": "1.2.0",
+      "description": "MCP server for Cartography market intelligence - human-curated crypto analysis via x402",
+      "links": "git+https://github.com/MrCartographer/cartography.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "crypto"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "clawvault-mcp-server",
+      "version": "0.7.0",
+      "description": "MCP server for ClawVault - AI agent payment security layer",
+      "links": "git+https://github.com/clawvault/mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payment"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "discord-selfbot-mcp",
+      "version": "1.6.0",
+      "description": "Discord Selfbot MCP server - Node.js wrapper for Python implementation",
+      "links": "git+https://github.com/Microck/discord.py-self-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "discord"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "dodopayments-mcp",
+      "version": "2.48.0",
+      "description": "The official MCP Server for the Dodo Payments API",
+      "links": "git+https://github.com/dodopayments/dodopayments-typescript.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Payments"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "excalidraw-mcp-server",
+      "version": "2.0.0",
+      "description": "Security-hardened MCP server for Excalidraw with API key auth, rate limiting, and real-time canvas sync",
+      "links": "git+https://github.com/debu-sinha/excalidraw-mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "API key"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "fileditor-mcp",
+      "version": "1.0.91",
+      "description": "MCP server for file operations",
+      "links": "",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "file operations"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "garmin-mcp-unofficial",
+      "version": "0.7.6",
+      "description": "Unofficial local-first Garmin MCP server for AI health, sleep and activity agents.",
+      "links": "git+https://github.com/davidmosiah/garmin-mcp.git",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "health"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "gmail-mcp-server",
+      "version": "1.0.30",
+      "description": "Gmail MCP Server with on-demand authentication for SIYA/Claude Desktop. Complete Gmail integration with multi-user support and OAuth2 security.",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "gmail"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "gmail-workspace-mcp-server",
+      "version": "0.4.12",
+      "description": "MCP server for Gmail integration with OAuth2 and service account support",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "gmail"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "google-calendar-workspace-mcp-server",
+      "version": "0.0.13",
+      "description": "MCP server for Google Calendar integration with service account support",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "google-workspace-mcp",
+      "version": "2.3.6",
+      "description": "MCP server for Google Workspace: Docs, Sheets, Drive, Gmail, Calendar, Slides, and Forms",
+      "links": "git+https://github.com/pm990320/google-workspace-mcp.git",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Gmail",
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "haiku-mcp-server",
+      "version": "0.0.9",
+      "description": "MCP server for Haiku API - enables AI agents to execute any blockchain transactions",
+      "links": "git+https://github.com/Haiku-Trading/haiku-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "blockchain"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "hubspot-mcp-server",
+      "version": "0.2.17",
+      "description": "A powerful Model Context Protocol (MCP) server implementation for seamless HubSpot CRM integration, enabling AI assistants to interact with your HubSpot data",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "imap-mcp-server",
+      "version": "2.0.0",
+      "description": "A powerful Model Context Protocol (MCP) server for IMAP email integration with Claude",
+      "links": "git+https://github.com/nikolausm/imap-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "imap"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "kiwoom-mcp-server",
+      "version": "0.52.6",
+      "description": "Read-only MCP server exposing the Kiwoom Securities REST API (market data, account inquiry, ISA tax-allowance calculator) to Claude Desktop / Claude Code.",
+      "links": "git+https://github.com/ChunSam/kiwoom-mcp-server.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Securities"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mailbots-mcp",
+      "version": "0.11.4",
+      "description": "Multi-account, multi-provider email MCP server",
+      "links": "git+https://github.com/mnease/mailbots-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-mail-server",
+      "version": "2.0.2",
+      "description": "MCP server for IMAP/SMTP email access with environment-based configuration",
+      "links": "git+https://github.com/yunfeizhu/mcp-mail-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "IMAP"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-apple-events",
+      "version": "1.5.0",
+      "description": "MCP server that provides native integration with Apple Reminders and Calendar on macOS.",
+      "links": "git+https://github.com/FradSer/mcp-server-apple-events.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-filesystem",
+      "version": "0.6.2",
+      "description": "MCP server for filesystem access",
+      "links": "",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "filesystem"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-google-calendar",
+      "version": "0.0.5",
+      "description": "unofficial MCP Server Google Calendar",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-google-workspace",
+      "version": "0.2.6",
+      "description": "MCP server for Google Workspace integration (Gmail, Calendar, Drive) with flexible authentication",
+      "links": "git+https://github.com/iskifogl/mcp-server-google-workspace.git",
+      "categories": [
+        "messaging",
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "Gmail",
+        "Calendar"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-linear",
+      "version": "1.6.0",
+      "description": "An MCP server for interacting with Linear's API, providing tools for managing issues, projects, and teams",
+      "links": "git+https://github.com/dvcrn/mcp-server-linear.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "teams"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-madeonsol",
+      "version": "1.25.0",
+      "description": "MCP server for MadeOnSol Solana KOL intelligence API — use from Claude, Cursor, or any MCP client. Free tier 200 req/day, no payment to start.",
+      "links": "git+https://github.com/madeonsol/mcp-server-madeonsol.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payment"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-reddit-ads",
+      "version": "0.5.5",
+      "description": "MCP server for the Reddit Ads API v3 - working write operations, tiered safety controls, built-in OAuth setup",
+      "links": "git+https://github.com/camlowe/mcp-server-reddit-ads.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-slack",
+      "version": "1.0.1",
+      "description": "MCP Server for Slack API integration",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-ssh",
+      "version": "1.0.2",
+      "description": "MCP server for SSH remote access: execute commands, transfer files via SFTP, generate SSH key pairs",
+      "links": "git+https://github.com/bacarrdy/mcp-ssh-server.git",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "execute commands"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-tempmail",
+      "version": "1.0.1",
+      "description": "MCP server for temporary email management using ChatTempMail API",
+      "links": "git+https://github.com/Selenium39/mcp-server-tempmail.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mcp-server-zapsign",
+      "version": "2.1.0",
+      "description": "Official ZapSign MCP server — remote OAuth (Cloudflare Workers) and local STDIO via npx",
+      "links": "git+https://github.com/ZapSign/api-mcp.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "mneme-mcp-server",
+      "version": "3.6.3",
+      "description": "MCP server for mneme: 9 tools for vault-native memory in Claude Code and MCP-compatible clients.",
+      "links": "git+https://github.com/OnourImpram/mneme.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "vault"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "msteams-mcp",
+      "version": "0.27.2",
+      "description": "MCP server for Microsoft Teams - search messages, send replies, manage favourites",
+      "links": "git+https://github.com/m0nkmaster/msteams-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Teams"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "nextcloud-mcp-server",
+      "version": "1.1.0",
+      "description": "Professional NextCloud MCP server for file operations and sharing",
+      "links": "git+https://github.com/abdullahMASHUK/nextcloud-mcp-server.git",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "file operations"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "nory-mcp-server",
+      "version": "1.0.3",
+      "description": "MCP server for x402 payments - Give any AI agent the ability to pay",
+      "links": "git+https://github.com/TheMemeBanker/x402-pay.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "notion-mcp-server",
+      "version": "2.13.0",
+      "description": "Notion MCP server for Claude, Cursor, ChatGPT, and Claude Desktop — connect AI agents to Notion via the Model Context Protocol. Create pages, query databases, append blocks, upload",
+      "links": "git+https://github.com/awkoy/notion-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "notion"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "obsidian-mcp",
+      "version": "2.0.1",
+      "description": "A safe, local MCP server for working with Obsidian vaults",
+      "links": "git+https://github.com/StevenStavrakis/obsidian-mcp.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "obsidian"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "onepassword-mcp-server",
+      "version": "0.5.4",
+      "description": "MCP server for interacting with 1Password via the CLI",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "1Password"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "oura-mcp-unofficial",
+      "version": "0.7.2",
+      "description": "Unofficial local-first Oura MCP server for AI health, sleep and activity agents.",
+      "links": "git+https://github.com/davidmosiah/oura-mcp.git",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "health"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "quickbooks-mcp",
+      "version": "0.11.0",
+      "description": "MCP server for QuickBooks Online API integration",
+      "links": "git+https://github.com/laf-rge/quickbooks-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "quickbooks"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "remote-filesystem-mcp-server",
+      "version": "0.1.5",
+      "description": "MCP server for remote filesystem operations on cloud storage (GCS, S3, etc.)",
+      "links": "",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "filesystem"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "scanpay-mcp-server",
+      "version": "0.3.0",
+      "description": "MCP server for ScanPay code security scanning with x402 payments",
+      "links": "git+https://github.com/Misterio070/scanpay.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "sdl-mcp",
+      "version": "0.13.5",
+      "description": "Symbol Delta Ledger MCP Server - Cards-first code context for polyglot repositories",
+      "links": "git+https://github.com/GlitterKill/sdl-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Ledger"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "sensorium-mcp",
+      "version": "3.1.5",
+      "description": "MCP server for remote control of AI assistants via Telegram",
+      "links": "git+https://github.com/andriyshevchenko/remote-copilot-mcp.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Telegram"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "slack-mcp-server",
+      "version": "1.3.0",
+      "description": "Model Context Protocol (MCP) server for Slack Workspaces. This integration supports both Stdio and SSE transports, proxy settings and does not require any permissions or bots being",
+      "links": "git+https://github.com/korotovsky/slack-mcp-server.git",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "slack-mcp-server-linux-amd64",
+      "version": "1.3.0",
+      "description": "Model Context Protocol (MCP) server for Slack Workspaces. This integration supports both Stdio and SSE transports, proxy settings and does not require any permissions or bots being",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "slack-workspace-mcp-server",
+      "version": "0.0.7",
+      "description": "MCP server for Slack workspace integration",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "slack"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "square-mcp-server",
+      "version": "0.1.2",
+      "description": "MCP Server for Square API",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "square"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "storybook-mcp-server",
+      "version": "0.1.3",
+      "description": "MCP server for Storybook - provides AI assistants access to components, stories, properties and screenshots",
+      "links": "git+https://github.com/stefanoamorelli/storybook-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "screenshots"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "tauri-plugin-mcp-server",
+      "version": "0.3.1",
+      "description": "MCP server that lets AI agents interact with and debug Tauri applications via the tauri-plugin-mcp socket (screenshots, DOM access, input simulation, log querying)",
+      "links": "git+https://github.com/P3GLEG/tauri-plugin-mcp.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "screenshots"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "tebra-mcp-server",
+      "version": "0.4.3",
+      "description": "MCP server for Tebra/Kareo practice management — 47 tools covering patients, appointments, encounters, billing, payments, documents, providers, and FHIR clinical data for AI agents",
+      "links": "git+https://github.com/jamesrosing/tebra-mcp-server.git",
+      "categories": [
+        "finance",
+        "health"
+      ],
+      "categoryEvidence": [
+        "billing",
+        "patients"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "twenty-mcp-server",
+      "version": "1.2.0",
+      "description": "Easy-to-install Model Context Protocol server for Twenty CRM. Try instantly with 'npx twenty-mcp-server setup' or install globally for permanent use.",
+      "links": "git+https://github.com/jezweb/twenty-mcp.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "CRM"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "unsplash-mcp-server",
+      "version": "0.1.1",
+      "description": "An MCP server for interacting with the Unsplash API (searching/downloading photos).",
+      "links": "git+https://github.com/shariqriazz/upsplash-mcp-server.git",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "photos"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "vantage-mcp-server",
+      "version": "2.24.0",
+      "description": "Self-hosted (local) MCP server that runs the same tools as the [hosted Vantage MCP](https://mcp.vantage.sh/mcp). Use this package when you need API-token auth without OAuth, or whe",
+      "links": "git+https://github.com/vantage-sh/vantage-mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "verigent-mcp-server",
+      "version": "0.7.7",
+      "description": "MCP server for Verigent — AI agent verification & counterparty due diligence. Check who you're transacting with, carry your own VG credential, flag bad actors.",
+      "links": "git+https://github.com/verigentai/mcp-server.git",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "credential"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "worldbank-mcp",
+      "version": "1.0.1",
+      "description": "World Bank Open Data MCP Server",
+      "links": "git+https://github.com/tianyuio/worldbank-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Bank"
+      ]
+    },
+    {
+      "registry": "npm",
+      "name": "z-zero-mcp-server",
+      "version": "1.10.1",
+      "description": "Z-ZERO MCP Server — Secure JIT Virtual Card Payment tools for AI Agents (Claude, Cursor, AutoGPT) — Real Single-Use Virtual Cards, settled in USDC on Base",
+      "links": "git+https://github.com/Dempty-glitch/Z-Zero-mcp.git",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Payment"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "a207-clinical-calc-mcp",
+      "version": "0.2.2",
+      "description": "儿童 CKD 临床计算 MCP（M6）：eGFR-Schwartz 估算肾小球滤过率、KDIGO 儿童 CKD 分期（G/A 与合并分期）。医生独占（MX-1），只读计算，无跨包依赖。",
+      "links": "",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "clinical"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "aagentic-terminal-mcp-prasad",
+      "version": "0.1.0",
+      "description": "An MCP which adds terminal capabilities to an agent.",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "aas-mcp-server",
+      "version": "0.1.0",
+      "description": "Open-source MCP server for AAS (Asset Administration Shell) APIs using OpenAPI",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "Shell"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "acb-tax-mcp",
+      "version": "0.4.0",
+      "description": "MCP server for Canadian adjusted cost base (ACB) and capital gains: average-cost tracking, per-disposition gains, and superficial-loss detection for LLM agents.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "tax"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "acc-c2c-mcp",
+      "version": "0.1.2",
+      "description": "MCP server for ACC C2C Protocol — lets AI agents dispatch tasks, manage lifecycle, and query the C2C API via API Key.",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "API Key"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "accounting-ai-mcp",
+      "version": "1.0.13",
+      "description": "MCP server for accounting ai. Features generate invoice, categorize expenses, calculate vat. From MEOK AI Labs.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "invoice"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "accounting-subject-analysis-mcp-server",
+      "version": "0.1.4",
+      "description": "MCP Server for Accounting Subject Analysis Method - 提供根据科目/指标名称获取分析方法和输出样例的工具",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "accounting"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "actionlayer-mcp",
+      "version": "0.6.0",
+      "description": "MCP server for ActionLayer — give Claude Code and other MCP hosts access to ActionLayer's browser-action catalog with per-session credential intake.",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "credential"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "acuris-mcp",
+      "version": "1.0.0",
+      "description": "MCP server for Acuris address validation & geocoding — 240+ countries, Royal Mail PAF (UK), free US/Canada census enrichment. Runs against your own Acuris API key.",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "API key"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "adam-mcp",
+      "version": "1.0.1",
+      "description": "MCP server that exposes Adam Framework vault memory as tools for Claude Desktop, Cursor, and any MCP-compatible client",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "vault"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "adelaidasofia-linear-mcp",
+      "version": "0.3.2",
+      "description": "Multi-workspace Linear MCP server with PAT auth — drop-in replacement for the official OAuth-only Linear connector.",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "OAuth"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "adelaidasofia-whatsapp-mcp",
+      "version": "0.1.1",
+      "description": "Python MCP server for whatsapp-mcp. Consumes the Go bridge REST API and exposes tools to Claude.",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "whatsapp"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "af-filesystem-mcp",
+      "version": "0.1.3",
+      "description": "MCP server for per-user, impersonated filesystem access on the AF platform",
+      "links": "",
+      "categories": [
+        "filesystem"
+      ],
+      "categoryEvidence": [
+        "filesystem"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "afya-mcp",
+      "version": "0.1.3",
+      "description": "MCP server for Kenya health system navigation — NHIF coverage, facility finder, maternal health, CHW support, and essential medicines. 6 tools.",
+      "links": "",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "health"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "afya-ya-akili-mcp",
+      "version": "0.1.3",
+      "description": "MCP server for Kenya mental health resources — therapist finder, crisis lines, t",
+      "links": "",
+      "categories": [
+        "health"
+      ],
+      "categoryEvidence": [
+        "health"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "ag402-mcp",
+      "version": "0.1.20",
+      "description": "HTTP payment gateway adapter for Ag402 — wraps any API with x402 payment verification",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payment"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-commerce-payments-mcp",
+      "version": "1.0.13",
+      "description": "MCP server for agent commerce payments. Features create invoice, process payment, escrow funds. From MEOK AI Labs.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-commerce-protocol-mcp",
+      "version": "1.0.11",
+      "description": "Agent Commerce Protocol MCP — bridges Stripe ACP + Google AP2 + Coinbase x402 for agent payments inside ChatGPT, AP2 coalition rails, and pay-per-call x402 flows. By MEOK AI Labs.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-coordination-mcp-server",
+      "version": "0.1.0",
+      "description": "Slack for AI agents — rooms, messaging and context sharing for multi-agent coordination",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Slack"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-cost-allocator-mcp",
+      "version": "1.0.7",
+      "description": "Agent Cost Allocator MCP — multi-tenant LLM cost attribution for chargeback billing. Companion to agent-token-budget. Splits one agent's spend across many tenants for invoicing. By",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "billing"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-identity-trust-mcp",
+      "version": "1.0.13",
+      "description": "Agent Identity Trust tools for AI agents. Capabilities: register agent identity, issue credential, verify credential. Built by MEOK AI Labs.",
+      "links": "",
+      "categories": [
+        "credentials"
+      ],
+      "categoryEvidence": [
+        "credential"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-insurance-mcp-server",
+      "version": "0.2.0",
+      "description": "MCP server for agent transaction insurance and escrow — protect AI agent-to-agent payments with smart escrow, dispute resolution, and risk scoring.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-memory-mcp",
+      "version": "0.2.0",
+      "description": "MCP server for Agent Memory — Telegram memory layer for AI agents",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Telegram"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-policy-enforcement-mcp",
+      "version": "1.0.11",
+      "description": "Per-agent-pair IAM for A2A. Define policies ('orchestrator may call billing only when amount<1000'), gate every A2A call via evaluate_call. EU AI Act Art 14 + ISO 42001 Annex A.7 e",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "billing"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-telegram-mcp",
+      "version": "0.1.2",
+      "description": "Telegram MCP Server — lets AI agents send/receive Telegram messages via a Bot Token",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "telegram"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-trust-stack-mcp",
+      "version": "0.2.1",
+      "description": "MCP server for autonomous AI agent trust — cryptographic provenance (Chain of Consciousness with Bitcoin OpenTimestamps), decentralized reputation (Agent Rating Protocol with bilat",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Bitcoin"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agent-x402-paywall-mcp",
+      "version": "1.0.10",
+      "description": "Agent x402 Paywall MCP — wraps Coinbase x402 (HTTP 402) so agents pay per-call without Stripe accounts. On-chain settlement via USDC (Base/Polygon/Solana) or Lightning. The plumbin",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "Stripe"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentberg-mcp",
+      "version": "0.3.1",
+      "description": "MCP server for Agentberg — AI trading agents, learning from each other",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "trading"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentbill-mcp",
+      "version": "0.1.1",
+      "description": "AgentBill MCP server. Add spend controls and billing to any AI agent in 3 lines.",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "billing"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentdraft-mcp",
+      "version": "0.1.1",
+      "description": "MCP server for AgentDraft — expose inbox, conflict-free calendar, and audit tools to MCP-aware AI clients",
+      "links": "",
+      "categories": [
+        "personal-data"
+      ],
+      "categoryEvidence": [
+        "calendar"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic-mail-mcp",
+      "version": "0.4.0",
+      "description": "A Model Context Protocol (MCP) server exposing Gmail operations for AI agents",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "Gmail"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic-terminal-mcp-luckynaren",
+      "version": "0.1.1",
+      "description": "An MCP which adds terminal capabilities to an agent.",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic-terminal-mcp-shubham96",
+      "version": "0.1.0",
+      "description": "An MCP which adds ternminal capablities to an agent",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic-wallet-guardian-mcp",
+      "version": "3.1.0",
+      "description": "Decision infrastructure for autonomous AI agents: evaluates a proposed blockchain action intent and returns an explainable ALLOW/WARN/BLOCK decision before execution, signed as a v",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "wallet"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic_mcp_terminal",
+      "version": "0.1.0",
+      "description": "An MCP which adds terminal capabilities to an agent.",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic_term_mcp",
+      "version": "0.1.0",
+      "description": "An MCP which adds terminal capabilities to an agent",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic_terminal_mcp",
+      "version": "0.1.0",
+      "description": "An MCP which adds terminal capabilities to an agent",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentic_terminal_mcp_sayani",
+      "version": "0.1.1",
+      "description": "A MCP which adds terminal capabilities to an agent.",
+      "links": "",
+      "categories": [
+        "shell-exec"
+      ],
+      "categoryEvidence": [
+        "terminal"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentline-mcp",
+      "version": "0.1.1",
+      "description": "MCP server for Agentline — give your AI agent a phone number, email, SMS, and voice calls.",
+      "links": "",
+      "categories": [
+        "messaging"
+      ],
+      "categoryEvidence": [
+        "email"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentpayment-mcp",
+      "version": "0.1.0",
+      "description": "MCP server for AgentPayment Network — autonomous AI agent payments",
+      "links": "https://agentpayment.network",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    },
+    {
+      "registry": "pypi",
+      "name": "agentwallet-mcp",
+      "version": "0.1.0",
+      "description": "MCP Server for AgentWallet Protocol — AI agents get wallets, escrow, and payments as native tools",
+      "links": "",
+      "categories": [
+        "finance"
+      ],
+      "categoryEvidence": [
+        "payments"
+      ]
+    }
+  ]
+}

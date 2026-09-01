@@ -313,8 +313,55 @@ def check():
     return problems
 
 
+def select(records, wanted):
+    """Candidates in the named categories, for a targeted sweep.
+
+    Sweeping the first N of an alphabetical list answers "what do MCP servers
+    do", which no one is asking. Sweeping the servers that handle money answers
+    a question someone has before installing one. The selection carries the
+    matched phrase with each record so the eventual report can say why each
+    server was in scope.
+    """
+    wanted = {w.strip().lower() for w in wanted if w.strip()}
+    if "sensitive" in wanted:
+        wanted.discard("sensitive")
+        wanted.update(SENSITIVE)
+    chosen = []
+    for record in records:
+        hits = [h for h in classify(record) if h["category"] in wanted]
+        if hits:
+            picked = dict(record)
+            picked["categories"] = [h["category"] for h in hits]
+            picked["categoryEvidence"] = [h["matched"] for h in hits]
+            chosen.append(picked)
+    return chosen
+
+
 def main():
     argv = sys.argv[1:]
+    if argv and argv[0] == "--select":
+        # categories.py --select finance,health <candidates.json> <out.json>
+        if len(argv) < 4:
+            raise SystemExit("usage: categories.py --select "
+                             "<cat[,cat]|sensitive> <candidates.json> <out.json>")
+        with io.open(argv[2], encoding="utf-8") as fh:
+            data = json.load(fh)
+        records = data.get("candidates") if isinstance(data, dict) else data
+        chosen = select(records, argv[1].split(","))
+        with io.open(argv[3], "w", encoding="utf-8", newline="\n") as fh:
+            json.dump({"selectedBy": argv[1], "candidates": chosen}, fh,
+                      indent=2, ensure_ascii=False)
+            fh.write("\n")
+        counts = {}
+        for record in chosen:
+            for category in record["categories"]:
+                counts[category] = counts.get(category, 0) + 1
+        print("selected {} of {} candidates in {}".format(
+            len(chosen), len(records), argv[1]))
+        for category, n in sorted(counts.items(), key=lambda kv: -kv[1]):
+            print("   {:<14} {}".format(category, n))
+        print("wrote {}".format(argv[3]))
+        return 0
     if argv and argv[0] == "--check":
         problems = check()
         for problem in problems:
