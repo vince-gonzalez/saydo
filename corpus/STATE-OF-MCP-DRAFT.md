@@ -1,4 +1,4 @@
-# What MCP tools actually do with your data
+# How hard is it to audit an MCP server from the outside?
 
 DRAFT. Wording is a placeholder pending the author's pass.
 
@@ -8,15 +8,18 @@ A behavioural sweep of 36 MCP servers discovered from public package registries,
 
 | outcome | servers |
 |---|---|
-| exercised successfully | 19 |
+| exercised successfully | 13 |
 | would not start | 17 |
 | could not be installed | 0 |
 | harness refused | 0 |
+| ran, but could not be attributed | 6 |
 | errored | 0 |
 
-Only the first row supports any claim about behaviour. Most MCP servers require a credential, and one that declined to run without a credential has not been shown to be safe -- it has not been shown anything. Every rate below is over the 19 exercised servers, not the 36 discovered ones.
+The attribution row is a limit of the method, not of the servers. A batch installs many packages into one image, and several publish a binary under the same generic name, so one server can answer for another. Those runs produced real behaviour that cannot be tied to a named package, and nothing observed in them is attributed to any. Earlier sweeps recorded such runs under whichever package was asked for, which credited projects with behaviour that was not theirs.
 
-Of the 19 that started, **19 did nothing observable**: they listed their tools and then made no network call the harness could see, because a tool invoked with placeholder arguments and no credential usually rejects the call before it does any work. Those servers have NOT been shown to be well behaved. Nothing was established about them in either direction, and they are excluded from every rate below rather than counted as clean.
+Only the first row supports any claim about behaviour. Most MCP servers require a credential, and one that declined to run without a credential has not been shown to be safe -- it has not been shown anything. Every rate below is over the 13 exercised servers, not the 36 discovered ones.
+
+Of the 13 that started, **13 did nothing observable**: they listed their tools and then made no network call the harness could see, because a tool invoked with placeholder arguments and no credential usually rejects the call before it does any work. Those servers have NOT been shown to be well behaved. Nothing was established about them in either direction, and they are excluded from every rate below rather than counted as clean.
 
 ## The finding is about auditability, not about safety
 
@@ -32,5 +35,5 @@ It does say something worth saying: **an MCP server is very hard to audit from t
 - The corpus is what public registries advertise, which is not the same as what people actually install.
 - Every measurement is reproducible: the harness, the declarations and the receipts are in this repository.
 
-Merged from 3 batch file(s).
+Merged from 1 batch file(s).
 

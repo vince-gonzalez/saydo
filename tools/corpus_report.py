@@ -60,7 +60,8 @@ def load_batches(folder):
 
 def tally(results):
     t = {"discovered": len(results), "measured": 0, "unstartable": 0,
-         "image_unavailable": 0, "errored": 0, "harness_refused": 0}
+         "image_unavailable": 0, "errored": 0, "harness_refused": 0,
+         "ambiguous": 0}
     for r in results:
         outcome = r.get("outcome")
         if outcome == "measured":
@@ -71,6 +72,13 @@ def tally(results):
             t["image_unavailable"] += 1
         elif outcome == "harness-refused":
             t["harness_refused"] += 1
+        elif outcome == "ambiguous-launch":
+            # Its own row. These ran and produced real behaviour; what is
+            # missing is which package it belonged to. Counting them as
+            # errors would hide the reason -- the reader would see six
+            # failures and never learn that the sweep could not tell whose
+            # code it had measured.
+            t["ambiguous"] += 1
         else:
             t["errored"] += 1
     return t
@@ -150,8 +158,18 @@ def write_report(results, batches, out_md):
     W("| would not start | {} |".format(t["unstartable"]))
     W("| could not be installed | {} |".format(t["image_unavailable"]))
     W("| harness refused | {} |".format(t["harness_refused"]))
+    W("| ran, but could not be attributed | {} |".format(t["ambiguous"]))
     W("| errored | {} |".format(t["errored"]))
     W("")
+    if t["ambiguous"]:
+        W("The attribution row is a limit of the method, not of the servers. "
+          "A batch installs many packages into one image, and several publish "
+          "a binary under the same generic name, so one server can answer for "
+          "another. Those runs produced real behaviour that cannot be tied to "
+          "a named package, and nothing observed in them is attributed to "
+          "any. Earlier sweeps recorded such runs under whichever package was "
+          "asked for, which credited projects with behaviour that was not "
+          "theirs.\n")
     W("Only the first row supports any claim about behaviour. Most MCP "
       "servers require a credential, and one that declined to run without a "
       "credential has not been shown to be safe -- it has not been shown "
