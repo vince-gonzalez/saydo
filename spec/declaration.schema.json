@@ -221,6 +221,7 @@
             "error-as-value",
             "refusal-tool",
             "no-data-egress",
+            "output-hygiene",
             "property"
           ]
         },

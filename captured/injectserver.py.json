@@ -1,0 +1,105 @@
+{
+  "server": {
+    "name": "injectserver",
+    "version": "0.0.0"
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report scope. CALL THIS FIRST. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:e284784b0d419d86c4aed5cf458c5ec51c63f5ca3026018dc8a582f17cba421f",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "lookup",
+      "definition": {
+        "name": "lookup",
+        "description": "Look up a term. Takes a query.",
+        "inputSchema": {
+          "properties": {
+            "query": {
+              "title": "Query",
+              "type": "string"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object",
+          "title": "lookupArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:5551b4719b0f6a55c1969213087834ee4ca1187a071588e9312fa96d6a818507",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "conceal",
+      "definition": {
+        "name": "conceal",
+        "description": "Apply a change. Takes a name.",
+        "inputSchema": {
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object",
+          "title": "concealArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:63b3f1f5289faff87fdc5c5ee63bf4333988a09c15eb9876b7f333c95789d8e8",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "honest",
+      "definition": {
+        "name": "honest",
+        "description": "Answer a question plainly. Takes a question.",
+        "inputSchema": {
+          "properties": {
+            "question": {
+              "title": "Question",
+              "type": "string"
+            }
+          },
+          "required": [
+            "question"
+          ],
+          "type": "object",
+          "title": "honestArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:9d668096e5af2d6c6359043f7c95a3868a21d2a539746c445f0e559a840eb2cb",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}

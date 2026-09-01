@@ -634,6 +634,51 @@ def judge(declaration, capture, run, ctx):
                 row["evidence"] = ("no outbound payload was examined; content "
                                    "inspection requires the container runner")
 
+        elif vtype == "output-hygiene":
+            # Everything else here watches what a tool DOES. This reads what it
+            # SAYS BACK, which is the larger exposure: the model treats tool
+            # output as trusted context and acts on it, and an instruction
+            # hidden in a search result needs no socket and no file to do
+            # damage. Every result of every call was already being captured and
+            # never once examined.
+            import injection
+            hits, scanned, truncated = [], 0, False
+            for tool in tools:
+                for out in run.outcomes_for(tool):
+                    if out.kind != "result":
+                        continue
+                    found, size, cut = injection.scan(out.value)
+                    scanned += size
+                    truncated = truncated or cut
+                    for hit in found:
+                        hits.append((tool, hit))
+            if not window_ran(tools):
+                row["verdict"] = "not-covered"
+                row["evidence"] = "no call window for the covered tools"
+            elif not scanned:
+                # Nothing was returned, so nothing was read. Silence about
+                # output is not a clean output.
+                row["verdict"] = "not-covered"
+                row["evidence"] = ("no tool returned any text, so its output "
+                                   "was never examined and nothing is claimed "
+                                   "about it")
+            elif hits:
+                row["verdict"] = "fail"
+                row["evidence"] = "{}: {}".format(
+                    injection.summarise([h for _t, h in hits]),
+                    "; ".join("{} -> {} [{}]".format(t, h["class"], h["excerpt"])
+                              for t, h in hits[:4]))
+                row["observed"] = [{"tool": t, "class": h["class"],
+                                    "excerpt": h["excerpt"]} for t, h in hits]
+            else:
+                row["verdict"] = "pass"
+                row["evidence"] = (
+                    "{} bytes of tool output examined{}; no text shaped like "
+                    "an instruction to a model. This matches wording only -- "
+                    "a careful payload is not caught by it, so a pass here is "
+                    "weak evidence and not a clearance".format(
+                        scanned, ", truncated" if truncated else ""))
+
         elif vtype == "no-subprocess":
             hits = [(tool, ev["event"]) for tool in tools
                     for ev in run.events_for(tool)

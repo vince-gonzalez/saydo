@@ -692,7 +692,16 @@ def cmd_selfcheck(args):
                          "cooperative server act, so a not-covered result "
                          "would say more about us than about any subject")
 
-    print("\n[4] the container path must hold together without Docker")
+    print("\n[4] the output scanner must catch a payload and spare clean prose")
+    noisy = _check_output_scan(python, args)
+    for line in noisy:
+        print("   " + line)
+    if noisy:
+        raise SystemExit("selfcheck FAILED: the output scanner is not "
+                         "discriminating, so any finding it produces is "
+                         "worthless")
+
+    print("\n[5] the container path must hold together without Docker")
     broken = _check_container_runner()
     for line in broken:
         print("   " + line)
@@ -700,7 +709,7 @@ def cmd_selfcheck(args):
         raise SystemExit("selfcheck FAILED: the sandbox runner is broken in a "
                          "way that would only show up in CI")
 
-    print("\n[5] schema, spec and every declaration must agree")
+    print("\n[6] schema, spec and every declaration must agree")
     # Three schema-versus-code divergences turned up in one day: two verdicts
     # and an invariant type that the code emitted and the schema forbade. Each
     # meant an artifact this project hands someone would be rejected by this
@@ -714,7 +723,7 @@ def cmd_selfcheck(args):
                          "declarations in this repository do not describe the "
                          "same program (see above for which)")
 
-    print("\n[6] every status verdict must satisfy the published schema")
+    print("\n[7] every status verdict must satisfy the published schema")
     # The schema is what a consumer validates against, so a verdict the code
     # can emit but the schema forbids makes our own output invalid -- which is
     # what happened when `inconclusive`, `revoked` and `expired` were added to
@@ -760,6 +769,47 @@ def _check_coverage(python, args):
     print("   all {} schema-constrained tools acted: {}".format(
         len(want), ", ".join(sorted(want))))
     return []
+
+
+def _check_output_scan(python, args):
+    """The output scanner must catch a payload AND leave clean prose alone."""
+    script = os.path.join(ROOT, "seeded", "injectserver.py")
+    decl = os.path.join(ROOT, "declarations", "inferred",
+                        "injectserver.py.declaration.json")
+    inner = _parser().parse_args(["verify", "--command", python + " " + script]
+                                 + (["--declaration", decl]
+                                    if os.path.exists(decl) else []))
+    inner.python, inner.at = python, args.at
+    try:
+        cmd_verify(inner)
+    except SystemExit:
+        pass
+    report = os.path.join(ROOT, "reports", "injectserver.py.report.json")
+    if not os.path.exists(report):
+        return ["the output-scan fixture produced no report"]
+    with open(report, encoding="utf-8") as fh:
+        rep = json.load(fh)
+    row = next((v for v in rep["verdicts"] if v["id"] == "output.hygiene"), None)
+    if row is None:
+        return ["no output-hygiene verdict; the invariant is not being judged"]
+    named = {o["tool"] for o in row.get("observed", [])}
+    problems = []
+    if row["verdict"] != "fail":
+        problems.append("a tool returning 'ignore all previous instructions' "
+                        "was not caught: output.hygiene = {}"
+                        .format(row["verdict"]))
+    for want in ("lookup", "conceal"):
+        if want not in named:
+            problems.append("{} returned a payload and was not named".format(want))
+    # The control. A scanner that flags ordinary prose is one nobody keeps, and
+    # a finding from it would mean nothing.
+    if "honest" in named:
+        problems.append("honest returns plain prose and was flagged; the "
+                        "scanner is producing noise, not findings")
+    if not problems:
+        print("   payload caught in {}, and plain prose left alone"
+              .format(", ".join(sorted(named))))
+    return problems
 
 
 def _check_container_runner():

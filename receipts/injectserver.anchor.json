@@ -1,0 +1,25 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:0b437d66-39fa-55e9-b6ec-d5c4006e5b46|pkg:generic/injectserver.py",
+  "subject": {
+    "name": "injectserver",
+    "version": "0.0.0",
+    "purl": "pkg:generic/injectserver.py"
+  },
+  "declarationSerial": "urn:uuid:0b437d66-39fa-55e9-b6ec-d5c4006e5b46",
+  "conformant": false,
+  "rows": 11,
+  "head": "8ed12de72848f54a4e64c497787f616fd88da95257bb3972ca5134e15efc1dde",
+  "priorReceipt": "e6d98fb8c9587947c3c52bb2981024cec434aa99c552f9d2d08fb9a67fbb2007",
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "1970-01-01T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "2riw0wHT21F-HFKYZns9AlHumh97XSx07F0CTWpcHcxpLgg41lJDvmtpJizYHfXjN_frZUJEE_tHqky7Fa15Dg"
+  }
+}

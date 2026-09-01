@@ -75,6 +75,7 @@ startup and shutdown, not just the union of tool invocations.
 | `deterministic` | identical arguments and identical bytes of files named by `params.pathArgs` produce identical results, after removing every field named in `params.volatile` (recursively) | two same-instance calls and one fresh-instance call, compared |
 | `error-as-value` | malformed or out-of-domain input produces an error in the result payload; the transport never sees an exception or crash | fuzzing and adversarial input |
 | `refusal-tool` | the server exposes `params.tool`: listed in `tools/list`, takes no arguments, performs no I/O, and states what the server cannot answer | invocation under monitoring |
+| `output-hygiene` | the tool's RESULTS carry no text shaped like an instruction to a model | every returned payload is read; wording only, so a pass is weak evidence and a hit is something to review rather than an accusation |
 | `no-data-egress` | egress may occur, but none of it carries the tool's own input | a marker planted in the input and looked for in outbound bodies, across two runs with different markers |
 | `property` | the named semantic check `params.check` holds; `params.statement` is the human-readable claim | an executable check the harness carries |
 
