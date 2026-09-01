@@ -234,6 +234,7 @@ class ContainerRunner(Runner):
         inside `network` the proxy is simply the only thing there."""
         self._ca = ca
         self._canaries = list(canaries or [])
+        self._egress_log = egress_log
         # The subject container is named rather than --rm, so it survives its
         # own exit long enough for `docker diff` to read what it wrote. A
         # leftover from a killed run would collide with that name, so it is
@@ -508,13 +509,39 @@ class ContainerRunner(Runner):
             return []
         out = self._docker("logs", self.proxy_name)
         events = []
-        for line in (out.stdout or "").splitlines():
+        # Container stdout and stderr arrive on separate streams. The proxy
+        # echoes decisions to stdout, but a crash or an early warning lands on
+        # stderr, and reading only one of them means a proxy that died on
+        # startup looks exactly like a proxy that saw no traffic.
+        streams = (out.stdout or "") + chr(10) + (out.stderr or "")
+        for line in streams.splitlines():
             line = line.strip()
             if line.startswith("{"):
                 try:
                     events.append(json.loads(line))
                 except ValueError:
                     pass
+        # Write what the proxy said to the host, so it survives teardown. A
+        # contained run left NO host-side record of the proxy's decisions:
+        # the container is removed at teardown and `docker logs` goes with it,
+        # so a run that collected nothing was indistinguishable from a run
+        # whose proxy was never asked. Three diagnostics were spent on that.
+        if getattr(self, "_egress_log", None):
+            try:
+                with open(self._egress_log, "a", encoding="utf-8",
+                          newline=chr(10)) as fh:
+                    if not events:
+                        fh.write(json.dumps({
+                            "event": "proxy.silent",
+                            "detail": "docker logs returned no JSON line",
+                            "returncode": getattr(out, "returncode", None),
+                            "stdout_bytes": len(out.stdout or ""),
+                            "stderr_head": (out.stderr or "")[:300],
+                        }) + chr(10))
+                    for row in events:
+                        fh.write(json.dumps(row) + chr(10))
+            except OSError:
+                pass
         return events + self._bridge_events()
 
     def teardown(self):
