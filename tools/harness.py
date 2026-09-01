@@ -180,6 +180,27 @@ class Run:
         self.appdata = appdata
         timeout = plan.get("call_timeout", 60)
 
+        # Almost no server does anything without a credential. Handed none,
+        # the tools refuse every call before doing any work, and the run
+        # observes nothing -- which is not a finding that the server is well
+        # behaved, it is the absence of any finding at all. A probe reads the
+        # refusals, learns which variables are wanted and what shape they take
+        # from the server's own words, and the real run is given well-formed
+        # fakes so that it ACTS.
+        #
+        # What this buys is the act, never a successful workload: the
+        # credential is rejected upstream, and the interesting event -- the
+        # request being built and sent -- has already happened by then.
+        self.synthetic_credentials = {}
+        self.credential_marker = None
+        if plan.get("synthesize_credentials"):
+            wanted, values, marker = _probe_credentials(
+                self, plan, server_python, timeout)
+            if values:
+                env.update(values)
+                self.synthetic_credentials = wanted
+                self.credential_marker = marker
+
         # A containerised server cannot write to a host log path, so its audit
         # hook is enabled inside the image and reports over stderr instead.
         # The hook stays ON either way: enforcement stops a tool from
@@ -1087,6 +1108,48 @@ def run_determinism(name, plan, server_python, monitor_log):
     return result
 
 
+def _probe_credentials(run, plan, server_python, timeout):
+    """Ask the server what it wants, in its own words, before measuring it.
+
+    One short-lived start with no credentials at all. Whatever the tools say
+    when they refuse is the highest-signal source there is, and it costs
+    nothing: the refusal names the variable and usually the shape it expects.
+
+    Nothing here is guessed. If the server names no variable, no variable is
+    set -- spraying an environment with invented names changes behaviour and
+    then reports the result as the program's own.
+    """
+    import credentials as credentials_mod
+
+    texts = []
+    session = Session(run._command(plan, server_python), env={},
+                      monitor_log=None)
+    try:
+        init = session.initialize()
+        if init.kind != "result":
+            return [], {}, None
+        texts.append((init.value or {}).get("instructions") or "")
+        for tool, args, _det in plan.get("exercise", [])[:8]:
+            out = session.call(tool, args, min(timeout, 20))
+            try:
+                texts.append(json.dumps(out.value)[:4000])
+            except Exception:
+                texts.append(str(out.value)[:4000])
+    except Exception:
+        return [], {}, None
+    finally:
+        try:
+            session.close()
+        except Exception:
+            pass
+
+    wanted = credentials_mod.wanted(*texts)
+    if not wanted:
+        return [], {}, None
+    marker = credentials_mod.new_marker()
+    return wanted, credentials_mod.synthesize(wanted, marker, *texts), marker
+
+
 def _capture_payloads(plan, det_tools, server_python, monitor_log, repeat=1):
     open(monitor_log, "w").close()
     env = {}
@@ -1370,6 +1433,17 @@ def run_conformance(name, plan, declaration, capture, server_python,
         # nothing, because this names real projects.
         "claimsChecked": claim_list,
         "claimContradictions": claim_conflicts,
+        # Which credentials this run invented, and on whose say-so. A run under
+        # synthetic credentials shows what a server DOES with input; it never
+        # shows that its work succeeded, because the far end rejected the key.
+        # Recording it here stops a later reader treating an exercised run as a
+        # completed one, and names the variables so the reason a silent server
+        # started talking is on the record rather than inferred.
+        "syntheticCredentials": [
+            {"name": entry["name"], "confidence": entry["confidence"],
+             "evidence": entry["evidence"]}
+            for entry in (getattr(main_run, "synthetic_credentials", None)
+                          or [])],
     }
 
 
@@ -1386,6 +1460,12 @@ def main():
                          "enforces (needs Docker on a Linux host)")
     ap.add_argument("--image", help="container image for --runner container")
     ap.add_argument("--runtime", help="container runtime, e.g. runsc for gVisor")
+    ap.add_argument("--credentials", action="store_true",
+                    help="probe the server for the environment variables it "
+                         "asks for and supply well-formed fakes, so a "
+                         "credential-gated server acts instead of refusing "
+                         "every call. Shows what it DOES with input, never "
+                         "that its work succeeded")
     ap.add_argument("--routed", action="store_true",
                     help="give the sandbox a gateway so bare-IP attempts are "
                          "recorded in any language, contained by a host "
@@ -1411,6 +1491,9 @@ def main():
             plan["container_argv"] = list(argv)
     else:
         plan = plans_mod.PLANS[name]
+    if args.credentials:
+        plan = dict(plan)
+        plan["synthesize_credentials"] = True
     import runner as runner_mod
     if args.runner == "container":
         if not args.image:

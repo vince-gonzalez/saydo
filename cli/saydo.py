@@ -197,6 +197,8 @@ def cmd_verify_any(args):
         harness_cmd += ["--runner", "container", "--image", args.image]
         if args.routed:
             harness_cmd.append("--routed")
+    if getattr(args, "credentials", False):
+        harness_cmd.append("--credentials")
     _run(harness_cmd)
 
     print("\n[4/4] emit the hash-chained receipt")
@@ -786,6 +788,20 @@ def cmd_selfcheck(args):
     print("   identical captures are disowned, distinct ones are kept, and "
           "launches go through the package")
 
+    print("\n[11] a credential-gated server must be made to act")
+    # The corpus returned nothing and it was read as an absence of findings.
+    # It was not: thirteen of thirteen servers refused every call because no
+    # credential was set, and a harness watching a refusal learns only that it
+    # was refused. A well-formed fake gets the request built and sent, which is
+    # the event worth seeing -- the far end rejecting the key happens later and
+    # does not matter.
+    bad = _check_credentials(python, args)
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: a credential-gated server was not "
+                         "made to act, so it would be reported as silent")
+
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "
                          "seeded server")
@@ -858,6 +874,76 @@ def _check_output_scan(python, args):
     if not problems:
         print("   payload caught in {}, and plain prose left alone"
               .format(", ".join(sorted(named))))
+    return problems
+
+
+def _check_credentials(python, args):
+    """Silence must become observation, and only where one was asked for.
+
+    Both directions matter. A harness that cannot make a gated server act
+    reports the whole credentialed half of the ecosystem as silent. One that
+    invents credentials for a server that never asked has changed the software
+    and is reporting the result as the software's own.
+    """
+    import credentials as credentials_mod
+    problems = list(credentials_mod.check())
+
+    def measure(fixture, credentials):
+        script = os.path.join(ROOT, "seeded", fixture + ".py")
+        argv = ["verify", "--command", python + " " + script]
+        if credentials:
+            argv.insert(1, "--credentials")
+        inner = _parser().parse_args(argv)
+        inner.python, inner.at = python, args.at
+        try:
+            cmd_verify(inner)
+        except SystemExit:
+            pass
+        path = os.path.join(ROOT, "reports", fixture + ".py.report.json")
+        if not os.path.exists(path):
+            return None
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+
+    without = measure("gatedserver", False)
+    if not without:
+        problems.append("gatedserver produced no report")
+    elif without.get("established"):
+        problems.append(
+            "gatedserver established {} thing(s) with NO credential, so this "
+            "gate is not testing what it claims -- the fixture is supposed to "
+            "refuse every call until it is given one"
+            .format(without["established"]))
+
+    with_creds = measure("gatedserver", True)
+    if not with_creds:
+        problems.append("gatedserver produced no report with --credentials")
+    else:
+        if not with_creds.get("established"):
+            problems.append(
+                "a credential-gated server established nothing even with "
+                "--credentials, so servers that need one are still reported "
+                "as silent")
+        if not with_creds.get("syntheticCredentials"):
+            problems.append(
+                "a run used invented credentials without recording them, so "
+                "a reader cannot tell an exercised run from a completed one")
+        if not any(v["verdict"] == "fail" for v in with_creds["verdicts"]):
+            problems.append("the egress the fixture performs once credentialed "
+                            "was not observed")
+
+    # The other direction: a server that asks for nothing must be given
+    # nothing. leakserver names no environment variable anywhere.
+    unasked = measure("leakserver", True)
+    if unasked and unasked.get("syntheticCredentials"):
+        problems.append(
+            "credentials were invented for a server that never asked for one: "
+            "{}".format([e["name"]
+                         for e in unasked["syntheticCredentials"]]))
+
+    if not problems:
+        print("   a gated server goes from establishing nothing to acting; a "
+              "server that asked for nothing was given nothing")
     return problems
 
 
@@ -1081,6 +1167,10 @@ def _parser():
                    choices=["local", "container"],
                    help="'container' runs the server in the sandbox")
     v.add_argument("--image", help="container image for --runner container")
+    v.add_argument("--credentials", action="store_true",
+                   help="supply well-formed fake values for the environment "
+                        "variables the server asks for, so a credential-gated "
+                        "server acts instead of refusing every call")
     v.add_argument("--routed", action="store_true",
                    help="record bare-IP attempts in any language")
     v.add_argument("--sandbox", action="store_true",

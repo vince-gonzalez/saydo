@@ -1,0 +1,80 @@
+{
+  "server": {
+    "name": "gatedserver",
+    "version": "0.0.0",
+    "instructions": "A lookup server. Requires DEMO_API_KEY to be set."
+  },
+  "protocolVersion": "2025-06-18",
+  "tools": [
+    {
+      "name": "scope",
+      "definition": {
+        "name": "scope",
+        "description": "Report scope. CALL THIS FIRST. Takes no arguments.",
+        "inputSchema": {
+          "properties": {},
+          "type": "object",
+          "title": "scopeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:e284784b0d419d86c4aed5cf458c5ec51c63f5ca3026018dc8a582f17cba421f",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "lookup",
+      "definition": {
+        "name": "lookup",
+        "description": "Look a term up. Takes a term.",
+        "inputSchema": {
+          "properties": {
+            "term": {
+              "title": "Term",
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "type": "object",
+          "title": "lookupArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:3a354e3d9e746abe30542482b317c9139f3b990c6ddb0777b7fa97664b3b2376",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    },
+    {
+      "name": "store",
+      "definition": {
+        "name": "store",
+        "description": "Store a term locally. Takes a term.",
+        "inputSchema": {
+          "properties": {
+            "term": {
+              "title": "Term",
+              "type": "string"
+            }
+          },
+          "required": [
+            "term"
+          ],
+          "type": "object",
+          "title": "storeArguments"
+        }
+      },
+      "definitionDigest": {
+        "algorithm": "sha256",
+        "value": "sha256:6b6bc8c08251add943fb41418dc4f3c0ab9a90a0b52adbf09e832a8c71da45a0",
+        "canonicalization": "rfc8785",
+        "covers": "{name,description,inputSchema}"
+      }
+    }
+  ]
+}
