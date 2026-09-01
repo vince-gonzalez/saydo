@@ -38,6 +38,23 @@ def load_batches(folder):
             continue
         results.extend(data.get("results", []))
         batches += 1
+
+    # Checked again here, not only in the sweep. A batch installs many
+    # packages into one image, so a generic binary name is answered by
+    # whichever package won PATH, and the sweep then files one server's
+    # behaviour under several projects' names. Batches produced before that
+    # check existed are merged by this function, and re-deriving a report from
+    # them would republish the misattribution. This is the last point where
+    # every record is in one place.
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import sweep_scale
+    disowned = sweep_scale.disown_collisions(results)
+    if disowned:
+        print("disowned {} record(s): another package in the same batch "
+              "produced an identical capture, so which one ran cannot be "
+              "established".format(len(disowned)))
+        for name, twins in disowned:
+            print("   {:<44} one of {}".format(name[:44], len(twins) + 1))
     return results, batches
 
 

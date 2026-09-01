@@ -152,9 +152,19 @@ def commands_for(candidate, available=()):
     tried = []
 
     if candidate["registry"] == "npm":
+        # Launch the package, never a bare binary name.
+        #
+        # A batch is one image holding twenty packages, and scoped names
+        # collapse: `@aibtc/mcp-server`, `@aipost/mcp-server` and
+        # `@battlegrid/mcp-server` all reduce to the binary `mcp-server`.
+        # Whichever package won PATH answered for all of them, and the sweep
+        # recorded one server's behaviour three times under three different
+        # projects' names -- three identical records accusing two projects of
+        # something a third did. `npx -p <package> <bin>` resolves the binary
+        # inside the package it belongs to, so the name on the record is the
+        # code that ran.
         for b in candidate.get("bins") or npm_bins(name):
-            tried.append([b])
-        tried.append([bare])
+            tried.append(["npx", "--no-install", "-p", name, b])
         tried.append(["npx", "-y", name])
         return tried
 
@@ -362,6 +372,127 @@ def _diagnose(attempts, image, limit=600):
             "detail": said[-limit:] if said else "said nothing at all"}
 
 
+def check():
+    """A measurement must belong to the package it names. [] = good.
+
+    Built from the batch that exposed this: five packages installed into one
+    image, five records, and one server -- aipost-mcp -- answering for all of
+    them. The sweep reported that three of four finance servers carried the
+    tool's own input to a host. One did. The other two were never run.
+    """
+    problems = []
+    twin = {"server": {"name": "aipost-mcp", "version": "1.1.8"},
+            "tools": ["send_message", "check_inbox"],
+            "outcome": "measured", "established": 2,
+            "dataFlow": {"aipost.email": {"relation": "input-dependent"}}}
+    records = [dict(twin, name="@aipost/mcp-server"),
+               dict(twin, name="@aibtc/mcp-server"),
+               {"name": "@bitwarden/mcp-server", "outcome": "measured",
+                "established": 1, "dataFlow": {},
+                "server": {"name": "Bitwarden MCP Server", "version": "1.0"},
+                "tools": ["lock", "unlock"]}]
+    disowned = dict(disown_collisions(records))
+
+    if len(disowned) != 2:
+        problems.append(
+            "two packages returned the same server and the same tools and {} "
+            "were disowned; both must be, because which one ran cannot be "
+            "established".format(len(disowned)))
+    if "@bitwarden/mcp-server" in disowned:
+        problems.append("a package with its own distinct server identity was "
+                        "disowned, which loses real measurements")
+    for record in records:
+        if record.get("outcome") == "ambiguous-launch":
+            if record.get("dataFlow") or record.get("established"):
+                problems.append(
+                    "{} was disowned but kept its behaviour, so a report can "
+                    "still attach it to that name".format(record["name"]))
+            if not record.get("ambiguousWith"):
+                problems.append("{} was disowned without recording which "
+                                "packages it collided with"
+                                .format(record["name"]))
+
+    # The launch must go through the package, never a bare binary name --
+    # that fallback is what let one package answer for another.
+    for attempt in commands_for({"name": "@aibtc/mcp-server", "registry": "npm",
+                                 "bins": ["mcp-server"]}):
+        if attempt == ["mcp-server"]:
+            problems.append(
+                "the sweep still launches the bare binary `mcp-server`, which "
+                "in a shared image is answered by whichever package won PATH")
+    return problems
+
+
+def _identity(record):
+    """What actually answered, in its own words: serverInfo plus its tool set.
+
+    The evidence was already in every record and nothing read it. A record
+    filed under `@aibtc/mcp-server` carried `server.name = "aipost-mcp"` --
+    the process said whose code it was, the sweep wrote a different name on
+    the finding, and the contradiction sat in the artifact unexamined.
+
+    Server name alone is too weak: unrelated packages ship servers called
+    `mcp-server`. The tool list alone is too weak: thin wrappers around one
+    API expose the same tools. Together they are specific enough that a
+    collision means one process answered twice.
+    """
+    server = record.get("server") or {}
+    tools = record.get("tools") or []
+    names = sorted(t.get("name", "") if isinstance(t, dict) else str(t)
+                   for t in tools)
+    if not (server.get("name") or names):
+        return ""
+    return "{}@{}::{}".format(server.get("name", ""),
+                              server.get("version", ""), "|".join(names))
+
+
+def disown_collisions(results):
+    """Refuse to attribute a measurement that two packages could claim.
+
+    A batch is one image holding many packages, so a generic binary name is
+    answered by whichever package won PATH. That produced three identical
+    records under three different projects' names, and the two that did not
+    run the code were being credited with its behaviour -- a false accusation
+    generated automatically, at scale, against real projects.
+
+    Launching through the package fixes the cause. This is the check that the
+    fix worked: identical captures mean the attribution is unsafe whatever
+    produced it, so every record involved is demoted to `ambiguous-launch` and
+    keeps its evidence but makes no claim about any named package. Dropping
+    the duplicates and keeping one would be worse -- it would pick a winner
+    by position and still name somebody.
+    """
+    seen = {}
+    for record in results:
+        if record.get("outcome") != "measured":
+            continue
+        key = _identity(record)
+        if key:
+            seen.setdefault(key, []).append(record)
+
+    disowned = []
+    for group in seen.values():
+        if len(group) < 2:
+            continue
+        names = [r.get("name") for r in group]
+        for record in group:
+            twins = [n for n in names if n != record.get("name")]
+            record["outcome"] = "ambiguous-launch"
+            record["ambiguousWith"] = twins
+            record["error"] = (
+                "another package in this batch produced an identical capture, "
+                "so which one actually ran cannot be established; no behaviour "
+                "is attributed to this name")
+            # The behaviour was real, but it belongs to an unknown package.
+            # Leaving these populated would let a later report read them back
+            # and re-attach them to this name.
+            record["dataFlow"] = {}
+            record["established"] = 0
+            record["claimContradictions"] = []
+            disowned.append((record.get("name"), twins))
+    return disowned
+
+
 def main():
     if len(sys.argv) != 5:
         raise SystemExit(__doc__)
@@ -412,11 +543,17 @@ def main():
         why = (r.get("error") or "").replace("\n", " ")[-120:]
         print("  {:<40} {:<14} {}".format(c["name"][:40], r.get("outcome"), why))
 
+    disowned = disown_collisions(results)
+    for name, twins in disowned:
+        print("  {:<40} {:<14} same code as {}".format(
+            name[:40], "ambiguous", ", ".join(twins)))
+
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
         json.dump({"batch": index, "results": results}, fh, indent=2,
                   ensure_ascii=False)
         fh.write("\n")
-    print("wrote {} ({} results)".format(out_path, len(results)))
+    print("wrote {} ({} results, {} disowned as ambiguous)"
+          .format(out_path, len(results), len(disowned)))
 
 
 if __name__ == "__main__":

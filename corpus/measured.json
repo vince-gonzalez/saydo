@@ -907,14 +907,24 @@
         "name": "agentled",
         "version": "0.6.0"
       },
-      "outcome": "measured",
+      "outcome": "ambiguous-launch",
       "conformant": true,
       "tally": {
         "pass": 3,
         "not-covered": 2
       },
       "dataFlow": {},
-      "findings": []
+      "findings": [],
+      "ambiguousWith": [
+        "@agentaeo/mcp-server",
+        "@agentled/mcp-server",
+        "@agentmark-ai/mcp-server",
+        "@agentmedia/mcp-server",
+        "@agentsim/mcp-server"
+      ],
+      "error": "another package in this batch produced an identical capture, so which one actually ran cannot be established; no behaviour is attributed to this name",
+      "established": 0,
+      "claimContradictions": []
     },
     {
       "name": "@agentaeo/mcp-server",
@@ -1108,14 +1118,24 @@
         "name": "agentled",
         "version": "0.6.0"
       },
-      "outcome": "measured",
+      "outcome": "ambiguous-launch",
       "conformant": true,
       "tally": {
         "pass": 3,
         "not-covered": 2
       },
       "dataFlow": {},
-      "findings": []
+      "findings": [],
+      "ambiguousWith": [
+        "@agent-tasks/mcp-server",
+        "@agentled/mcp-server",
+        "@agentmark-ai/mcp-server",
+        "@agentmedia/mcp-server",
+        "@agentsim/mcp-server"
+      ],
+      "error": "another package in this batch produced an identical capture, so which one actually ran cannot be established; no behaviour is attributed to this name",
+      "established": 0,
+      "claimContradictions": []
     },
     {
       "name": "@agentdeskai/browser-tools-mcp",
@@ -1410,14 +1430,24 @@
         "name": "agentled",
         "version": "0.6.0"
       },
-      "outcome": "measured",
+      "outcome": "ambiguous-launch",
       "conformant": true,
       "tally": {
         "pass": 3,
         "not-covered": 2
       },
       "dataFlow": {},
-      "findings": []
+      "findings": [],
+      "ambiguousWith": [
+        "@agent-tasks/mcp-server",
+        "@agentaeo/mcp-server",
+        "@agentmark-ai/mcp-server",
+        "@agentmedia/mcp-server",
+        "@agentsim/mcp-server"
+      ],
+      "error": "another package in this batch produced an identical capture, so which one actually ran cannot be established; no behaviour is attributed to this name",
+      "established": 0,
+      "claimContradictions": []
     },
     {
       "name": "@agentmark-ai/mcp-server",
@@ -1611,14 +1641,24 @@
         "name": "agentled",
         "version": "0.6.0"
       },
-      "outcome": "measured",
+      "outcome": "ambiguous-launch",
       "conformant": true,
       "tally": {
         "pass": 3,
         "not-covered": 2
       },
       "dataFlow": {},
-      "findings": []
+      "findings": [],
+      "ambiguousWith": [
+        "@agent-tasks/mcp-server",
+        "@agentaeo/mcp-server",
+        "@agentled/mcp-server",
+        "@agentmedia/mcp-server",
+        "@agentsim/mcp-server"
+      ],
+      "error": "another package in this batch produced an identical capture, so which one actually ran cannot be established; no behaviour is attributed to this name",
+      "established": 0,
+      "claimContradictions": []
     },
     {
       "name": "@agentmedia/mcp-server",
@@ -1813,14 +1853,24 @@
         "name": "agentled",
         "version": "0.6.0"
       },
-      "outcome": "measured",
+      "outcome": "ambiguous-launch",
       "conformant": true,
       "tally": {
         "pass": 3,
         "not-covered": 2
       },
       "dataFlow": {},
-      "findings": []
+      "findings": [],
+      "ambiguousWith": [
+        "@agent-tasks/mcp-server",
+        "@agentaeo/mcp-server",
+        "@agentled/mcp-server",
+        "@agentmark-ai/mcp-server",
+        "@agentsim/mcp-server"
+      ],
+      "error": "another package in this batch produced an identical capture, so which one actually ran cannot be established; no behaviour is attributed to this name",
+      "established": 0,
+      "claimContradictions": []
     },
     {
       "name": "@agentsim/mcp-server",
@@ -2014,14 +2064,24 @@
         "name": "agentled",
         "version": "0.6.0"
       },
-      "outcome": "measured",
+      "outcome": "ambiguous-launch",
       "conformant": true,
       "tally": {
         "pass": 3,
         "not-covered": 2
       },
       "dataFlow": {},
-      "findings": []
+      "findings": [],
+      "ambiguousWith": [
+        "@agent-tasks/mcp-server",
+        "@agentaeo/mcp-server",
+        "@agentled/mcp-server",
+        "@agentmark-ai/mcp-server",
+        "@agentmedia/mcp-server"
+      ],
+      "error": "another package in this batch produced an identical capture, so which one actually ran cannot be established; no behaviour is attributed to this name",
+      "established": 0,
+      "claimContradictions": []
     }
   ]
 }

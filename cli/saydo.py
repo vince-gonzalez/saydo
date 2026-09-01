@@ -767,6 +767,25 @@ def cmd_selfcheck(args):
     print("   the category-to-behaviour join reports servers, not promises, "
           "and says 'not measured' rather than zero")
 
+    print("\n[10] a measurement must belong to the package it names")
+    # A batch installs many packages into one image, and scoped names collapse:
+    # @aibtc/mcp-server, @aipost/mcp-server and @battlegrid/mcp-server all
+    # reduce to the binary `mcp-server`. One server answered for five packages
+    # and the sweep filed five records under five names -- reporting that three
+    # of four finance servers carried the tool's own input to a host, when one
+    # did and the others were never run. Every record already carried the
+    # contradiction: server.name said `aipost-mcp` under someone else's name.
+    # Nothing read it.
+    import sweep_scale as sweep_mod
+    bad = sweep_mod.check()
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: the sweep can attribute one "
+                         "server's behaviour to another package's name")
+    print("   identical captures are disowned, distinct ones are kept, and "
+          "launches go through the package")
+
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "
                          "seeded server")
