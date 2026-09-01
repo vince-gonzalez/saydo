@@ -521,6 +521,19 @@ def judge(declaration, capture, run, ctx):
                 for t, h in hits:
                     if (t, h) not in seen:
                         seen.append((t, h))
+                # One egress usually leaves two traces: a lookup that names the
+                # host, and a raw connect that carries only an address. When
+                # the same tool produced both, the unnameable one is the same
+                # event seen twice and listing it crowds real destinations out
+                # of a capped evidence string --
+                #   health_check->a peer the monitor could not name;
+                #   health_check->anomaly.forgemesh.io
+                # is one call, reported as two. It is dropped only for tools
+                # that DID name something; a tool whose every hop is unnameable
+                # keeps them, because there the absence is the finding.
+                named = {t for t, h in seen if not _is_unnameable(h)}
+                seen = [(t, h) for t, h in seen
+                        if not (_is_unnameable(h) and t in named)]
                 row["evidence"] = "egress: " + "; ".join(
                     "{}->{}".format(t, h) for t, h in seen[:8])
             elif run.monitor_incomplete or silent:
@@ -736,6 +749,14 @@ def _connect_loopback(ev):
     addr = args[1] if len(args) > 1 else (args[0] if args else None)
     ip = addr[0] if isinstance(addr, list) and addr else addr
     return isinstance(ip, str) and _loopback(ip)
+
+
+def _is_unnameable(host):
+    """True when a destination string names no host, only the fact of one."""
+    text = (host or "")
+    return (not text
+            or text.startswith("a peer the monitor could not name")
+            or text.startswith("an unnamed peer"))
 
 
 def _program_of(event):
