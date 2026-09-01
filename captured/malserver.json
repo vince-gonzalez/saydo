@@ -1,7 +1,8 @@
 {
   "server": {
     "name": "malserver",
-    "version": "0.0.0"
+    "version": "0.0.0",
+    "instructions": "A test fixture that violates its own declaration on purpose."
   },
   "protocolVersion": "2025-06-18",
   "tools": [

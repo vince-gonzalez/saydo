@@ -1,0 +1,122 @@
+{
+  "subject": {
+    "kind": "mcp-server",
+    "name": "hypocriteserver",
+    "version": "0.0.0",
+    "supplier": {
+      "name": "hypocriteserver.py"
+    },
+    "artifacts": [
+      {
+        "type": "other",
+        "identifier": "pkg:generic/hypocriteserver.py"
+      }
+    ]
+  },
+  "declaration_serial": "urn:uuid:f7152f4b-d984-59f8-a049-005378bd9d10",
+  "harness_version": "0.1.0",
+  "enforcement": "observed",
+  "monitor": "host process; egress observed at a proxy the tool may decline to use, filesystem and subprocess observed in-runtime for Python only. Not containment.",
+  "conformant": false,
+  "established": 2,
+  "tally": {
+    "pass": 3,
+    "fail": 1,
+    "not-covered": 1
+  },
+  "dataFlow": {},
+  "verdicts": [
+    {
+      "id": "refusal.scope",
+      "type": "refusal-tool",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "scope listed=True answered=True did_no_io=True"
+    },
+    {
+      "id": "network.none",
+      "type": "no-network",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "fail",
+      "evidence": "egress: sync->example.com"
+    },
+    {
+      "id": "writes.none",
+      "type": "no-write",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no write observed",
+      "observed": []
+    },
+    {
+      "id": "subprocess.none",
+      "type": "no-subprocess",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "pass",
+      "evidence": "no subprocess observed",
+      "observed": []
+    },
+    {
+      "id": "errors.are-values",
+      "type": "error-as-value",
+      "appliesTo": [
+        "*"
+      ],
+      "verdict": "not-covered",
+      "evidence": "no fuzz outcomes for the covered tools"
+    }
+  ],
+  "findings": [],
+  "claimsChecked": [
+    {
+      "expectation": "no-network",
+      "meaning": "that it runs offline",
+      "strength": "explicit",
+      "quote": "A fast local-only notes server. Runs entirely offline and sends no telemetry. Your data never leaves yo…"
+    },
+    {
+      "expectation": "no-network",
+      "meaning": "that it is local-only",
+      "strength": "explicit",
+      "quote": "A fast local-only notes server. Runs entirely offline and sends no…"
+    },
+    {
+      "expectation": "no-data-egress",
+      "meaning": "that your data never leaves",
+      "strength": "explicit",
+      "quote": "…er. Runs entirely offline and sends no telemetry. Your data never leaves your machine."
+    },
+    {
+      "expectation": "no-data-egress",
+      "meaning": "that it collects no telemetry",
+      "strength": "explicit",
+      "quote": "…nly notes server. Runs entirely offline and sends no telemetry. Your data never leaves your machine."
+    }
+  ],
+  "claimContradictions": [
+    {
+      "kind": "claim-contradicted",
+      "claim": "that it runs offline",
+      "quote": "A fast local-only notes server. Runs entirely offline and sends no telemetry. Your data never leaves yo…",
+      "invariant": "network.none",
+      "observed": "egress: sync->example.com",
+      "note": "the server's own description makes this promise and the run observed the opposite. This compares its words to its behaviour; it says nothing about why."
+    },
+    {
+      "kind": "claim-contradicted",
+      "claim": "that it is local-only",
+      "quote": "A fast local-only notes server. Runs entirely offline and sends no…",
+      "invariant": "network.none",
+      "observed": "egress: sync->example.com",
+      "note": "the server's own description makes this promise and the run observed the opposite. This compares its words to its behaviour; it says nothing about why."
+    }
+  ]
+}

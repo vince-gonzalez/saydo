@@ -1313,6 +1313,18 @@ def run_conformance(name, plan, declaration, capture, server_python,
         runner.teardown()
 
     verdicts, findings = judge(declaration, capture, main_run, ctx)
+
+    # The server's own words, from whatever it published about itself: the
+    # instructions it hands a client on connect, and the descriptions of the
+    # tools it exposes.
+    import claims as claims_mod
+    server_info = capture.get("server") or {}
+    claim_list = claims_mod.extract(
+        server_info.get("instructions"),
+        (declaration.get("subject") or {}).get("description"),
+        " ".join((t.get("definition") or {}).get("description") or ""
+                 for t in capture.get("tools", [])))
+    claim_conflicts = claims_mod.contradictions(claim_list, verdicts)
     tally = {}
     for v in verdicts:
         tally[v["verdict"]] = tally.get(v["verdict"], 0) + 1
@@ -1346,6 +1358,18 @@ def run_conformance(name, plan, declaration, capture, server_python,
         "dataFlow": ctx.get("differential") or {},
         "verdicts": verdicts,
         "findings": findings,
+        # Where the server's OWN description promises something the run
+        # observed it not doing. Almost nobody writes a declaration, but almost
+        # every server ships prose making the same promises in marketing form,
+        # and those can be contradicted by the same run. It turns "this server
+        # makes network calls", which is nearly a tautology, into "it says it
+        # makes none", which is a finding.
+        #
+        # Only explicit claims are used and only a FAILED verdict contradicts
+        # one. An ambiguous phrase and an unsettled question both yield
+        # nothing, because this names real projects.
+        "claimsChecked": claim_list,
+        "claimContradictions": claim_conflicts,
     }
 
 

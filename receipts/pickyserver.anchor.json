@@ -9,8 +9,8 @@
   "declarationSerial": "urn:uuid:93444478-97b3-557d-ace5-55c5149bfabf",
   "conformant": false,
   "rows": 9,
-  "head": "a487a4556b78a415f4b8781694ebfd50b12bfaac57c61bbd517b92238f14b114",
-  "priorReceipt": "c6600415a5af0dd9a8e53c0a107aeb4fe89bded1689a9a5d41457b0335ce1652",
+  "head": "99d8b39933752dd26e7ada15d7a2ff92be20cb5c5ab07a39eca051e0fe1da4d0",
+  "priorReceipt": "47f25b28ccebbc3fb3693e2f5a6c166ba32cf387a35285c312a2001bbbcff196",
   "signature": {
     "role": "supplier",
     "type": "jws-ed25519",
@@ -20,6 +20,6 @@
     "covers": "head",
     "signedAt": "1970-01-01T00:00:00Z",
     "signer": "F-Keys Creative LLC",
-    "value": "kaQ85b8h5LH4HPtz7yhKYFcvpTSnjF9qPRgbIe_PFhmohhdPomjmny37_8No6VGZcPHfTKsjP4F5OquwO_TrDQ"
+    "value": "erj71O1faMrne5XjR20UXb_pS04gKvhUi78-FWr6dgnCCMBCqTanxAhCbyRbH-A6BQEZS5_-UWrszWHojSUZBw"
   }
 }

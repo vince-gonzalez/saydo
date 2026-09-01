@@ -4,7 +4,7 @@ Launches the server command, performs the MCP initialize handshake over
 stdio, requests tools/list, and writes one JSON document per server:
 
     {
-      "server": {"name": ..., "version": ...},
+      "server": {"name": ..., "version": ..., "instructions": ...},
       "protocolVersion": ...,
       "tools": [
         {"name": ..., "definition": {name, description, inputSchema},
@@ -136,8 +136,14 @@ def capture(command):
 
     info = init.get("serverInfo", {})
     return {
+        # `instructions` is the prose a server hands the client on connect --
+        # its own description of itself, and the place its promises live. It
+        # was being discarded, so a server could claim "local-only, no
+        # telemetry" in the one field every client reads and nothing here ever
+        # saw the sentence.
         "server": {"name": info.get("name", ""),
-                   "version": info.get("version", "")},
+                   "version": info.get("version", ""),
+                   "instructions": init.get("instructions", "")},
         "protocolVersion": init.get("protocolVersion", ""),
         "tools": tools,
     }

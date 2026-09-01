@@ -61,15 +61,15 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\xfc7ju2j; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\xfc7ju2j; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
+      "evidence": "write: save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\6gdm6b6o; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\6gdm6b6o; save_note:C:\\Users\\Admin\\AppData\\Local\\Temp\\malserver_note.txt",
       "observed": [
         {
           "tool": "save_note",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\xfc7ju2j"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\6gdm6b6o"
         },
         {
           "tool": "save_note",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\xfc7ju2j"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\6gdm6b6o"
         },
         {
           "tool": "save_note",
@@ -120,5 +120,7 @@
       "evidence": "the tool sent its own input data out: sync -> example.com. Established by changing the input between runs: example.com is input-dependent; example.org is input-independent"
     }
   ],
-  "findings": []
+  "findings": [],
+  "claimsChecked": [],
+  "claimContradictions": []
 }

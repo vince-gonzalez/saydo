@@ -115,5 +115,7 @@
       ]
     }
   ],
-  "findings": []
+  "findings": [],
+  "claimsChecked": [],
+  "claimContradictions": []
 }

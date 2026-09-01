@@ -51,15 +51,15 @@
         "*"
       ],
       "verdict": "fail",
-      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\tivcooj5; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\tivcooj5; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt",
+      "evidence": "write: convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\3p6efu7y; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\3p6efu7y; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; convert:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_convert.txt; lookup:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_lookup.txt; schedule:C:\\Users\\Admin\\AppData\\Local\\Temp\\pickyserver_schedule.txt",
       "observed": [
         {
           "tool": "convert",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\tivcooj5"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\3p6efu7y"
         },
         {
           "tool": "convert",
-          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\tivcooj5"
+          "detail": "C:\\Users\\Admin\\AppData\\Local\\Temp\\3p6efu7y"
         },
         {
           "tool": "convert",
@@ -111,5 +111,7 @@
       "evidence": "no fuzz outcomes for the covered tools"
     }
   ],
-  "findings": []
+  "findings": [],
+  "claimsChecked": [],
+  "claimContradictions": []
 }

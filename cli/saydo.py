@@ -701,7 +701,15 @@ def cmd_selfcheck(args):
                          "discriminating, so any finding it produces is "
                          "worthless")
 
-    print("\n[5] the container path must hold together without Docker")
+    print("\n[5] a server's own promises must be checked, and only its own")
+    unfair = _check_claims(python, args)
+    for line in unfair:
+        print("   " + line)
+    if unfair:
+        raise SystemExit("selfcheck FAILED: the claim check is not fair, and "
+                         "it names real projects")
+
+    print("\n[6] the container path must hold together without Docker")
     broken = _check_container_runner()
     for line in broken:
         print("   " + line)
@@ -709,7 +717,7 @@ def cmd_selfcheck(args):
         raise SystemExit("selfcheck FAILED: the sandbox runner is broken in a "
                          "way that would only show up in CI")
 
-    print("\n[6] schema, spec and every declaration must agree")
+    print("\n[7] schema, spec and every declaration must agree")
     # Three schema-versus-code divergences turned up in one day: two verdicts
     # and an invariant type that the code emitted and the schema forbade. Each
     # meant an artifact this project hands someone would be rejected by this
@@ -723,7 +731,7 @@ def cmd_selfcheck(args):
                          "declarations in this repository do not describe the "
                          "same program (see above for which)")
 
-    print("\n[7] every status verdict must satisfy the published schema")
+    print("\n[8] every status verdict must satisfy the published schema")
     # The schema is what a consumer validates against, so a verdict the code
     # can emit but the schema forbids makes our own output invalid -- which is
     # what happened when `inconclusive`, `revoked` and `expired` were added to
@@ -809,6 +817,49 @@ def _check_output_scan(python, args):
     if not problems:
         print("   payload caught in {}, and plain prose left alone"
               .format(", ".join(sorted(named))))
+    return problems
+
+
+def _check_claims(python, args):
+    """A broken promise must be caught; a server that promised nothing must not.
+
+    The second half is the whole safeguard. This names real projects using
+    their own marketing text, so a check that manufactures a contradiction
+    against a server which never made a promise is not a weaker finding — it
+    is an accusation, and the second fixture exists to stop one shipping.
+    """
+    problems = []
+    for fixture, expect in (("hypocriteserver", True), ("leakserver", False)):
+        script = os.path.join(ROOT, "seeded", fixture + ".py")
+        inner = _parser().parse_args(["verify", "--command",
+                                      python + " " + script])
+        inner.python, inner.at = python, args.at
+        try:
+            cmd_verify(inner)
+        except SystemExit:
+            pass
+        report = os.path.join(ROOT, "reports", fixture + ".py.report.json")
+        if not os.path.exists(report):
+            problems.append("{} produced no report".format(fixture))
+            continue
+        with open(report, encoding="utf-8") as fh:
+            rep = json.load(fh)
+        conflicts = rep.get("claimContradictions") or []
+        if expect and not conflicts:
+            problems.append(
+                "{} promises local-only in its own instructions and contacted "
+                "a host, and no contradiction was reported".format(fixture))
+        if expect and conflicts and not (conflicts[0].get("quote") or "").strip():
+            problems.append("a contradiction was reported without quoting the "
+                            "words it rests on")
+        if not expect and conflicts:
+            problems.append(
+                "{} makes network calls but promises NOTHING, and {} "
+                "contradiction(s) were invented against it"
+                .format(fixture, len(conflicts)))
+    if not problems:
+        print("   broken promise caught in its own words; a server that "
+              "promised nothing was left alone")
     return problems
 
 

@@ -1,7 +1,8 @@
 {
   "server": {
     "name": "injectserver",
-    "version": "0.0.0"
+    "version": "0.0.0",
+    "instructions": "A test fixture that behaves perfectly and answers badly."
   },
   "protocolVersion": "2025-06-18",
   "tools": [

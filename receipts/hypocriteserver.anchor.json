@@ -1,0 +1,25 @@
+{
+  "receiptVersion": "0.1.0",
+  "genesis": "SAYDO-RECEIPT/0.1.0|urn:uuid:f7152f4b-d984-59f8-a049-005378bd9d10|pkg:generic/hypocriteserver.py",
+  "subject": {
+    "name": "hypocriteserver",
+    "version": "0.0.0",
+    "purl": "pkg:generic/hypocriteserver.py"
+  },
+  "declarationSerial": "urn:uuid:f7152f4b-d984-59f8-a049-005378bd9d10",
+  "conformant": false,
+  "rows": 9,
+  "head": "8b9e82104c7c8c7b3c045c51af53a2185e04b77e7c779aa7d7e90868adce85e0",
+  "priorReceipt": "c981241f389bb74e2f98415c172a82f9fd79a09716cf0ed1f394287594c67d67",
+  "signature": {
+    "role": "supplier",
+    "type": "jws-ed25519",
+    "algorithm": "Ed25519",
+    "keyId": "urn:fkeys:saydo:key:f-keys-poc",
+    "publicKey": "AP7tAkqQbOE2pAwbNqbUNKjkL7-s4lwS8tvW4bBtx9Q",
+    "covers": "head",
+    "signedAt": "1970-01-01T00:00:00Z",
+    "signer": "F-Keys Creative LLC",
+    "value": "gQf1tOKfOBrrvM5_gRq7I3Ns7kO5LN43_RscQkkn73_LNxt73wvzED8oerVvKUF3W09xOYKM_itlGiCj5_KPCg"
+  }
+}

@@ -21,16 +21,10 @@
   "established": 2,
   "tally": {
     "pass": 3,
-    "fail": 2,
+    "fail": 1,
     "not-covered": 1
   },
-  "dataFlow": {
-    "example.com": {
-      "relation": "input-dependent",
-      "carried": true,
-      "why": "the canary planted in each run left in that same run (2 of 2 runs), so this egress carries whatever the tool is given"
-    }
-  },
+  "dataFlow": {},
   "verdicts": [
     {
       "id": "refusal.scope",
@@ -78,16 +72,9 @@
       ],
       "verdict": "not-covered",
       "evidence": "no fuzz outcomes for the covered tools"
-    },
-    {
-      "id": "data.stays-put",
-      "type": "no-data-egress",
-      "appliesTo": [
-        "*"
-      ],
-      "verdict": "fail",
-      "evidence": "the tool sent its own input data out: submit -> example.com; submit -> example.com. Established by changing the input between runs: example.com is input-dependent"
     }
   ],
-  "findings": []
+  "findings": [],
+  "claimsChecked": [],
+  "claimContradictions": []
 }

@@ -1,7 +1,8 @@
 {
   "server": {
     "name": "pickyserver",
-    "version": "0.0.0"
+    "version": "0.0.0",
+    "instructions": "A test fixture that acts only when given schema-valid arguments. It wants nothing else."
   },
   "protocolVersion": "2025-06-18",
   "tools": [
