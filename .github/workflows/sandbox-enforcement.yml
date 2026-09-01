@@ -54,6 +54,27 @@ jobs:
       - name: Build the proxy image
         run: docker build -f container/Dockerfile.proxy -t saydo/proxy:ci .
 
+      # The proxy must survive being asked to inspect. It did not: the image
+      # was missing sandbox_ca.py, so with SAYDO_INSPECT=1 it raised
+      # ModuleNotFoundError and died before binding. Nothing noticed, because a
+      # dead proxy and a quiet one produce the same empty log, and every
+      # contained run that planted a canary was measuring an empty sandbox.
+      - name: 'GATE: the proxy must start with inspection enabled'
+        run: |
+          docker run -d --name saydo-probe             -e SAYDO_INSPECT=1 -e SAYDO_CANARIES=abc123             saydo/proxy:ci
+          sleep 4
+          LOGS=$(docker logs saydo-probe 2>&1)
+          echo "$LOGS" | head -20
+          RUNNING=$(docker inspect -f '{{.State.Running}}' saydo-probe)
+          docker rm -f saydo-probe >/dev/null 2>&1 || true
+          if [ "$RUNNING" != "true" ]; then
+            echo "::error::the proxy exited with inspection enabled. Content           inspection is the only way data-egress is measured, and a proxy that           dies here makes every contained run silently unmeasurable."
+            exit 1
+          fi
+          echo "$LOGS" | grep -q "@@SAYDO-CA@@" || {
+            echo "::error::the proxy started but published no CA, so no HTTPS           body can be examined"; exit 1; }
+          echo "OK: proxy runs with inspection on and published its CA."
+
       - name: Create the two networks
         run: |
           # saydo-inside has NO route off-host: a container on it can reach

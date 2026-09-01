@@ -18,6 +18,18 @@ FROM python:3.12-slim
 WORKDIR /app
 COPY tools/egress_proxy.py /app/egress_proxy.py
 COPY tools/dns_sink.py /app/dns_sink.py
+# Content inspection needs both of these, and neither was here. With
+# SAYDO_INSPECT=1 the proxy imported sandbox_ca at startup, raised
+# ModuleNotFoundError, and died before binding -- so every contained run that
+# planted a canary ran against a sandbox with no proxy in it at all. That is
+# why data.stays-put came back not-covered for 379 servers: not a property of
+# those servers, a missing COPY.
+COPY tools/sandbox_ca.py /app/sandbox_ca.py
+COPY tools/canary.py /app/canary.py
+# sandbox_ca mints the interception CA; without this the import above succeeds
+# and the first HTTPS interception fails instead, which is worse because it
+# fails later and looks like the tool's doing.
+RUN pip install --no-cache-dir --quiet "cryptography>=42"
 
 # This container deliberately runs as root, because it binds port 53 to act as
 # the sandbox's only nameserver. It is SayDo's own trusted infrastructure and
