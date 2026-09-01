@@ -115,6 +115,16 @@ jobs:
           echo '--- summary ---'
           head -40 corpus/STATE-OF-MCP-DRAFT.md
 
+      # A corpus-wide rate has no audience. Nobody chooses "an MCP server";
+      # they choose one to hold their mail, or their bank credentials, and the
+      # rate that matters is the one for that kind of server. Same runs, sorted
+      # by what each server says it is.
+      - name: Break the corpus down by what these servers claim to be
+        run: |
+          python tools/categories.py corpus/candidates.json corpus/census.json
+          echo '--- behaviour by category ---'
+          python tools/category_report.py batches corpus/by-category.json
+
       - name: Publish the corpus
         uses: actions/upload-artifact@v4
         with:
@@ -122,3 +132,5 @@ jobs:
           path: |
             corpus/measured.json
             corpus/STATE-OF-MCP-DRAFT.md
+            corpus/census.json
+            corpus/by-category.json

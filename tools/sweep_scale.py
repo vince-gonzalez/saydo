@@ -258,6 +258,14 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
         record["established"] = report.get("established", 0)
         record["tally"] = report["tally"]
         record["dataFlow"] = report.get("dataFlow", {})
+        # What the server promised in its own instructions, and which of those
+        # promises its behaviour contradicted. Without this the sweep can only
+        # report that a server contacted a host -- true of most useful software
+        # and close to meaningless. With it the sweep can report that a server
+        # said it would not and did, which is a finding about that server
+        # rather than about the category it happens to be in.
+        record["claimsChecked"] = report.get("claimsChecked", [])
+        record["claimContradictions"] = report.get("claimContradictions", [])
         record["findings"] = [
             {"invariant": v["id"], "type": v["type"],
              "evidence": v["evidence"][:300]}

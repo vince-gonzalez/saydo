@@ -745,6 +745,28 @@ def cmd_selfcheck(args):
         raise SystemExit("selfcheck FAILED: emitted a status the published "
                          "schema rejects")
 
+    print("\n[9] the category rules must be tested, not just written")
+    # A classifier rule can die silently: an exclusion written with an escape
+    # that the shell consumed matched nothing for a whole corpus run, and the
+    # only symptom was a category quietly growing by one. Nothing failed,
+    # because nothing was checking the rules themselves -- so the bug would
+    # have been published as a fact about the ecosystem. Each rule is now
+    # pinned to a case it has to keep getting right.
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import categories as categories_mod
+    import category_report as category_report_mod
+    bad = categories_mod.check() + category_report_mod.check()
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: the category rules do not do what "
+                         "they claim, so any census built from them is wrong")
+    print("   {} rules and {} exclusions hold against {} pinned cases"
+          .format(len(categories_mod.RULES), len(categories_mod.EXCLUSIONS),
+                  len(categories_mod.WITNESSES)))
+    print("   the category-to-behaviour join reports servers, not promises, "
+          "and says 'not measured' rather than zero")
+
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "
                          "seeded server")
