@@ -822,6 +822,34 @@ def cmd_selfcheck(args):
     print("   an install hook running a project script is separated from a "
           "native module compiling itself")
 
+    print("\n[13] a server that never answers must not stop the world")
+    # Three corpus sweeps spent their entire budget inside the FIRST package
+    # and reported nothing. The capture handshake blocks in readline(), and a
+    # process that never writes and never exits keeps that read blocked for
+    # ever -- there is no timeout to fire and no output to explain it.
+    import capture_tools as capture_mod
+    import time as _time
+    started = _time.time()
+    bad = []
+    try:
+        capture_mod.capture([python, os.path.join(ROOT, "seeded",
+                                                  "muteserver.py")], timeout=8)
+        bad.append("a server that never answers returned a capture")
+    except Exception as exc:
+        if "was killed" not in str(exc):
+            bad.append("the capture ended, but blamed the server for closing "
+                       "stdout when the harness killed it: {}"
+                       .format(str(exc)[:70]))
+    took = _time.time() - started
+    if took > 25:
+        bad.append("a mute server held the harness for {:.0f}s".format(took))
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: a hanging server can still "
+                         "consume an entire run")
+    print("   a mute server was given up on in {:.0f}s and said so".format(took))
+
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "
                          "seeded server")

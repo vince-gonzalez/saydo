@@ -29,6 +29,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import threading
 
 import jcs
 
@@ -72,6 +73,15 @@ def _read_response(stream, want_id, proc=None):
                 elif proc.poll() is not None:
                     detail = ("; it exited {} and said nothing"
                               .format(proc.returncode))
+            if (proc is not None
+                    and getattr(proc, "_saydo_killed", {}).get("by_watchdog")):
+                # It did not close anything. We killed it, because it was
+                # never going to answer. Reporting that as the server
+                # closing its own stdout sends the reader looking for a
+                # crash that did not happen.
+                raise RuntimeError(
+                    "server did not answer id {} within the capture "
+                    "timeout and was killed{}".format(want_id, detail))
             raise RuntimeError("server closed stdout before answering id {}{}"
                                .format(want_id, detail))
         line = line.strip()
@@ -91,9 +101,30 @@ def _read_response(stream, want_id, proc=None):
             return msg["result"]
 
 
-def capture(command):
+#: A server that starts and never answers must not be able to stop the
+#: world. `_read_response` blocks in readline(), and a container that hangs
+#: keeps its pipe open forever, so there is nothing to return and nothing to
+#: time out -- three corpus sweeps spent their entire budget inside the
+#: FIRST package and reported nothing at all.
+CAPTURE_TIMEOUT = 60
+
+
+def capture(command, timeout=CAPTURE_TIMEOUT):
     proc = subprocess.Popen(command, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # A watchdog, not a readline timeout: killing the process is what makes
+    # the blocking read return, and it works the same whether the server is
+    # a local interpreter or a container that never speaks.
+    killed = {"by_watchdog": False}
+
+    def _give_up():
+        killed["by_watchdog"] = True
+        proc.kill()
+
+    watchdog = threading.Timer(timeout, _give_up)
+    proc._saydo_killed = killed
+    watchdog.daemon = True
+    watchdog.start()
     try:
         proc.stdin.write(_rpc(1, "initialize", {
             "protocolVersion": PROTOCOL,
@@ -110,9 +141,16 @@ def capture(command):
         proc.stdin.flush()
         listed = _read_response(proc.stdout, 2, proc)
     finally:
-        proc.stdin.close()
+        watchdog.cancel()
+        try:
+            proc.stdin.close()
+        except Exception:
+            pass
         proc.terminate()
-        proc.wait(timeout=10)
+        try:
+            proc.wait(timeout=10)
+        except Exception:
+            proc.kill()
 
     tools = []
     for tool in listed["tools"]:
