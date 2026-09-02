@@ -28,6 +28,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import signal
 import time
 import traceback
 
@@ -54,8 +55,53 @@ SYNTHESIZE_CREDENTIALS = False
 #: unattributable too.
 PROBE_IMPORTS = False
 
+#: Hard wall-clock budget for ONE package, enforced by a signal so it can
+#: interrupt a blocking read rather than politely asking one to finish.
+#:
+#: Every failed sweep died the same way: silence after the image built, no
+#: package line, cancelled at the cap. One package consumed the entire job
+#: and the run produced nothing -- not even a record of which package it was
+#: stuck on, which is why four different theories about the cause were all
+#: wrong. A package that exceeds this is recorded as `timed-out` and the
+#: sweep moves on, so the run always finishes and always yields rows.
+PACKAGE_BUDGET = 150
+
 PY_IMAGE = "saydo/batch-py:ci"
 NODE_IMAGE = "saydo/batch-node:ci"
+
+
+class _OutOfTime(Exception):
+    """One package used its whole budget."""
+
+
+class _budget:
+    """Interrupt a package that will not finish.
+
+    A signal, not a thread or a poll: the thing that hangs is a blocking
+    read, and nothing cooperative can interrupt one. SIGALRM lands in the
+    main thread and raises, which unwinds whatever is stuck. On a platform
+    without it this is a no-op -- sweeps run on Linux in CI, and pretending
+    to enforce a budget that is not enforced would be worse than not having
+    one.
+    """
+
+    def __init__(self, seconds):
+        self.seconds = seconds
+        self.armed = hasattr(signal, "SIGALRM")
+
+    def __enter__(self):
+        if self.armed:
+            signal.signal(signal.SIGALRM, self._fire)
+            signal.alarm(self.seconds)
+        return self
+
+    def _fire(self, _signum, _frame):
+        raise _OutOfTime()
+
+    def __exit__(self, *_exc):
+        if self.armed:
+            signal.alarm(0)
+        return False
 
 
 def batch_of(candidates, index, size):
@@ -701,12 +747,24 @@ def main():
             results.append({"name": c["name"], "registry": c["registry"],
                             "outcome": "image-unavailable"})
             continue
+        # Announced BEFORE the work, not after. The only print was on the way
+        # out, so a package that never returned left no trace of its own name
+        # and every post-mortem was guesswork.
+        print("  {:<40} measuring...".format(c["name"][:40]), flush=True)
+        started_pkg = time.time()
         try:
-            r = measure(c, image, bins.get(c["registry"], set()), seq)
+            with _budget(PACKAGE_BUDGET):
+                r = measure(c, image, bins.get(c["registry"], set()), seq)
+        except _OutOfTime:
+            r = {"name": c["name"], "registry": c["registry"],
+                 "outcome": "timed-out",
+                 "error": "exceeded the {}s budget for one package; the "
+                          "sweep moved on".format(PACKAGE_BUDGET)}
         except Exception:
             r = {"name": c["name"], "registry": c["registry"],
                  "outcome": "error",
                  "error": traceback.format_exc(limit=3)[-400:]}
+        r["seconds"] = round(time.time() - started_pkg, 1)
         results.append(r)
         # The reason is printed, not just the outcome: a sweep whose failures
         # are invisible in the log cannot be debugged from the log.

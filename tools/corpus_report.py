@@ -65,7 +65,7 @@ def load_batches(folder):
 def tally(results):
     t = {"discovered": len(results), "measured": 0, "unstartable": 0,
          "image_unavailable": 0, "errored": 0, "harness_refused": 0,
-         "ambiguous": 0}
+         "ambiguous": 0, "timed_out": 0}
     for r in results:
         outcome = r.get("outcome")
         if outcome == "measured":
@@ -76,6 +76,12 @@ def tally(results):
             t["image_unavailable"] += 1
         elif outcome == "harness-refused":
             t["harness_refused"] += 1
+        elif outcome == "timed-out":
+            # Its own row: the package used its whole budget and the sweep
+            # moved on. Nothing about it was established, and folding it into
+            # errors would hide that the harness gave up rather than the
+            # package failing.
+            t["timed_out"] += 1
         elif outcome == "ambiguous-launch":
             # Its own row. These ran and produced real behaviour; what is
             # missing is which package it belonged to. Counting them as
@@ -163,6 +169,7 @@ def write_report(results, batches, out_md):
     W("| could not be installed | {} |".format(t["image_unavailable"]))
     W("| harness refused | {} |".format(t["harness_refused"]))
     W("| ran, but could not be attributed | {} |".format(t["ambiguous"]))
+    W("| used its whole time budget | {} |".format(t["timed_out"]))
     W("| errored | {} |".format(t["errored"]))
     W("")
     if t["ambiguous"]:
