@@ -802,6 +802,23 @@ def cmd_selfcheck(args):
         raise SystemExit("selfcheck FAILED: a credential-gated server was not "
                          "made to act, so it would be reported as silent")
 
+    print("\n[12] the instrument must work with no MCP involved at all")
+    # Installing and importing need no driver and no credential: the exercise
+    # IS the import. Nothing in this path knows what MCP is, which is the
+    # point -- the observation stack was never MCP-specific, only the driver
+    # was, and a package that phones home when you merely import it is a
+    # finding about software rather than about one protocol.
+    import package_probe as package_probe_mod
+    bad = package_probe_mod.check(python)
+    for line in bad:
+        print("   " + line)
+    if bad:
+        raise SystemExit("selfcheck FAILED: the import probe cannot catch a "
+                         "package that acts at import, so it would report "
+                         "every package as quiet")
+    print("   a module that phones home at import is caught on all three "
+          "channels; a quiet one and an unimportable one are not")
+
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "
                          "seeded server")
