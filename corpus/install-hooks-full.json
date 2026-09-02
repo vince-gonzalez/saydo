@@ -1,0 +1,8611 @@
+{
+  "rows": [
+    {
+      "name": "2dai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@0xmonaco/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@0xshariq/email-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "npm run build && node postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@1ly/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@2kw/ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@a-bonus/google-docs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aaronsb/google-workspace-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aashari/mcp-server-atlassian-bitbucket",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/ensure-executable.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@aashari/mcp-server-atlassian-confluence",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/ensure-executable.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@aashari/mcp-server-atlassian-jira",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/ensure-executable.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@abhaybabbar/retellai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@abhishekjkrsna/swapi-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@abhiz123/todoist-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aborruso/ckan-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@acta-team/docs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@activecampaign/postmark-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ada-mcp/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "node scripts/preinstall-probes.mjs",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@adbpg-imv/imv-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@adhdev/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@adsim/wordpress-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@advanced-communities/salesforce-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aeven/nanobanana-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agenium/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agent-infra/mcp-server-browser",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agent-infra/mcp-server-commands",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agent-infra/mcp-server-filesystem",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agent-infra/mcp-server-search",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agent-inspect/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agent-tasks/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentaeo/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentdeskai/browser-tools-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentdomain/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentled/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentmark-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentmedia/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentsim/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agenttrust/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentvalet/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agentx-ai/mailchimp-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agiflowai/architect-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agiflowai/one-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agiflowai/scaffold-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agifyai/leadify-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agimon-ai/doompi-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agimon-ai/imagine-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agimon-ai/log-sink-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agimon-ai/video-editor-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agimon-ai/workflow-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@agledger/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ahdev/dokploy-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ahmedmustahid/postgres-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ai-dossier/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aibtc/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aicloud360/360-ai-cloud-disk-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aiet/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ainetwork/mssql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aipost/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aipper/zentao-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aiservicer/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aiwerk/mcp-server-cal",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aiwerk/mcp-server-imap",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@akiojin/unity-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/ensure-better-sqlite3.mjs",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@alanse/mcp-server-google-workspace",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alchemy/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aleph-alpha/lib-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alexruck/pocketbase-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alipay/mcp-server-alipay",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alipay/open-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alisaitteke/photoshop-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aliyun-supabase/mcp-server-supabase",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@allensandiego/postgres-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@allratestoday/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alludium/affinity-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@almanak/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@alphasense/graphql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@amap/amap-maps-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@amedia/brick-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@amitgurbani/mcp-server-woocommerce",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ampeco/public-api-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@andrewkimjoseph/celina-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@angelogiacco/elevenlabs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@angrydad67/fabric-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@antv/mcp-server-chart",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@anyproto/anytype-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@anyshift/anyshift-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aot-tech/jira-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@apex-inc/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@apify/actors-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@apify/mcp-server-rag-web-browser",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@apocdata-info/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@apparelhub/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@applyra/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@appsyogi/gsc-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@arabold/docs-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo 'Skipping Playwright browser install. See README.md for details.'",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@arcbridge/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@archsmith/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@arieffian/postgres-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@arikusi/deepseek-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@arinova-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@arizeai/phoenix-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@artymclabin/gmail-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@asgcard/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ask-llm/ollama-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@asktian/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@assetlab/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@astandrik/local-ydb-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@astrocal/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@astudioplus/codegraph-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node bin/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@asynq-family/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@atollhq/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@atomgit.com/atomgit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@atoms-tech/atoms-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@attackforge/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@aurentiaai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@auth0/auth0-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@automatalabs/mcp-server-playwright",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@autonomylab-xyz/excel-mcp-server-json",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ax-ado-mcp/mcp-server-azure-devops-enhanced",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ax402/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@b10cks/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@baidumap/mcp-server-baidu-map",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@basementstudio/qa-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@battlegrid/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@behavioros/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@benborla29/mcp-server-mysql",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bgrgndzz/gong-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bgx4k3p/huly-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@billingserv/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bit2me/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bitsbound/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bitwarden/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@blen/fedreg-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@blocks-network/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bloomfilter/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bluerfalcon/census-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@brave/brave-search-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bretterer/forge-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@bridge_gpt/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@browser-control/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@browserstack/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@brushes/xiaohongshu-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@burger-editor/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@buywhere/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@calcom/cal-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@calypsohq/multimodal-rag-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cap-js/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@capivv/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@carbonstopper/agent-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@casys/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cedricziel/aha-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cedulon/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@centia-io/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@centrali-io/centrali-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ceraph/react-native-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node -e \"try{var e=process.env;if(e.CI||e.CERAPH_SKIP_POSTINSTALL||require('fs').existsSync(process.cwd()+'/../../pnpm-workspace.yaml'))process.exit(0);process.stderr.write('\\n[@ceraph/react-native-mc",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@cexll/codex-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@chainlink/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@chakra-ui/react-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@chkp/quantum-management-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@chronova/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@chushixixin/dsh-harness-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ckalima/pipedrive-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@claudexor/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@clawallex/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@clawvec/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo '' && echo '🎉 @clawvec/mcp-server installed!' && echo '→ Register: https://clawvec.com/agent/enter' && echo '→ Then set CLAWVEC_AGENT_TOKEN in your .mcp.json' && echo ''",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@clearlist/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@clipform/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@clipkit/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cloneviral/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cloudbase/cloudbase-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cloudflare/mcp-server-cloudflare",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cmssy/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cnbcool/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coaspe/sap-abap-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cocal/google-calendar-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@codacy/codacy-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@codefuturist/email-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@codescene/codehealth-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@codesherlock/codesherlock-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coding-solo/godot-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@codingmantra/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cogdepot/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cognistore/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cognium-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coherenceos/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coinbase/cds-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coincap/coincap-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coingecko/coingecko-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@colloquial/colloquial-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@commercetools/commerce-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "npx only-allow pnpm",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@commercetools/nimbus-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@configcat/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@connorbritain/mssql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@contentful/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@contentrabbit/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@contextium/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@contextstream/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@convertcom/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@coretext-ai/github-mcp-server-sls-c4d5e6f7-a8b9-4012-b345-456789012345",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@covalenthq/goldrush-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cplace/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@crabcut/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@creatordbai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@creatrip/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@creedspace/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node -e \"try{const f='./dist/postinstall.js';require('fs').existsSync(f)&&require(f)}catch{}\"",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@crisog/railway-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cristip73/mcp-server-asana",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cronicorn/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@crscreditapi/b2c-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@crscreditapi/mware-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@csszyx/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cyango-tools/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@cyanheads/git-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@daften/fireflyiii-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@daileyos/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@danmoisan/drm-copilot-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@davincibets/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@db-ux/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dbx-app/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dealsurface/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@decantr/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@decido/frubeala-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@decispher/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@decodo/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@deeppane/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@deerdawn/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@delorenj/mcp-server-trello",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@demostudio/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@demox-site/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dev-flow-tech/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@devabdultech/hn-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dialpad/dialtone-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@didcid/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@digilac/simap-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dinanathdash/envault-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node postinstall.mjs",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@diviops/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dmfaster/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@doist/todoist-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@doitintl/doit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dollhousemcp/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@donach/mattermost-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dondonudonjp/vertexai-imagen-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@donmai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@doomscrollr/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dopehunter/n8n-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dopplerhq/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@downatthebottomofthemolehole/megalinter-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@downatthebottomofthemolehole/terraform-best-practices-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dpesch/mantisbt-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dplooy/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@draftt-io/draftt-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@driflyte/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dubstrata/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dudztroyer/slack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dversum/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dwlf/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dynatrace-oss/dynatrace-managed-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@dynatrace-wwse/dynatrace-mcp-server-otel",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@e2a/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@easy-mcps/clickhouse-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@easy-mcps/mysql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@easy-mcps/redis-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@easy-mcps/sqlite-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ebay/npm-public-api-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@echosaw/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ecuabyte/cortex-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@edgescaleai/cube-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@egain/egain-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ehrocks/fe-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@elchika-inc/ts-review-graph-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@elgato/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@eliware/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@elixium.ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@elnora-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@enfyra/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@enterpret/zendesk-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@eraserlabs/eraser-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ericthered926/duckduckgo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@erisdev/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@esaio/esa-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@esaio/pplog-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@eventcatalog/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@expandfi/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@expensebot/mcp-server-auth",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@extentos/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@eztexting/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fairseal/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@falzz1010/laravel-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fangjunjie/ssh-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fanyangmeng/ghost-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@felores/kie-ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fgjcarlos/nodered-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fhirfly-io/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fidensa/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@findtime/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@finedata/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@firecms/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@firestitch/specify-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@firfi/huly-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fkadev/prompts.chat-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@flipcoin/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@floriscornel/teams-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@floto/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@flowcore/platform-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@flowdot.ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@flowrelay/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@focusgts/eds-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@foxitsoftware/foxit-pdf-api-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fractalizer/mcp-server-yandex-tracker",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fractalizer/mcp-server-yandex-wiki",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@frase/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@frihet/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js || true",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@fruggr/zendesk-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@futuretea/flashduty-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@futuretea/higress-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@futuretea/rancher-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@futuretea/wecom-bot-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fuul/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@fyosimi/fv-backlog-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "npx only-allow pnpm",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@garoon/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gatling.io/gatling-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@genkey/keygen-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@genlobe/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gently/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@get-technology-inc/jamf-docs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@getabrain/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gethopp/figma-mcp-bridge",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@getlinnk/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@getterdone/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@geunoh/s3-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ggui-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ggui-ai/mcp-server-core",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ggui-ai/mcp-server-handlers",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gildara/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@givewp/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gleanwork/configure-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gojasper/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gongrzhe/server-gmail-autoauth-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@google-cloud/gcloud-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@google-cloud/observability-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@google-cloud/storage-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gotohuman/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@greenarmor/ges-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@gremlin/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@greynoise/greynoise-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@growi/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@growpanel/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@guandata/guanbi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@h1deya/mcp-server-weather",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@happyvertical/smrt-dev-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hapticpaper/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@heilgar/shadcn-ui-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@helm-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@henkey/postgres-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo 'postgres-mcp-server installed successfully! Run with: npx @henkey/postgres-mcp-server'",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@henols/vice-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@heroku/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@heroui/react-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hexsleeves/tailscale-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hiveship/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@honeyfield/rent2b-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hookbase/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hoshikawashiro/ide-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hostora/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hostsmith/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@houdiniswap/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hovecapital/read-only-mysql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@html2pdfconverter/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hubspot/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hugeicons/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hydrochlorix/googledrive-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hypertrack/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@hypnosis/ssh-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ibm/ibmi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@icedq/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@icoretech/warden-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node bin/patch-bitwarden-cli.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@icy-r/bitbucket-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@id3-clarity/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@idealyst/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@igniteui/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ikas/code-components-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ilovevideoeditor/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@imjaineel-dev/sn-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@indigoprotocol/indigo-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@infineon/design-system-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@infino-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@influxdata/influxdb3-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@infomaniak/mcp-server-calendar",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@infomaniak/mcp-server-mail",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@informatik_tirol/redmine-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@infrawise/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ingenx-io/valets-schema-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@inkeep/agents-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@intentlm/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@iobroker/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ionhour/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@isiahw1/mcp-server-bing-webmaster",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js || true",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@isnow890/naver-search-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@itm-platform/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@iuk-ink/binance-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ivelin-web/tempo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ivotoby/contentful-management-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ivotoby/openapi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jahandco/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jarahkon/hass-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jaumemory/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jgalego/teamapi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jhlee111/mssql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jinzcdev/leetcode-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jinzcdev/markmap-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jissp/nestjs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jiujiang/jishi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jonyoder/code-index-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jordyvd/openrouter-imagegen-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jpisnice/shadcn-ui-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jrmc/adonis-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@jsamuel1/xero-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "npm run build",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@jseek/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@junction41/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@justrelease/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kalelaufa/github-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kamacrm/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@keegancsmith/linear-issues-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kekwanulabs/syncline-mcp-server-go",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node ./bin/install.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@kernlang/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kevinwatt/mcp-server-searxng",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kevinwatt/shell-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@khgs2411/mcp-server-trello",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kickflow/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kikita-labs/ui-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kimtaeyoon83/mcp-server-youtube-transcript",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kinlab/kin-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kintone/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kirjapro/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kirkdeam/puppeteer-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kirtijha/salesforce-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kiwiclaw/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@klever/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@knorq/docx-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@kula-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@langapi/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@langwatch/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lapras-inc/lapras-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@last9/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node bin/download-binary.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@layers/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lazyants/hetzner-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lazyants/lexware-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@leadloadz/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@leadshark/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@leonardocrdso/office365-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@leonardsellem/n8n-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@letsrunit/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lhk714/bazi-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lhtdeg/harmony-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lime-soda/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@line/line-bot-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lingpie/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lionchat/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lishenxydlgzs/aws-athena-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@liveauth-labs/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lizzythelizard/whatsapp-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lkbaba/mcp-server-gemini",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@llmindset/hf-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@localstack/localstack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lockon0927/woocommerce-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lokvis/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lonca/baron-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lottiefiles/creator-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lovrabet/dataset-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lumiclip/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/bluesky-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/facebook-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/fathom-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/instagram-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/linkedin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/wordpress-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@luminarylane/x-twitter-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lynx-js/devtool-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lynx-js/docs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@lynx-js/docs-mcp-server-canary",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@macroforge/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@magiclane/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@magicmakerslab/geoverdant-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mailerlite/canny-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mailgun/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mailjet/mailjet-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mailrith/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@makehq/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@makeplane/plane-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@malleable-cloud/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@manansiingh/figma-react-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mantine/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mapbox/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "patch-package || (cd ../../.. && node ./node_modules/patch-package/index.js --patch-dir ./node_modules/@mapbox/mcp-server/patches) || true",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@mapleflow/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@marian-craciunescu/ssh-mcp-server-secured",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@marky-app/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mashroom/mashroom-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@masonator/coolify-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@matillion/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mcp-apps/azure-devops-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mcp-apps/kusto-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mcp_factory/canva-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mcpdotdirect/evm-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mcpfun/mcp-server-ccxt",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mcpservers/openrouterai",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mearl/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mechris3/github-enterprise-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@meetergo/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mehmetsenol/gorev-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@memberjunction/ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@memlab/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@memorycrystal/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@memoryplugin/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mesheshq/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@meshy-ai/meshy-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@metamask/device-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@metaneutrons/german-legal-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mgsoftwarebv/mcp-server-bridge",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mia-platform/console-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/clarity-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/fabric-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node ./scripts/post-install-script.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@microsoft/fabric-mcp-linux-x64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/m365agentstoolkit-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/postgres-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/powerbi-modeling-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/powerbi-modeling-mcp-darwin-arm64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/powerbi-modeling-mcp-linux-x64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@microsoft/powerbi-modeling-mcp-win32-x64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@midscene/android-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@midscene/ios-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@midscene/web-bridge-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mieubrisse/notion-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@milaboratories/pl-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-apple-shortcuts",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-elevenlabs",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-fathom",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-freshdesk",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-gamma",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-google-analytics",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-google-workspace",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-hubspot",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-humaans",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-kling",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-microsoft-shared",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-mixmax",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-nano-banana",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-napkin",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-office",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-openai-image",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-quickbooks",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-salesforce",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-servicenow",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-slack",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-workday",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-xero",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mindstone/mcp-server-zendesk",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mintmcp/slack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@misddev/clickup-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mneia/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@modesty/fluent-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@moleculer/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mondaydotcomorg/monday-api-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@moralisweb3/api-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@motiffcom/motiff-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mr.dj2u/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mseep/dubco-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mseep/iconify-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mseep/linear-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mseep/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mseep/verodat-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@muhammadmustafa18/whatsapp-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@mulesoft/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@my-mcp-hub/node-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@myspec/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@naganpm/snowflake-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nahisaho/musubix-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nano-rs/investigator-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@negokaz/excel-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@neiltron/apple-health-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nekzus/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@netanel89/cpa-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@neubirdai/mcp-server-neubird",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@neural-ng/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@neuronai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@next-ai-drawio/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@next-wiki/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nexus2520/bitbucket-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nexus2520/jira-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ng-annotate/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nielspeter/sonarlint-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "bash scripts/setup-sonarlint.sh",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@niledatabase/nile-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nilsir/mcp-server-mysql",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nirholas/binance-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nirholas/binance-us-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nirvana-labs/nirvana-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nitish-raj/searxng-mcp-bridge",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nitpicker/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nocobase/plugin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@noditlabs/nodit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@noteplanco/noteplan-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@notionhq/notion-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@npgamedev/godot-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@npm-workflow86/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@nuphus/nuphus-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node bin/check.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@nysds/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@o1-labs/mina-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@obolo/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@octanejs/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@octopusdeploy/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@odyssey365/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ohah/react-native-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@okx_ai/okx-trade-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js || exit 0",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@oliverames/mcp-server-for-ynab",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@oliverames/sprout-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@omnidim-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@omniology/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@omnisocials/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@oneentry/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@onemrvapublic/design-system-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@oneshot-agent/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@onesub/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@oneuptime/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@onloon-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@onozaty/redmine-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@open-loyalty/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@openameba/spindle-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@openbnb/mcp-server-airbnb",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@opendata.cat/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@opengsd/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@opentofu/opentofu-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@opentweet/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@openzeppelin/contracts-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@opsee/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@orderly.network/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@orkesflow/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@orthacms/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@owine/unifi-network-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@owine/unifi-protect-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@paca-ai/paca-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@paddle/paddle-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pandanpc/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node install.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@particlesui/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pasympa/discord-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@patternfly/patternfly-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pdfbroker/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pdfgate/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@peaka/mcp-server-peaka",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@peekview/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@peng-shawn/mermaid-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@perhamm/ssh-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@phantom/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@phaserjs/editor-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@picsha-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pictify/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pinepaper.studio/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ping-identity/davinci-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@piqae/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pir-ahmed-shah/super-productivity-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@piyapat/mssql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@platformos/platformos-mcp-supervisor",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@playcanvas/editor-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@pnp/cli-microsoft365-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@popstas/planfix-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@porkbunllc/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@postman/postman-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "npx only-allow pnpm",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@practicaltools/reddit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@prathamesh0901/zoom-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@preceptai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@prenta/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@presentation-md/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@presto-ai/google-workspace-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@prismism/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@privacyscrubber/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@priventai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@processon/mcp-server-processon-node",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@professional-wiki/mediawiki-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@programcomputer/nasa-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@programinglive/dev-workflow-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node install.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@prohostai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@project-aegis/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@promptx/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@proofslip/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@psi3/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@qase/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@r-huijts/strava-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ractermx/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rad-security/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@radholm/azure-devops-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ragieai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rainsuite/rs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rajsir/mcp-server-terraform",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@raytien/git-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@raytio/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@receiz/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rededis/dataverse-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@redsift/ds-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@regle/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@remembrance-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@remindlo/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@remnux/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@replenishradar/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@repo-prism/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@resourcexjs/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@respira/wordpress-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@retell-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@retrograde-labs/lune-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@richard-stovall/opnsense-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ringpublishing/mui-components-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@roamzy/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rockhopper-co/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rokealvo/jira-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@roomi-fields/notebooklm-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rotifer/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rowai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@roychri/mcp-server-asana",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rsdoctor/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rsksmart/rsk-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rubric-protocol/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ruminaider/newrelic-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@runcycles/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@runpod/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rushdb/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@rustledger/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ryanseaotter/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@saeroon/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@salesforce/b2c-dx-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@salesforce/pwa-kit-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@saltcorn/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sap-ux/fiori-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sap/mdk-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/cleanup-onnx-binaries.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@sargonpiraev/confluence-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/github-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/gitlab-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/google-calendar-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/google-tasks-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/habitify-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/hh-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/jira-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/notion-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sargonpiraev/slack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@scavio/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@schedulala/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@schift-io/ai-memory-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@scratchrun/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@search-docs/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@seed-design/docs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@segosolutions/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sei-js/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@selfhost.dev/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sentry/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@serdnaley/metabase-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@serverless-dna/mkdocs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sharedmemory/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@shegerpay/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@shibainu16/bitbucket-dc-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@shopana/novaposhta-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@shopify/dev-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@shrkcrft/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@shuotao/revit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sid7vish/universal-rag-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@siemens/element-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@siemens/ix-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@siemens/ix-mcp-angular",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@siemens/ix-mcp-react",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@siemens/ix-mcp-vue",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@siftable/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sigmacomputing/slack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@signaliz/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@simonecoelhosfo/optimizely-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sisense/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "playwright install chromium",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@skill-hub/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@slidemaster/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@smilechecks/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@socialneuron/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@softeria/ms-365-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@softpulse/pulse-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@solapi/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "test -f dist/bin/postinstall.js && node dist/bin/postinstall.js || echo 'Skipping postinstall in CI/build environment'",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@solumon/mcp-server-confluence",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@some-useful-agents/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@somosocta/tasker-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@soulsketch/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@soumyaprasadrana/maximo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sparkdesk/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@spctre/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@speakai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@splicr/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sshadows/zendesk-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stableops/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stackguide/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stackql/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stackscan/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@staminna/directus-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@steipete/claude-code-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@steipete/macos-automator-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stellarwp/learndash-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stigg/typescript-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@stll/anonymize-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@storylenses/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@structured-world/gitlab-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@studiosignal/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sunra/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@supabase/mcp-server-postgrest",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@supabase/mcp-server-supabase",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@supcon-international/node-red-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@superblocksteam/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@supermodeltools/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sura_ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@surajadsul02/mcp-server-salesforce",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@suthio/redash-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@syke1/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@sylphlab/pdf-reader-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@symbioticsec/symbiotic-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@synapse-network-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@syntalic/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@szjc/szjc-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@taazkareem/clickup-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@taiga-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@takashito/linode-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@takiguchi-yu/google-workspace-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tankpkg/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tanstack/ai-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tapflowio/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tarasrushchak/jira-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@taskade/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tensorfeed/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thalovant/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thecorporation/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@theia/ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thenomadinorbit/vision-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@therealchristhomas/gitlab-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thesvg/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@theupsider/lsp-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thevgergroup/apollo-io-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thinking-models/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@thinkingpatterns/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tiangong-lca/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tigrisdata/tigris-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tim0_12432/hotkeyless-ahk-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@timbreeding/jira-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tiwater/office-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tmegit/figma-developer-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tocharianou/mcp-server-kibana",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tokenlabai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tokst/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tomtom-org/tomtom-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@toolentry.io/toolentry-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tothienbao6a0/figma-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tpsdev-ai/flair-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node -e \"try{const{chmodSync,statSync}=require('fs');for(const p of ['dist/mcp-shim.cjs','dist/index.js','dist/session-start-hook.js','dist/continuity-capture-hook.js']){try{if(statSync(p).isFile()){c",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@tradesearcher/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-admin",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-assessment",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-base",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-consent",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-discovery",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-docs",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-dsr",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-inventory",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-preferences",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transcend-io/mcp-server-workflows",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@translated/lara-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@transloadit/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@treasuredata/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@triplewhale/mcp-server-triplewhale",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trishchuk/antigravity-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trishchuk/codex-mcp-tool",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trishchuk/kimi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trsdn/mistraldocai-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/setup.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@truncus/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trustbaseai/collab-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trustrails/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trycompai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@trylighthouse/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tryparsley/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tsmztech/mcp-server-salesforce",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ttoss/http-server-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ttpears/gitlab-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tuannvm/gemini-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@turbopuffer/turbopuffer-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@tylertech/forge-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@uarlouski/testrail-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ui5/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ulinkly/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@umbraco-cms/create-umbraco-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@unified-product-graph/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@uniformdev/uniform-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@unifuncs/ufn-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@unthread-io/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@upstash/context7-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@upstash/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@utaba/ucm-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@uxpressia/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vallt/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vantagate/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vantagestack/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@variflight-ai/variflight-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vectorize-io/vectorize-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vectros-ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vedalumina/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vendure/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@verifyax/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vibeframe/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vibemap.ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vibesharingapp/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vizejs/musea-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vkhanhqui/figma-mcp-go",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@voltagent/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vorim/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@voteship/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vscode-mcp/vscode-mcp-ipc",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vscode-mcp/vscode-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vunguyen/ado-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vybit/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@vygruppen/spor-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wahlu/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@walletap/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wangshunnn/bilibili-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wasmagent/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wealthville/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@web4w3/msteams-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@web4w3/psql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@webhouse/cms-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@whizbang/docs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@winor30/mcp-server-datadog",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wire-dsl/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wireweave/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wisewandtools/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@withinfocus/statbotics-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@withinfocus/tba-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@withpica/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wordpress/design-system-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@wundervault/mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "chmod +x dist/agent.js dist/index.js 2>/dev/null || true",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@xeroapi/xero-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@xiedada/nodemw-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@xinyuai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@xuandev/atlassian-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@xyd-js/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yawlabs/postgres-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yepcode/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yezack/ssh-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yhy2001/figma-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yjzf/mcp-server-yjzf",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yoda.digital/gitlab-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yoryoboy/bi-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@yyaylt/zhipu-web-search-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@z7589xxz758/slidex-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "playwright install chromium",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "@z_ai/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zeabur/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zencoderai/slack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zeph-to/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zeplin/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zeroheight/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zeromodern/mcp-server-0mod",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@ziggs-ai/ziggs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zihin/mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "@zy_zhou/vps-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "a11y-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "a11y-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "accessflow-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "actual-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "actual-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "admanagekit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "admob-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aem-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ag-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agent-browser-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agent-orchestrator-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agent-recall-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agentation-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agentdrop-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agenthub-multiagent-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agentmail-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "agentphone-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aha-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aipou-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aiquila-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "airbrake-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "airweave-mcp-search",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aistudio-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "al-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aleph-siliconflow-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "alibabacloud-dataworks-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "alibabacloud-devops-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "amcjt-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "android-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "anilist-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "anki-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "anklebreaker-unity-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "anonsec-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "apidog-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "appium-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "appium-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo '📦 Installing Python dependencies...' && (python3 -m pip install -r requirements.txt || echo '⚠️ Python dependencies not installed. Run manually: pip install -r requirements.txt')",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "apple-doc-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "apple-health-mcp-unofficial",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "apple-mail-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "node -e \"const fs=require('fs');const ua=process.env.npm_config_user_agent||'';if(fs.existsSync('.git')&&!ua.startsWith('pnpm')){console.error('\\nThis repo uses pnpm. npm/yarn resolve dependencies off",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "apple-notes-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "node -e \"const fs=require('fs');const ua=process.env.npm_config_user_agent||'';if(fs.existsSync('.git')&&!ua.startsWith('pnpm')){console.error('\\nThis repo uses pnpm. npm/yarn resolve dependencies off",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "appsignal-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "arduino-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "argocd-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "arxiv-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "asianexpats-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ask-experts-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ast-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "astro-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "atest-mcp-server-launcher",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "atlassian-confluence-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "atlassian-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ato-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "auigrid-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "automad-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "autotel-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "aws-s3-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "axe-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "axiom-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "b1-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bachstudio-demo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "backlog-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "preinstall",
+          "body": "npx only-allow pnpm",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "bagos-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bamboo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "better-qdrant-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "binance-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bitbank-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bitbucket-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bitbucket-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bitget-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bitrix24-tasks-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "blender-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "blocklens-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bookstack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "boondmanager-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "boostifai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "box-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "brains-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "brave-real-browser-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "npm run build:all && node scripts/auto-update-deps.js || true",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "brilliant-directories-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bring-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bugsnag-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "buyking-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "bws-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "calendly-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "camoufox-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "canvas-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "cartography-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "cascade-cms-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "casemargin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ccs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "claude-code-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "claude-sessions-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "clawvault-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "clickup-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "cloudinary-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "cls-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "coda-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "code-review-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "codeatlas-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "codeloop-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "codeql-development-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "codex-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "comfyui-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "computer-use-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "concurrent-browser-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "conductor-node-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "confluence-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "connectiq-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "context7-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "converse-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "coolify-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "correctover-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "crawlforge-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo '\nCrawlForge MCP Server installed!\n\nQuick start: run \"npx crawlforge init\" to configure your API key, install skills, and register the MCP server with your AI clients.\nOr run \"npx crawlforge-setu",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "cresva-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "cursor-rules-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo '\nTo use cursor-rules-mcp, add this to your mcp.json file:\n\n\"cursor-rules-mcp\": {\n  \"command\": \"npx\",\n  \"args\": [\n    \"cursor-rules-mcp\"\n  ]\n}\n'",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "d365fo-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dameng-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dameng-mcp-server-x",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dart-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "databricks-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "databricks-mcp-server-linux-amd64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "datadog-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "datadog-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dataforseo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "davinci-resolve-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "deepl-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "deepseek-thinker-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "deepwiki-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "deployhq-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "derived-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dero-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dicomweb-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dida365-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dingtalk-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "discogs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "discord-selfbot-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "docker-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "docusaurus-plugin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dodopayments-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dokploy-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "doktor-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "doubao-vision-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dovetail-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "dubuy-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "duckduckgo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "e-arveldaja-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "eastworld-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "easyeda-copilot-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "easyeda-mcp-pro",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "easyhook-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "efficient-gitlab-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "elasticsearch-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "electron-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ember-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "enhanced-postgres-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "etoro-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "exa-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "excalidraw-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "excalidraw-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "exovault-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "faker-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fal-ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fdic-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "featurebase-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fetcher-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "playwright install chromium",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "fetchpet-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ffmpeg-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "figma-console-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "figma-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "file-rag-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "echo 'Installation completed successfully'",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "fileditor-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "firecrawl-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fireflies-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "firehydrant-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "flora-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "flow-codeblock-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fly-io-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "flycode-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fodda-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "footballbin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "frame0-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fred-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "freee-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "frontrun-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "fsb-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "functype-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gangtise-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "garmin-mcp-unofficial",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gcp-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ge-app-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gemini-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gemini-mcp-tool",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "general-tools-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gezhe-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "github-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "github-mcp-server-js",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gitlab-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gmail-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node install.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "gmail-workspace-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "godot-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gogcli-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gogcli-mcp-classroom",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gogcli-mcp-slides",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gongio-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "good-eggs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "google-calendar-workspace-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "google-flights-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "google-sheets-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "google-tag-manager-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "google-workspace-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gorgias-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gpt-researcher-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "graphlit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "grayboard-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "greptile-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "groq-compound-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gsc-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "guesty-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gumroad-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "gws-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hacktricks-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "haiku-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hana-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "handoff-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "harmonica-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hasura-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hatchbox-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "help-scout-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hevy-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hlims-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "honeybook-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hono-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hostinger-api-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hourei-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "howtocook-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "hubspot-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ibmcloud-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "iconify-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ideablast-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "illustrator-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "imap-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "immensity-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "impact-ui-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "influxdb-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "infranodus-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "intel-asrai-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "interactive-brokers-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ios-simulator-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "iterminal-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jaeger-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jenkins-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jina-ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jira-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jmeter-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "joplin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "js-reverse-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jsdesign-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "json-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jufa-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "jui-tools-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/fetch-definitions.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "junobuild-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kapture-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "karbon-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kimi-code-memory-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kimi-mcp-hub",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kiwoom-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "korea-stock-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "krs-poland-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kubernetes-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kubernetes-mcp-server-darwin-arm64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kubernetes-mcp-server-linux-amd64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kubernetes-mcp-server-linux-arm64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kubernetes-mcp-server-windows-amd64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "kusto-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "langfuse-observability-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "langsmith-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "legalithm-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "lighthouse-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "lighthouse-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "lightrag-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "linkinator-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "linkup-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "local-time-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "loopctl-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "lsp-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "lucid-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mailbots-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "make-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node bin/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "malicious-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "manifold-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mantis-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "margin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "markdownlint-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "markly-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-accessibility-scanner",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-adr-analysis-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-arr-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-atlassian",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-bento-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-bigquery-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-code-graph",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-color-convert",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-deepseek",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-deepwiki",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-echo-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-evals",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-excalidraw-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-fetch-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-ffmpeg",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-figma",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-firebird",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-git",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-google-docs",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-grafana-npx",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-graphql-tools",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-gsheets",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-hacker-news",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-hello-world",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-image",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-jira-stdio",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-lite",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-local-rag",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-mail-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-mailtrap",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-maven-deps",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-node-mssql",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-omnisearch",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-open-library",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-opsgenie",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-rag-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-ripgrep",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-scraper",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-searxng",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-secure-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-sequential-thinking",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-actor-critic-thinking",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-apple-events",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.mjs",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "mcp-server-apple-shortcuts",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-aws",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-axiom",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-code-runner",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-commands",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-dataset",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-docker",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-elevenlabs",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-fear-greed",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-filesystem",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-flomo",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-for-revit",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-framework",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-gemini",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-google-calendar",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-google-search-console",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-google-workspace",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-jira-cloud",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-kubernetes",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-linear",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-lottiefiles",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-madeonsol",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-markview",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "mcp-server-memrise",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-mysql",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-nationalparks",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-neubird",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-onenote",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-peecai",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-perplexity",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-polardb-agentic",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-reddit-ads",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-redmine",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-scf",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-semgrep",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/check-semgrep.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "mcp-server-serper",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-siri-shortcuts",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-slack",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-spec-driven-development",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-sqlite",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-sqlite-npx",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-ssh",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-taskwarrior",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-tempmail",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-theme-parks",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-trello",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-tripit",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-typespec",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-vue-hook-optimizer",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-weread",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-whisper",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-wikipedia",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-yandex-tracker",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-yandex-wiki",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-server-zapsign",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-solarwinds",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-sqlite",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node -e \"console.log('\\nMCP SQLite server installed! Run with: npx mcp-sqlite-server <database-path>')\"",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "mcp-sqlite-tools",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-svelte-docs",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-tenant-isolation",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mcp-testrail",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mealie-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mealie-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mediawiki-mcp-server-olioex",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mega-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "memvid-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mentedb-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mermaid-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "meta-ads-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "miapi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mimo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "minecraft-mcp-rs",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mitmachim-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mneme-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mobai-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mobile-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "momen-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "monarch-money-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "moneybird-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mongodb-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "monobank-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "morphed-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mr-magic-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mssql-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mssql-mcp-node",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mssql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "msteams-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mulesoft-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "my-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mysql-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "mysql-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nan-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nano-banana-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "narrarium-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ncloud-gov-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ncloud-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "news-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "newsnow-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "next-finance-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nextcloud-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nexus-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "node-opcua-modeler-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "node-red-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nory-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "notebooklm-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "notion-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "npm-run-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "npm-search-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "npmplus-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nuxt-mcp-dev",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "nx-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "obs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "obsidian-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ollama-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ollama-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "omnifocus-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "onepassword-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "onestep-puppeteer-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "onshape-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openai-gpt-image-mcp-199bio",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openai-gpt-image-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openai-image-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openai-vision-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openapi-mcp-generator",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openapi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openchrome-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "opencode-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "opengrok-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openregister-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openroad-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/fix-node-pty.cjs",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "openrouter-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openrpc-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "openscad-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "opentakeoff-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "opsgenie-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "oracle-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "orgo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "osint-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "oura-mcp-unofficial",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "outline-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "outpost-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "outx-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pagespeed-insights-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "paput-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "patchright-mcp-jalikey",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "payermax-developer-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pcbway-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "perplexity-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "photopea-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pi-mcp-extension",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pinescript-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pinterest-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "plantuml-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "playwright-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "playwright-parallel-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "playwright-stealth-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "plex-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "podman-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pointsyeah-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "posterly-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "powerplatform-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pptx-viewer-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "proctor-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "prometheus-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "proxmox-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "prts-mcp-ts",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pulsemcp-cms-admin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "pup-recorder-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "puppeteer-mcp-claude",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "puppeteer-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "puppeteer-real-browser-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "qatouch-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "qbittorrent-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "qixin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "questrade-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "quickbooks-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "qwksearch-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rabbitmq-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ralph-hero-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "raveneye-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rclone-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "reactbits-dev-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "real-browser-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "patchright install chromium",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "reclaim-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "reddit-mcp-buddy",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "reddit-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "reelscribe-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "remnote-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "remote-filesystem-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "renovate-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "replicate-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "reqable-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node install.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "rewind-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rhombus-node-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ris-mcp-ts",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rive-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "riveter-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rlm-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rn-debug-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "roam-research-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "rosetta-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "salesforce-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "chmod +x ./build/index.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "samarth-gtm-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sample-aws-pricing-calculator-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "scanpay-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sciverse-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "scopewalker-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "scorecard-ai-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "scrapbox-cosense-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "scrapeless-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "screenpipe-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sdd-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sdl-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.mjs",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "search-console-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "search-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "search1api-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "secondbrainos-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "secufusion-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "semanticscholar-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sensorium-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "senti-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "seo-tools-mcp-metrika",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "seo-tools-mcp-ywm",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "serper-search-scrape-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "shadcn-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "shadcn-ui-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "shopify-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "shopify-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "signalk-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "silicon-flow-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "skillsmp-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "slack-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "slack-mcp-server-linux-amd64",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "slack-workspace-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "slimcontext-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "slite-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "smooth-operator-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "snowflake-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "solr-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "spaces-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sqemo-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "sqlite-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/install-python-deps.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "square-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ssh-agent-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ssh-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ssh-mcp-cli",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "stepfun-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "storybook-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "storybook-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "strava-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "strava-mcp-unofficial",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "substrate-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "supabase-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "super-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "super-productivity-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "superpowers-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "taibu-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tailwindcss-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tapd-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "targetprocess-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tarotoo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tauri-plugin-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tavily-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tdesign-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "teable-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tebra-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "telnyx-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "temporal-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tencent-careers-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "terradeed-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "terraform-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "thebrain-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tianji-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tie-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tiled-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "time-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tiny-http-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tiny-stdio-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tm1-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tmdb-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tmux-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "todoist-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "todoist-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tokportal-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tonyq-mimo-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "touchdesigner-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tradeblocks-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tradingview-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "trello-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "tripo-ai-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "twelvelabs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "twenty-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node -e \"if (process.env.npm_command !== 'exec') { console.log('\\n🎉 Twenty MCP Server installed! Run \\\"twenty-mcp setup\\\" to get started.\\n'); } else { console.log('\\n✨ Running via npx - configuration",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "twist-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ucm-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ue-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "unichat-ts-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "unity-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "unleash-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "unreal-engine-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "unsplash-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "uptybots-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "uuid-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vantage-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "velixar-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vercel-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vercel-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vercel-platform-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "verigent-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vestige-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "vexp-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vision-helper-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vision-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vite-plugin-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "vite-plugin-vue-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "volcengine-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "watsonx-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "webpage-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node -e \"const fs=require('fs');const cp=require('child_process');const dist='dist/scripts/postinstall.js';if(!fs.existsSync(dist)){console.log('Skipping mcp-server postinstall in source workspace (di",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "webpilot-mcp-server",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node scripts/postinstall.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "wechat-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wenlan-mcp",
+      "status": "hooks",
+      "hooks": [
+        {
+          "hook": "postinstall",
+          "body": "node install.js",
+          "ordinary": false
+        }
+      ]
+    },
+    {
+      "name": "whiteboard-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "whoop-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "whoop-mcp-unofficial",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wikipedia-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wikipedia-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wolfpack-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wopee-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "worldbank-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wso2-docs-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "wuying-agentbay-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "x64dbg-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "xcode-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "xcomet-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "xhs-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "yahoo-finance-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "yapi-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "yingdao-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "ynab-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "youtube-data-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "youtube-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "yuandian-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "z-zero-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zd-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zenoti-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zephyr-scale-mcp-server",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zion-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zola-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zotero-mcp",
+      "status": "none",
+      "hooks": []
+    },
+    {
+      "name": "zubeid-youtube-mcp-server",
+      "status": "none",
+      "hooks": []
+    }
+  ]
+}
