@@ -27,43 +27,74 @@
     }
   } catch (e) { /* undici not present; http/https still covered below */ }
 
+  // A CONNECT-tunnelling agent, written inline so no module needs installing.
+  // HTTPS through a forward proxy is NOT an absolute-path GET -- that is the
+  // http-proxy form, and using it for https (the first attempt here) let
+  // https.get sail straight past. https needs: dial the proxy, send
+  // `CONNECT host:port`, wait for `200`, then hand the tunnelled socket up for
+  // TLS. The proxy terminates that TLS with its CA and reads the body.
   try {
-    const { HttpsProxyAgent } = require('https-proxy-agent');
-    const agent = new HttpsProxyAgent(proxy);
-    require('http').globalAgent = agent;
-    require('https').globalAgent = agent;
-  } catch (e) {
-    // No proxy-agent module available. Fall back to routing http/https through
-    // the proxy by rewriting request options to target the proxy host with an
-    // absolute path, which a forward proxy accepts.
+    const net = require('net');
+    const https = require('https');
+    const http = require('http');
     const url = require('url');
     const p = new url.URL(proxy);
-    ['http', 'https'].forEach((mod) => {
-      let m;
-      try { m = require(mod); } catch (e) { return; }
-      const orig = m.request;
-      m.request = function (options, cb) {
-        try {
-          if (typeof options === 'string') options = new url.URL(options);
-          if (options instanceof url.URL) {
-            options = {
-              host: p.hostname, port: p.port,
-              path: options.href,
-              headers: { Host: options.host }
-            };
-          } else if (options && !options._saydo) {
-            const targetHost = options.hostname || options.host;
-            const scheme = mod === 'https' ? 'https' : 'http';
-            options = Object.assign({}, options, {
-              _saydo: true,
-              host: p.hostname, hostname: p.hostname, port: p.port,
-              path: scheme + '://' + targetHost + (options.path || '/'),
-              headers: Object.assign({ Host: targetHost }, options.headers)
-            });
+    const proxyHost = p.hostname;
+    const proxyPort = Number(p.port) || 80;
+
+    class TunnelAgent extends https.Agent {
+      createConnection(options, cb) {
+        const targetHost = options.host || options.hostname;
+        const targetPort = options.port || 443;
+        const sock = net.connect(proxyPort, proxyHost, () => {
+          sock.write(
+            'CONNECT ' + targetHost + ':' + targetPort + ' HTTP/1.1\r\n' +
+            'Host: ' + targetHost + ':' + targetPort + '\r\n\r\n');
+        });
+        let header = '';
+        const onData = (chunk) => {
+          header += chunk.toString('latin1');
+          const end = header.indexOf('\r\n\r\n');
+          if (end === -1) return;
+          sock.removeListener('data', onData);
+          if (!/^HTTP\/1\.[01] 200/.test(header)) {
+            cb(new Error('proxy CONNECT failed: ' + header.slice(0, 40)));
+            sock.destroy();
+            return;
           }
-        } catch (e) { /* leave options as-is */ }
-        return orig.call(this, options, cb);
-      };
-    });
-  }
+          // TLS re-originates on top of the tunnel; the proxy is the peer and
+          // presents a leaf under its CA, which NODE_EXTRA_CA_CERTS trusts.
+          const tls = require('tls').connect({
+            socket: sock, servername: targetHost,
+            ...options
+          }, () => cb(null, tls));
+          tls.on('error', (e) => cb(e));
+        };
+        sock.on('data', onData);
+        sock.on('error', (e) => cb(e));
+        return undefined;
+      }
+    }
+    https.globalAgent = new TunnelAgent();
+
+    // Plain http through a forward proxy IS the absolute-path form.
+    const httpOrig = http.request;
+    http.request = function (options, cb) {
+      try {
+        if (typeof options === 'string') options = new url.URL(options);
+        if (options instanceof url.URL) {
+          const target = options.host;
+          options = { host: proxyHost, port: proxyPort, path: options.href,
+                      headers: { Host: target } };
+        } else if (options && !options._saydo) {
+          const target = options.hostname || options.host;
+          options = Object.assign({}, options, {
+            _saydo: true, host: proxyHost, hostname: proxyHost,
+            port: proxyPort, path: 'http://' + target + (options.path || '/'),
+            headers: Object.assign({ Host: target }, options.headers) });
+        }
+      } catch (e) { /* leave as-is */ }
+      return httpOrig.call(this, options, cb);
+    };
+  } catch (e) { /* http/https interception best-effort */ }
 })();
