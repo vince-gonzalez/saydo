@@ -194,7 +194,7 @@ class Run:
         self.synthetic_credentials = {}
         self.credential_marker = None
         if plan.get("synthesize_credentials"):
-            wanted, values, marker = _probe_credentials(
+            wanted, values, marker = _credentials_for(
                 self, plan, server_python, timeout)
             if values:
                 env.update(values)
@@ -1108,41 +1108,56 @@ def run_determinism(name, plan, server_python, monitor_log):
     return result
 
 
-def _probe_credentials(run, plan, server_python, timeout):
-    """Ask the server what it wants, in its own words, before measuring it.
+def _credentials_for(run, plan, server_python, timeout):
+    """What the software says it needs, read from whatever is already known.
 
-    One short-lived start with no credentials at all. Whatever the tools say
-    when they refuse is the highest-signal source there is, and it costs
-    nothing: the refusal names the variable and usually the shape it expects.
+    The first version of this started a throwaway server to collect refusals.
+    That is the highest-signal source there is -- a refusal names the variable
+    and usually the shape -- and under the container runner it was also a
+    second container per package, sharing a fixed name with the real one. A
+    twenty-package sweep hung for the full hour and produced nothing.
 
-    Nothing here is guessed. If the server names no variable, no variable is
-    set -- spraying an environment with invented names changes behaviour and
-    then reports the result as the program's own.
+    So the live probe is now opt-in and off under a runner that containerises,
+    and the default reads text that already exists: the server's own
+    instructions from the capture, its tool descriptions, and the package
+    description. Those carry most of what a refusal would say -- "requires
+    GITHUB_TOKEN" is usually in the README long before it is in an error --
+    and they cost nothing, cannot hang, and cannot collide.
+
+    Nothing is guessed either way. A server naming no variable gets none.
     """
     import credentials as credentials_mod
 
-    texts = []
-    session = Session(run._command(plan, server_python), env={},
-                      monitor_log=None)
-    try:
-        init = session.initialize()
-        if init.kind != "result":
-            return [], {}, None
-        texts.append((init.value or {}).get("instructions") or "")
-        for tool, args, _det in plan.get("exercise", [])[:8]:
-            out = session.call(tool, args, min(timeout, 20))
-            try:
-                texts.append(json.dumps(out.value)[:4000])
-            except Exception:
-                texts.append(str(out.value)[:4000])
-    except Exception:
-        return [], {}, None
-    finally:
+    texts = list(plan.get("credential_texts") or [])
+
+    live = plan.get("probe_credentials") and not (
+        run.runner and run.runner.enforcement == "contained")
+    if live:
+        session = None
         try:
-            session.close()
+            session = Session(run._command(plan, server_python), env={},
+                              monitor_log=None)
+            init = session.initialize()
+            if init.kind == "result":
+                texts.append((init.value or {}).get("instructions") or "")
+                for tool, args, _det in plan.get("exercise", [])[:8]:
+                    out = session.call(tool, args, min(timeout, 20))
+                    try:
+                        texts.append(json.dumps(out.value)[:4000])
+                    except Exception:
+                        texts.append(str(out.value)[:4000])
         except Exception:
             pass
+        finally:
+            if session is not None:
+                try:
+                    session.close()
+                except Exception:
+                    pass
 
+    texts = [t for t in texts if t]
+    if not texts:
+        return [], {}, None
     wanted = credentials_mod.wanted(*texts)
     if not wanted:
         return [], {}, None
@@ -1494,6 +1509,18 @@ def main():
     if args.credentials:
         plan = dict(plan)
         plan["synthesize_credentials"] = True
+        # The live probe stays on for a local run, where a throwaway start is
+        # cheap and the REFUSAL is the only place a required shape is stated
+        # ("your key should start with sk-"). Under a containerising runner it
+        # is skipped -- there it was a second container per package sharing a
+        # fixed name with the real one, and a sweep hung for a full hour.
+        plan["probe_credentials"] = args.runner != "container"
+        server_info = capture.get("server") or {}
+        plan["credential_texts"] = [
+            server_info.get("instructions") or "",
+            " ".join((t.get("definition") or {}).get("description") or ""
+                     for t in capture.get("tools", []))[:8000],
+        ]
     import runner as runner_mod
     if args.runner == "container":
         if not args.image:

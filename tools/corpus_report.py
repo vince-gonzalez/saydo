@@ -170,6 +170,28 @@ def write_report(results, batches, out_md):
           "any. Earlier sweeps recorded such runs under whichever package was "
           "asked for, which credited projects with behaviour that was not "
           "theirs.\n")
+    imported = [r for r in results
+                if (r.get("importProbe") or {}).get("imported")]
+    acted_on_import = [r for r in imported
+                       if (r["importProbe"].get("network")
+                           or r["importProbe"].get("subprocess"))]
+    if imported:
+        W("## What happens on import alone\n")
+        W("Separate from anything above. Importing a package runs its module "
+          "body -- no server, no tools, no credential -- and it is what every "
+          "user of that package does. A package that would not start as a "
+          "server is still installed and still imports, so this covers the "
+          "servers the rest of the report could say nothing about.\n")
+        W("| | packages |")
+        W("|---|---|")
+        W("| imported successfully | {} |".format(len(imported)))
+        W("| reached the network or spawned a process on import | {} |"
+          .format(len(acted_on_import)))
+        W("")
+        W("Run with no network at all, so nothing was reached. What is "
+          "recorded is what the package TRIED to do at import, which the "
+          "monitor sees when the call is made.\n")
+
     W("Only the first row supports any claim about behaviour. Most MCP "
       "servers require a credential, and one that declined to run without a "
       "credential has not been shown to be safe -- it has not been shown "

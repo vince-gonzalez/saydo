@@ -46,7 +46,7 @@ concurrency:
 jobs:
   sweep:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 35
     strategy:
       fail-fast: false          # one bad batch must not lose the others
       max-parallel: 4

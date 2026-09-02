@@ -190,6 +190,74 @@ def commands_for(candidate, available=()):
     return tried
 
 
+IMPORT_NET = ("socket.connect", "socket.getaddrinfo", "socket.sendto")
+IMPORT_PROC = ("subprocess.Popen", "os.system", "os.exec", "os.spawn",
+               "os.posix_spawn", "child_process.spawn", "child_process.exec")
+IMPORT_WRITE = ("os.remove", "os.rename", "os.mkdir", "os.truncate",
+                "os.link", "os.symlink", "shutil.copyfile", "shutil.move",
+                "fs.writeFile", "fs.write", "open")
+
+
+def import_names(candidate):
+    """What to import, best guess first. A package need not match its module."""
+    name = candidate["name"]
+    if candidate["registry"] == "npm":
+        return [name]
+    bare = name.split("/")[-1]
+    return [bare.replace("-", "_"), bare.replace("_", "-"), bare]
+
+
+def import_probe(candidate, image, timeout=60):
+    """What a package does when it is merely imported. No driver, no credential.
+
+    This is the largest source of information the sweep was throwing away. A
+    package that will not start as an MCP server was recorded `unstartable`
+    and yielded nothing at all -- seventeen of thirty-six in one corpus. But
+    it is installed, and importing it runs whatever its module body runs,
+    which is a thing every user of that package does and nobody inspects.
+
+    Run with no network whatsoever. The point is not to let it reach anything
+    -- it is to record that it TRIED, which the in-process monitor sees when
+    the call is made, before DNS fails. What it wanted is the finding.
+    """
+    events, tried = [], []
+    for module in import_names(candidate):
+        if candidate["registry"] == "npm":
+            argv = ["node", "-e", "require({!r})".format(module).replace("'", '"')]
+        else:
+            argv = ["python", "-c", "import {}".format(module)]
+        tried.append(" ".join(argv))
+        out = subprocess.run(
+            ["docker", "run", "--rm", "--network", "none", "--read-only",
+             "--tmpfs", "/scratch:rw,noexec,nosuid,size=64m,mode=1777",
+             "-e", "TMPDIR=/scratch", "-e", "HOME=/scratch",
+             "-e", "SAYDO_MONITOR_STDERR=1", "--cap-drop", "ALL",
+             "--security-opt", "no-new-privileges", "--memory", "512m",
+             "--workdir", "/scratch", image] + argv,
+            capture_output=True, text=True, timeout=timeout)
+        found = []
+        for line in (out.stderr or "").splitlines():
+            if line.startswith("@@SAYDO@@ "):
+                try:
+                    found.append(json.loads(line[len("@@SAYDO@@ "):]))
+                except ValueError:
+                    continue
+        events = found
+        # A module that imported cleanly is the one to report. Keep going only
+        # while the name is wrong, which reads as an import error.
+        if out.returncode == 0:
+            return {"module": module, "imported": True,
+                    "network": [e for e in events
+                                if e.get("event") in IMPORT_NET],
+                    "subprocess": [e for e in events
+                                   if e.get("event") in IMPORT_PROC],
+                    "tried": tried}
+    return {"module": None, "imported": False, "network": [], "subprocess": [],
+            "tried": tried,
+            "note": "no module name derived from the package could be "
+                    "imported; nothing was established about it"}
+
+
 def measure(candidate, image, available=(), seq=0, timeout=90):
     """Capture, infer, exercise, classify. Never raises."""
     name = candidate["name"]
@@ -257,6 +325,18 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
         # The probe reads each server's own refusal, learns the variables and
         # shapes it asks for, and supplies well-formed fakes so it ACTS.
         full["synthesize_credentials"] = SYNTHESIZE_CREDENTIALS
+        # Read from text already in hand -- no extra container, nothing that
+        # can hang. The server's own instructions and tool descriptions come
+        # from the capture that just ran, and the package description from the
+        # registry listing. "Requires GITHUB_TOKEN" is usually in the README
+        # long before it appears in an error.
+        server_info = capture.get("server") or {}
+        full["credential_texts"] = [
+            server_info.get("instructions") or "",
+            candidate.get("description") or "",
+            " ".join((t.get("definition") or {}).get("description") or ""
+                     for t in capture.get("tools", []))[:8000],
+        ]
 
         try:
             report = harness.run_conformance(name, full, declaration, capture,
@@ -302,10 +382,29 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
              "evidence": (v.get("evidence") or "")[:220]}
             for v in report["verdicts"]]
         record["enforcement"] = report.get("enforcement")
+        # Also for servers that DID start: import-time behaviour is a
+        # different question from what the tools do when called, and a server
+        # that refuses every call without a credential can still act on
+        # import.
+        try:
+            record["importProbe"] = import_probe(candidate, image)
+        except Exception as exc:
+            record["importProbe"] = {"imported": False,
+                                     "note": "probe failed: {}".format(exc)[:160]}
         return record
 
     record["outcome"] = "unstartable"
     record["error"] = "no conventional launch command produced a tools/list"
+    # It would not start as a server, and it is still installed. Importing it
+    # runs its module body, which is what every user of the package does. This
+    # bucket was the single largest source of nothing in the corpus --
+    # seventeen of thirty-six -- and it costs one container to turn it into
+    # data.
+    try:
+        record["importProbe"] = import_probe(candidate, image)
+    except Exception as exc:
+        record["importProbe"] = {"imported": False,
+                                 "note": "probe failed: {}".format(exc)[:160]}
     # WHY it would not start is the finding. "Unstartable" lumps together a
     # server demanding an API key, a server that crashes, and a launch command
     # we guessed wrong -- three very different facts about the ecosystem, and
@@ -514,8 +613,8 @@ def main():
     cand_path, index, size, out_path = (argv[0], int(argv[1]),
                                         int(argv[2]), argv[3])
     if SYNTHESIZE_CREDENTIALS:
-        print("credentials: probing each server for the variables it asks "
-              "for and supplying well-formed fakes")
+        print("credentials: reading each server's own instructions and "
+              "description for the variables it asks for", flush=True)
     with open(cand_path, encoding="utf-8") as fh:
         candidates = json.load(fh)["candidates"]
     batch = batch_of(candidates, index, size)
@@ -525,7 +624,7 @@ def main():
         print("batch {}: empty".format(index))
         return
 
-    print("batch {}: {} packages".format(index, len(batch)))
+    print("batch {}: {} packages".format(index, len(batch)), flush=True)
     plans_mod.write_fixtures()
     tmp = tempfile.mkdtemp()
     images = write_dockerfiles(batch, tmp)
@@ -559,7 +658,8 @@ def main():
         # The reason is printed, not just the outcome: a sweep whose failures
         # are invisible in the log cannot be debugged from the log.
         why = (r.get("error") or "").replace("\n", " ")[-120:]
-        print("  {:<40} {:<14} {}".format(c["name"][:40], r.get("outcome"), why))
+        print("  {:<40} {:<14} {}".format(c["name"][:40], r.get("outcome"), why),
+              flush=True)
 
     disowned = disown_collisions(results)
     for name, twins in disowned:
