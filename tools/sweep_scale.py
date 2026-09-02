@@ -18,6 +18,7 @@ ecosystem is.
 
 Usage:
     python sweep_scale.py <candidates.json> <batch_index> <batch_size> <out.json>
+                          [--credentials]
 """
 
 from __future__ import annotations
@@ -39,6 +40,11 @@ import harness
 import infer_declaration
 import plans as plans_mod
 import runner as runner_mod
+
+#: Set from the command line. Off by default because it costs one extra
+#: server start per package, and because a run under invented credentials
+#: shows what a server DOES with input, never that its work succeeded.
+SYNTHESIZE_CREDENTIALS = False
 
 PY_IMAGE = "saydo/batch-py:ci"
 NODE_IMAGE = "saydo/batch-node:ci"
@@ -245,6 +251,12 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
              "appliesTo": ["*"]})
         full = plans_mod.synth_plan(capture, argv)
         full["container_argv"] = list(argv)
+        # Almost nothing in this corpus acts without a credential. Thirteen
+        # servers started and thirteen did nothing observable, which was read
+        # as an absence of findings and was really an absence of measurement.
+        # The probe reads each server's own refusal, learns the variables and
+        # shapes it asks for, and supplies well-formed fakes so it ACTS.
+        full["synthesize_credentials"] = SYNTHESIZE_CREDENTIALS
 
         try:
             report = harness.run_conformance(name, full, declaration, capture,
@@ -494,10 +506,16 @@ def disown_collisions(results):
 
 
 def main():
-    if len(sys.argv) != 5:
+    global SYNTHESIZE_CREDENTIALS
+    argv = [a for a in sys.argv[1:] if a != "--credentials"]
+    SYNTHESIZE_CREDENTIALS = "--credentials" in sys.argv[1:]
+    if len(argv) != 4:
         raise SystemExit(__doc__)
-    cand_path, index, size, out_path = (sys.argv[1], int(sys.argv[2]),
-                                        int(sys.argv[3]), sys.argv[4])
+    cand_path, index, size, out_path = (argv[0], int(argv[1]),
+                                        int(argv[2]), argv[3])
+    if SYNTHESIZE_CREDENTIALS:
+        print("credentials: probing each server for the variables it asks "
+              "for and supplying well-formed fakes")
     with open(cand_path, encoding="utf-8") as fh:
         candidates = json.load(fh)["candidates"]
     batch = batch_of(candidates, index, size)

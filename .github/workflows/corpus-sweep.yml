@@ -30,6 +30,9 @@ on:
       offset:
         description: 'Skip this many batches from the start'
         default: '0'
+      credentials:
+        description: 'Supply well-formed fake credentials so gated servers act'
+        default: 'false'
 
 # One sweep at a time, and a second one WAITS rather than replacing the first.
 # Cancelling is right for a correctness check, where only the newest commit's
@@ -80,9 +83,11 @@ jobs:
         run: |
           OFFSET=${{ github.event.inputs.offset }}
           INDEX=$(( ${{ matrix.batch }} + OFFSET ))
+          CREDS=""
+          if [ "${{ github.event.inputs.credentials }}" = "true" ]; then CREDS="--credentials"; fi
           python tools/sweep_scale.py \
             "${{ github.event.inputs.corpus }}" "$INDEX" ${{ github.event.inputs.size }} \
-            "corpus-batch-$INDEX.json"
+            "corpus-batch-$INDEX.json" $CREDS
 
       - name: Keep the results
         if: steps.gate.outputs.run == 'yes'
