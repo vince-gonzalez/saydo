@@ -46,7 +46,7 @@ concurrency:
 jobs:
   sweep:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 30
     strategy:
       fail-fast: false          # one bad batch must not lose the others
       max-parallel: 4
@@ -89,8 +89,11 @@ jobs:
             "${{ github.event.inputs.corpus }}" "$INDEX" ${{ github.event.inputs.size }} \
             "corpus-batch-$INDEX.json" $CREDS
 
+      # always(): a batch that times out has still measured most of its
+      # packages, and the file is rewritten after each one. Uploading only on
+      # success threw all of that away.
       - name: Keep the results
-        if: steps.gate.outputs.run == 'yes'
+        if: always() && steps.gate.outputs.run == 'yes'
         uses: actions/upload-artifact@v4
         with:
           name: corpus-batch-${{ matrix.batch }}

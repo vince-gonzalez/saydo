@@ -28,6 +28,10 @@ import sys
 
 def load_batches(folder):
     results, batches = [], 0
+    if not os.path.isdir(folder):
+        print("no batch directory at {!r}: every sweep job failed or uploaded "
+              "nothing, so there is no corpus to report on".format(folder))
+        return results, batches
     for name in sorted(os.listdir(folder)):
         if not name.endswith(".json"):
             continue

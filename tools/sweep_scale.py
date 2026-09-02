@@ -207,7 +207,7 @@ def import_names(candidate):
     return [bare.replace("-", "_"), bare.replace("_", "-"), bare]
 
 
-def import_probe(candidate, image, timeout=60):
+def import_probe(candidate, image, timeout=12):
     """What a package does when it is merely imported. No driver, no credential.
 
     This is the largest source of information the sweep was throwing away. A
@@ -227,33 +227,48 @@ def import_probe(candidate, image, timeout=60):
         else:
             argv = ["python", "-c", "import {}".format(module)]
         tried.append(" ".join(argv))
-        out = subprocess.run(
-            ["docker", "run", "--rm", "--network", "none", "--read-only",
-             "--tmpfs", "/scratch:rw,noexec,nosuid,size=64m,mode=1777",
-             "-e", "TMPDIR=/scratch", "-e", "HOME=/scratch",
-             "-e", "SAYDO_MONITOR_STDERR=1", "--cap-drop", "ALL",
-             "--security-opt", "no-new-privileges", "--memory", "512m",
-             "--workdir", "/scratch", image] + argv,
-            capture_output=True, text=True, timeout=timeout)
-        found = []
-        for line in (out.stderr or "").splitlines():
+        blocked = False
+        try:
+            out = subprocess.run(
+                ["docker", "run", "--rm", "--network", "none", "--read-only",
+                 "--tmpfs", "/scratch:rw,noexec,nosuid,size=64m,mode=1777",
+                 "-e", "TMPDIR=/scratch", "-e", "HOME=/scratch",
+                 "-e", "SAYDO_MONITOR_STDERR=1", "--cap-drop", "ALL",
+                 "--security-opt", "no-new-privileges", "--memory", "512m",
+                 "--workdir", "/scratch", image] + argv,
+                capture_output=True, text=True, timeout=timeout)
+            stderr, code = out.stderr or "", out.returncode
+        except subprocess.TimeoutExpired as expired:
+            # Importing a server package runs its entry point, which starts
+            # the server and waits on stdin forever. That is the normal case
+            # here, not a failure -- and the module body already ran, so
+            # anything it did on the way to blocking was observed. The partial
+            # stderr is the evidence; throwing it away because the process
+            # outlived a timer would discard the whole point of the probe.
+            raw = expired.stderr or b""
+            stderr = raw.decode("utf-8", "replace") if isinstance(raw, bytes)                 else (raw or "")
+            code, blocked = 0, True
+
+        events = []
+        for line in stderr.splitlines():
             if line.startswith("@@SAYDO@@ "):
                 try:
-                    found.append(json.loads(line[len("@@SAYDO@@ "):]))
+                    events.append(json.loads(line[len("@@SAYDO@@ "):]))
                 except ValueError:
                     continue
-        events = found
-        # A module that imported cleanly is the one to report. Keep going only
-        # while the name is wrong, which reads as an import error.
-        if out.returncode == 0:
-            return {"module": module, "imported": True,
+
+        # Blocking proves the module body ran. So does a clean exit. Either
+        # way this name was the right one, and trying further names would cost
+        # another full timeout for no information.
+        if code == 0 or blocked or events:
+            return {"module": module, "imported": True, "blocked": blocked,
                     "network": [e for e in events
                                 if e.get("event") in IMPORT_NET],
                     "subprocess": [e for e in events
                                    if e.get("event") in IMPORT_PROC],
                     "tried": tried}
-    return {"module": None, "imported": False, "network": [], "subprocess": [],
-            "tried": tried,
+    return {"module": None, "imported": False, "blocked": False,
+            "network": [], "subprocess": [], "tried": tried,
             "note": "no module name derived from the package could be "
                     "imported; nothing was established about it"}
 
@@ -660,6 +675,13 @@ def main():
         why = (r.get("error") or "").replace("\n", " ")[-120:]
         print("  {:<40} {:<14} {}".format(c["name"][:40], r.get("outcome"), why),
               flush=True)
+        # Written after every package, not once at the end. A batch that runs
+        # out of time otherwise loses everything it measured: the last one
+        # spent thirty-five minutes and produced no artifact at all, so there
+        # was nothing to look at and nothing to learn from.
+        with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
+            json.dump({"batch": index, "results": results, "partial": True},
+                      fh, indent=2, ensure_ascii=False)
 
     disowned = disown_collisions(results)
     for name, twins in disowned:
@@ -667,7 +689,8 @@ def main():
             name[:40], "ambiguous", ", ".join(twins)))
 
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump({"batch": index, "results": results}, fh, indent=2,
+        json.dump({"batch": index, "results": results, "partial": False},
+                  fh, indent=2,
                   ensure_ascii=False)
         fh.write("\n")
     print("wrote {} ({} results, {} disowned as ambiguous)"
