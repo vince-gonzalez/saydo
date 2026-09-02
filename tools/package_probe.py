@@ -325,6 +325,51 @@ def check(python=None):
                     "writes a file at import was not caught on {}"
                     .format(channel))
 
+    # 1b. Credential reads: the channel that matters, and the one most
+    #     likely to rot silently, because it depends on the isolated home
+    #     being built AND the baseline signature keeping open events apart.
+    loud2 = probe_import("credreader", python)
+    if loud2["importFailed"]:
+        problems.append("the credential-reading fixture could not be "
+                        "imported, so that channel tested nothing")
+    else:
+        hits = loud2.get("secretReads") or []
+        if not hits:
+            problems.append(
+                "a module that reads ~/.npmrc at import was not caught; the "
+                "path is assembled at runtime, which is exactly the case "
+                "source inspection misses")
+        elif not any("npmrc" in str(h.get("path", "")).lower()
+                     for h in hits):
+            problems.append("a credential read was reported without naming "
+                            "the file it read")
+        for h in hits:
+            if "saydo-home-" not in str(h.get("path", "")):
+                problems.append(
+                    "the fixture read {!r}, which is OUTSIDE the isolated "
+                    "home -- the probe is touching real credential files"
+                    .format(str(h.get("path"))[:60]))
+
+    # 1c. The isolated home must be furnished and self-contained. An empty
+    #     home silently disarms the whole channel: nothing to read means
+    #     nothing detected, and every package looks clean.
+    home = _isolated_home("testmarker")
+    try:
+        for rel in DECOYS:
+            if not os.path.exists(os.path.join(home, *rel.split("/"))):
+                problems.append("decoy {!r} was not planted".format(rel))
+        with open(os.path.join(home, ".npmrc"), encoding="utf-8") as fh:
+            body = fh.read()
+        if "testmarker" not in body:
+            problems.append("a decoy carries no run marker, so a value found "
+                            "in egress could not be tied to the run that "
+                            "planted it")
+        if os.path.realpath(home) == os.path.realpath(
+                os.path.expanduser("~")):
+            problems.append("the isolated home IS the real home")
+    finally:
+        shutil.rmtree(home, ignore_errors=True)
+
     # 2. It must leave a quiet module alone. Every import reads files and
     #    the interpreter does plenty on its own; without baseline subtraction
     #    that noise becomes a finding about every package measured.
