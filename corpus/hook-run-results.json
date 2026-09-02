@@ -1,0 +1,651 @@
+[
+ {
+  "name": "@0xshariq/email-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "npm run build && node postinstall.js"
+ },
+ {
+  "name": "@aashari/mcp-server-atlassian-bitbucket",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.4
+ },
+ {
+  "name": "@aashari/mcp-server-atlassian-confluence",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "@aashari/mcp-server-atlassian-jira",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "@ada-mcp/mcp-server",
+  "outcome": "ran",
+  "hook": "preinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.7
+ },
+ {
+  "name": "@akiojin/unity-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.4
+ },
+ {
+  "name": "@arabold/docs-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo 'Skipping Playwright browser install. See README.md for details.'"
+ },
+ {
+  "name": "@astudioplus/codegraph-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "github.com",
+   "release-assets.githubusercontent.com"
+  ],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 8.2
+ },
+ {
+  "name": "@ceraph/react-native-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "@clawvec/mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo '' && echo '\ud83c\udf89 @clawvec/mcp-server installed!' && echo '\u2192 Register: https://"
+ },
+ {
+  "name": "@commercetools/commerce-mcp",
+  "outcome": "not-node-hook",
+  "hook": "preinstall",
+  "body": "npx only-allow pnpm"
+ },
+ {
+  "name": "@creedspace/mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "@dinanathdash/envault-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "@frihet/mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.4
+ },
+ {
+  "name": "@fyosimi/fv-backlog-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "preinstall",
+  "body": "npx only-allow pnpm"
+ },
+ {
+  "name": "@henkey/postgres-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo 'postgres-mcp-server installed successfully! Run with: npx @henkey/postgres"
+ },
+ {
+  "name": "@icoretech/warden-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.5
+ },
+ {
+  "name": "@isiahw1/mcp-server-bing-webmaster",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.8
+ },
+ {
+  "name": "@jsamuel1/xero-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "npm run build"
+ },
+ {
+  "name": "@kekwanulabs/syncline-mcp-server-go",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.5
+ },
+ {
+  "name": "@last9/mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "github.com",
+   "release-assets.githubusercontent.com"
+  ],
+  "wroteHome": [
+   "C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-home-_4pe6z79\\last9-mcp-server-1788387218764.zip",
+   "C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-home-_4pe6z79\\last9-mcp-server-1788387218764.zip"
+  ],
+  "credentialReads": [],
+  "seconds": 30.9
+ },
+ {
+  "name": "@mapbox/mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "patch-package || (cd ../../.. && node ./node_modules/patch-package/index.js --pa"
+ },
+ {
+  "name": "@mehmetsenol/gorev-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "github.com",
+   "release-assets.githubusercontent.com"
+  ],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 30.7
+ },
+ {
+  "name": "@microsoft/fabric-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "@nielspeter/sonarlint-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "bash scripts/setup-sonarlint.sh"
+ },
+ {
+  "name": "@nuphus/nuphus-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "@okx_ai/okx-trade-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 3.4
+ },
+ {
+  "name": "@pandanpc/mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "cos.pandanpc.com"
+  ],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 1.0
+ },
+ {
+  "name": "@postman/postman-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "preinstall",
+  "body": "npx only-allow pnpm"
+ },
+ {
+  "name": "@programinglive/dev-workflow-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [],
+  "wroteHome": [
+   "C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-home-r8gxh26n\\.state\\workflow-state.json"
+  ],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "@sap/mdk-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "@sisense/mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "playwright install chromium"
+ },
+ {
+  "name": "@solapi/mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "test -f dist/bin/postinstall.js && node dist/bin/postinstall.js || echo 'Skippin"
+ },
+ {
+  "name": "@tpsdev-ai/flair-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "@trsdn/mistraldocai-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "@wundervault/mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "chmod +x dist/agent.js dist/index.js 2>/dev/null || true"
+ },
+ {
+  "name": "@z7589xxz758/slidex-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "playwright install chromium"
+ },
+ {
+  "name": "appium-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo '\ud83d\udce6 Installing Python dependencies...' && (python3 -m pip install -r require"
+ },
+ {
+  "name": "apple-mail-mcp",
+  "outcome": "ran",
+  "hook": "preinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "apple-notes-mcp",
+  "outcome": "ran",
+  "hook": "preinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "arxiv-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 2.2
+ },
+ {
+  "name": "backlog-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "preinstall",
+  "body": "npx only-allow pnpm"
+ },
+ {
+  "name": "brave-real-browser-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "npm run build:all && node scripts/auto-update-deps.js || true"
+ },
+ {
+  "name": "crawlforge-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo '\nCrawlForge MCP Server installed!\n\nQuick start: run \"npx crawlforge init\" "
+ },
+ {
+  "name": "cursor-rules-mcp",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo '\nTo use cursor-rules-mcp, add this to your mcp.json file:\n\n\"cursor-rules-m"
+ },
+ {
+  "name": "discord-selfbot-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 1.3
+ },
+ {
+  "name": "fetcher-mcp",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "playwright install chromium"
+ },
+ {
+  "name": "file-rag-mcp",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "echo 'Installation completed successfully'"
+ },
+ {
+  "name": "gmail-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.4
+ },
+ {
+  "name": "hacktricks-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 11.4
+ },
+ {
+  "name": "jui-tools-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "raw.githubusercontent.com"
+  ],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.7
+ },
+ {
+  "name": "make-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "mcp-server-apple-events",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "mcp-server-markview",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "mcp-server-semgrep",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.4
+ },
+ {
+  "name": "mcp-sqlite",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "openroad-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.2
+ },
+ {
+  "name": "real-browser-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "patchright install chromium"
+ },
+ {
+  "name": "reqable-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "salesforce-mcp-server",
+  "outcome": "not-node-hook",
+  "hook": "postinstall",
+  "body": "chmod +x ./build/index.js"
+ },
+ {
+  "name": "sdl-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 12.6
+ },
+ {
+  "name": "sqlite-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 5.9
+ },
+ {
+  "name": "twenty-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "vestige-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "github.com",
+   "release-assets.githubusercontent.com"
+  ],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 31.4
+ },
+ {
+  "name": "webpage-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "webpilot-mcp-server",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": true,
+  "network": [],
+  "wroteHome": [],
+  "credentialReads": [],
+  "seconds": 0.3
+ },
+ {
+  "name": "wenlan-mcp",
+  "outcome": "ran",
+  "hook": "postinstall",
+  "blocked": false,
+  "selfDisabled": false,
+  "network": [
+   "github.com",
+   "release-assets.githubusercontent.com"
+  ],
+  "wroteHome": [
+   "C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-home-jh5ci_fd\\wenlan-windows-x64.zip",
+   "C:\\Users\\Admin\\AppData\\Local\\Temp\\saydo-home-jh5ci_fd\\wenlan-windows-x64.zip"
+  ],
+  "credentialReads": [],
+  "seconds": 5.5
+ }
+]
