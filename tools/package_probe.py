@@ -44,6 +44,8 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -58,9 +60,92 @@ REACHED_OUT = ("socket.connect", "socket.getaddrinfo", "socket.sendto",
                "subprocess.Popen", "os.system", "os.exec", "os.spawn",
                "os.posix_spawn")
 
+#: Paths whose CONTENTS are credentials. A package reading one of these while
+#: you merely import it is the finding this whole project was looking for, and
+#: it is the thing static analysis is worst at: the path can be assembled at
+#: runtime, read through a native extension, or fetched from a config value,
+#: and source inspection sees none of that. Running the code sees all of it.
+SECRET_PATHS = (
+    ".ssh", "id_rsa", "id_ed25519", "id_ecdsa", "authorized_keys",
+    ".npmrc", ".pypirc", ".netrc", ".git-credentials",
+    ".aws", ".azure", ".kube", "docker/config", "docker\\config",
+    ".gnupg", "keyring", "keychain", "credentials.json",
+    "client_secret", "service-account", "token.json",
+    ".env", "secrets.yaml", "secrets.yml", "cookies.sqlite",
+    "Login Data", "Cookies", "wallet.dat", ".bash_history",
+)
+
+#: Read constantly by ordinary code and never interesting.
+SECRET_NOISE = ("site-packages", "__pycache__", "/lib/", '\\lib\\',
+                "dist-info", "egg-info", "node_modules")
+
+
+def secret_reads(events):
+    """Reads of paths that hold credentials, with the interpreter's own noise
+    removed. Case-insensitive: Windows paths vary and a miss here is a miss of
+    the only channel that matters."""
+    out = []
+    for e in events:
+        if e.get("event") != "open" or e.get("intent") != "read":
+            continue
+        path = str(e.get("path") or "")
+        low = path.lower()
+        if any(n.lower() in low for n in SECRET_NOISE):
+            continue
+        for marker in SECRET_PATHS:
+            if marker.lower() in low:
+                out.append({"path": path, "matched": marker})
+                break
+    return out
+
+
 WROTE = ("os.remove", "os.rename", "os.mkdir", "os.rmdir", "os.truncate",
          "os.link", "os.symlink", "shutil.rmtree", "shutil.copyfile",
          "shutil.move")
+
+
+#: Files planted in the isolated home. Each carries a unique marker, so a
+#: value found later in egress names the run that planted it -- a decoy is a
+#: canary as well as a tripwire.
+#: Files planted in the isolated home, written as LINE LISTS so no escape
+#: sequence appears in this source at all. Each carries a unique marker, so a
+#: value found later in captured egress names the run that planted it -- a
+#: decoy is a canary as well as a tripwire.
+DECOYS = {
+    ".npmrc": ["//registry.npmjs.org/:_authToken=SAYDO-DECOY-{m}"],
+    ".netrc": ["machine example.com login saydo password SAYDO-DECOY-{m}"],
+    ".pypirc": ["[pypi]", "username = __token__",
+                "password = SAYDO-DECOY-{m}"],
+    ".env": ["API_KEY=SAYDO-DECOY-{m}", "DATABASE_URL=postgres://x/y"],
+    ".git-credentials": ["https://saydo:SAYDO-DECOY-{m}@github.com"],
+    ".ssh/id_rsa": ["-----BEGIN OPENSSH PRIVATE KEY-----",
+                    "SAYDO-DECOY-{m}", "-----END OPENSSH PRIVATE KEY-----"],
+    ".aws/credentials": ["[default]",
+                         "aws_secret_access_key = SAYDO-DECOY-{m}"],
+}
+
+
+def _isolated_home(marker):
+    """A throwaway home directory, furnished with decoy credentials.
+
+    Two problems, one answer. Redirecting HOME makes first-run state fresh for
+    anything that initialises in a config or cache directory rather than temp,
+    which a single probe otherwise sees once and never again. And it means the
+    detector never has to read -- or write -- the operator's real credential
+    files to find out whether a package reads credential files.
+
+    The decoys are what a thief would want and are worth nothing. Each carries
+    a marker, so the same value turning up in captured egress is not an
+    inference about intent, it is the file leaving.
+    """
+    root = tempfile.mkdtemp(prefix="saydo-home-")
+    for rel, body in DECOYS.items():
+        path = os.path.join(root, *rel.split("/"))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(chr(10).join(l.format(m=marker) for l in body)
+                     + chr(10))
+    return root
 
 
 def _run_watched(python, code, timeout=120, extra_env=None):
@@ -72,6 +157,23 @@ def _run_watched(python, code, timeout=120, extra_env=None):
     env["PYTHONPATH"] = BOOT + (os.pathsep + prior if prior else "")
     env["SAYDO_MONITOR_LOG"] = log.name
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    # A FRESH temp directory per probe. Dynamic observation sees a one-time
+    # side effect exactly once: adodbapi created a cache directory on its
+    # first import and every run after that found it already there and did
+    # nothing, so the probe reported clean for behaviour it had itself
+    # triggered. Anything a package caches, seeds or drops on first use lands
+    # here, and here is empty every time.
+    scratch = tempfile.mkdtemp(prefix="saydo-probe-")
+    for var in ("TEMP", "TMP", "TMPDIR"):
+        env[var] = scratch
+    # An isolated HOME as well, furnished with decoys. Resetting temp alone
+    # left every package that initialises in a config or cache directory
+    # looking clean on its second run for ever after.
+    home = _isolated_home(secrets.token_hex(4))
+    for var in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA",
+                "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME"):
+        env[var] = home
+    env["HOMEDRIVE"], env["HOMEPATH"] = home[:2], home[2:]
     if extra_env:
         env.update(extra_env)
     try:
@@ -95,12 +197,24 @@ def _run_watched(python, code, timeout=120, extra_env=None):
             os.unlink(log.name)
         except OSError:
             pass
+        shutil.rmtree(scratch, ignore_errors=True)
+        shutil.rmtree(home, ignore_errors=True)
     return events, (proc.stderr or "").strip()[-400:]
 
 
 def _signature(event):
-    """What an event is, ignoring when it happened."""
-    return (event.get("event"), json.dumps(event.get("args"))[:200])
+    """What an event is, ignoring when it happened.
+
+    `open` rows carry `path` and `intent`, never `args`. Keying only on args
+    gave every open in the process the identical signature, so a single open
+    in the baseline subtracted EVERY open the package made -- including a read
+    of ~/.npmrc that the monitor had captured correctly and handed over. The
+    observation was right; the bookkeeping deleted it.
+    """
+    kind = event.get("event")
+    if kind == "open":
+        return (kind, event.get("intent"), str(event.get("path") or "")[:200])
+    return (kind, json.dumps(event.get("args"))[:200])
 
 
 def probe_import(module, python=None, timeout=120):
@@ -122,6 +236,7 @@ def probe_import(module, python=None, timeout=120):
     spawned = [e for e in caused if e.get("event") in REACHED_OUT
                and not e.get("event", "").startswith("socket")]
     wrote = [e for e in caused if e.get("event") in WROTE]
+    secrets = secret_reads(caused)
 
     return {
         "module": module,
@@ -130,6 +245,7 @@ def probe_import(module, python=None, timeout=120):
         "network": [e.get("args") for e in network][:20],
         "subprocess": [e.get("args") for e in spawned][:20],
         "writes": [e.get("args") for e in wrote][:20],
+        "secretReads": secrets[:20],
         "importFailed": bool(stderr and "Error" in stderr),
         "stderr": stderr if stderr else None,
     }
@@ -164,6 +280,13 @@ def verdicts_for(probe):
         "importing it spawned a process: {}".format(probe["subprocess"][:3]))
     add("import.no-writes", probe["writes"],
         "importing it modified files: {}".format(probe["writes"][:3]))
+    # Last because it is the one that matters. A package that reads a
+    # credential file while you merely import it has done the thing every
+    # supply-chain scanner exists to catch, and it did it in a way source
+    # inspection can miss entirely.
+    add("import.no-credential-reads", probe.get("secretReads"),
+        "importing it read credentials: {}".format(
+            [s["path"] for s in (probe.get("secretReads") or [])][:3]))
     return out
 
 
