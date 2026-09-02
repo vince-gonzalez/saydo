@@ -809,7 +809,8 @@ def cmd_selfcheck(args):
     # was, and a package that phones home when you merely import it is a
     # finding about software rather than about one protocol.
     import package_probe as package_probe_mod
-    bad = package_probe_mod.check(python)
+    import install_scripts as install_scripts_mod
+    bad = package_probe_mod.check(python) + install_scripts_mod.check()
     for line in bad:
         print("   " + line)
     if bad:
@@ -818,6 +819,8 @@ def cmd_selfcheck(args):
                          "every package as quiet")
     print("   a module that phones home at import is caught on all three "
           "channels; a quiet one and an unimportable one are not")
+    print("   an install hook running a project script is separated from a "
+          "native module compiling itself")
 
     if not caught:
         raise SystemExit("selfcheck FAILED: the harness did not catch the "

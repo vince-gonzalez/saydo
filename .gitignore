@@ -11,3 +11,6 @@ corpus-batch-*.json
 dist/
 build/
 *.egg-info/
+# Named per-package install-hook rows: regenerate with
+# tools/install_scripts.py rather than publishing a list.
+corpus/install-hooks.json
