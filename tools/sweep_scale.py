@@ -28,6 +28,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -90,7 +91,14 @@ def write_dockerfiles(batch, out_dir):
             fh.write(
                 "FROM node:22-slim\n"
                 "RUN useradd --create-home --uid 10001 saydo\n"
-                "RUN for p in {}; do npm install -g --omit=dev \"$p\" "
+                # ONE npm invocation, not twenty. Installing each package on
+                # its own serialises twenty dependency-tree resolutions and
+                # was taking longer than the whole job budget -- two runs died
+                # inside docker build having measured nothing. The loop stays
+                # as a fallback so one bad package cannot take the batch.
+                "RUN npm install -g --omit=dev --no-audit --no-fund " + specs +
+                " || for p in " + specs + "; do npm install -g --omit=dev "
+                "--no-audit --no-fund \"$p\" "
                 "|| echo \"SAYDO-INSTALL-FAILED $p\"; done\n"
                 # The Node monitor, loaded before the server's own code. Without
                 # it a Node server has no observation channel whatsoever and
@@ -104,10 +112,26 @@ def write_dockerfiles(batch, out_dir):
     return made
 
 
+#: A build must never be able to consume the whole job. This was 1800s --
+#: the same as the batch cap -- so a slow install ate every second and the
+#: run died having measured nothing, twice, printing nothing to say why.
+BUILD_TIMEOUT = 600
+
+
 def build(dockerfile, image):
-    out = subprocess.run(
-        ["docker", "build", "-f", dockerfile, "-t", image, "."],
-        cwd=ROOT, capture_output=True, text=True, timeout=1800)
+    started = time.time()
+    print("   building {} (cap {}s)".format(image, BUILD_TIMEOUT), flush=True)
+    try:
+        out = subprocess.run(
+            ["docker", "build", "-f", dockerfile, "-t", image, "."],
+            cwd=ROOT, capture_output=True, text=True, timeout=BUILD_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        print("   {} did NOT build within {}s".format(image, BUILD_TIMEOUT),
+              flush=True)
+        return False, ("build exceeded {}s; these packages could not be "
+                       "installed in time".format(BUILD_TIMEOUT))
+    print("   {} built in {:.0f}s (ok={})".format(
+        image, time.time() - started, out.returncode == 0), flush=True)
     return out.returncode == 0, (out.stderr or "")[-400:]
 
 
