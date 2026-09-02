@@ -47,6 +47,13 @@ import runner as runner_mod
 #: shows what a server DOES with input, never that its work succeeded.
 SYNTHESIZE_CREDENTIALS = False
 
+#: Off by default, and default means EXACTLY the path that last completed a
+#: sweep. Thirteen runs succeeded through ebe211f; every run after it failed,
+#: because each new capability was stacked on the previous failure instead of
+#: on a green baseline. One variable at a time, or the next failure is
+#: unattributable too.
+PROBE_IMPORTS = False
+
 PY_IMAGE = "saydo/batch-py:ci"
 NODE_IMAGE = "saydo/batch-node:ci"
 
@@ -425,11 +432,12 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
         # different question from what the tools do when called, and a server
         # that refuses every call without a credential can still act on
         # import.
-        try:
-            record["importProbe"] = import_probe(candidate, image)
-        except Exception as exc:
-            record["importProbe"] = {"imported": False,
-                                     "note": "probe failed: {}".format(exc)[:160]}
+        if PROBE_IMPORTS:
+            try:
+                record["importProbe"] = import_probe(candidate, image)
+            except Exception as exc:
+                record["importProbe"] = {"imported": False,
+                                         "note": "probe failed: {}".format(exc)[:160]}
         return record
 
     record["outcome"] = "unstartable"
@@ -439,11 +447,12 @@ def measure(candidate, image, available=(), seq=0, timeout=90):
     # bucket was the single largest source of nothing in the corpus --
     # seventeen of thirty-six -- and it costs one container to turn it into
     # data.
-    try:
-        record["importProbe"] = import_probe(candidate, image)
-    except Exception as exc:
-        record["importProbe"] = {"imported": False,
-                                 "note": "probe failed: {}".format(exc)[:160]}
+    if PROBE_IMPORTS:
+        try:
+            record["importProbe"] = import_probe(candidate, image)
+        except Exception as exc:
+            record["importProbe"] = {"imported": False,
+                                     "note": "probe failed: {}".format(exc)[:160]}
     # WHY it would not start is the finding. "Unstartable" lumps together a
     # server demanding an API key, a server that crashes, and a launch command
     # we guessed wrong -- three very different facts about the ecosystem, and
@@ -644,9 +653,14 @@ def disown_collisions(results):
 
 
 def main():
-    global SYNTHESIZE_CREDENTIALS
-    argv = [a for a in sys.argv[1:] if a != "--credentials"]
+    global SYNTHESIZE_CREDENTIALS, PROBE_IMPORTS
+    flags = ("--credentials", "--import-probe")
+    argv = [a for a in sys.argv[1:] if a not in flags]
     SYNTHESIZE_CREDENTIALS = "--credentials" in sys.argv[1:]
+    PROBE_IMPORTS = "--import-probe" in sys.argv[1:]
+    if PROBE_IMPORTS:
+        print("import probe: on (one extra container per package)",
+              flush=True)
     if len(argv) != 4:
         raise SystemExit(__doc__)
     cand_path, index, size, out_path = (argv[0], int(argv[1]),
