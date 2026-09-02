@@ -126,6 +126,24 @@
       }
     }));
 
+  // READS. The Python hook records every open with an intent; this side had
+  // only ever reported writes, so a Node package reading ~/.npmrc and shipping
+  // it -- the exact supply-chain move -- came back clean. The credential
+  // channel is worthless on Node without this. Read APIs are wrapped to emit
+  // an open with intent 'read'; the probe filters these to credential paths,
+  // so the volume of ordinary reads is a downstream concern, not lost data.
+  ['readFile', 'readFileSync', 'createReadStream'].forEach((m) =>
+    wrap(fs, m, (a) => emit({
+      t: now(), event: 'open', path: text(a[0]), intent: 'read'
+    })));
+
+  ['open', 'openSync'].forEach((m) =>
+    wrap(fs, m, (a) => {
+      if (!openFlagsAreWrite(a[1])) {
+        emit({ t: now(), event: 'open', path: text(a[0]), intent: 'read' });
+      }
+    }));
+
   ['createWriteStream'].forEach((m) =>
     wrap(fs, m, (a) => emit({
       t: now(), event: 'open', path: text(a[0]), intent: 'write'
@@ -154,6 +172,10 @@
     ['writeFile', 'appendFile'].forEach((m) =>
       wrap(fs.promises, m, (a) => emit({
         t: now(), event: 'open', path: text(a[0]), intent: 'write'
+      })));
+    ['readFile'].forEach((m) =>
+      wrap(fs.promises, m, (a) => emit({
+        t: now(), event: 'open', path: text(a[0]), intent: 'read'
       })));
     Object.keys(FS_EVENTS).forEach((m) => {
       if (m.endsWith('Sync')) return;
