@@ -1,0 +1,160 @@
+# Run the 5 install-time fetchers inside the container, where egress that
+# evades a host-side proxy is caught at the network layer.
+#
+# On a host these 5 escape observation: they use https.get or a spawned curl,
+# neither of which honours a same-process proxy (findings/exfil-hooks-host-
+# ceiling.md). The claim SANBOX.md makes is that a container on an --internal
+# network has NO route out except the proxy, so evasion is impossible without
+# the tool's cooperation. This job tests that claim on exactly the 5 packages
+# that evaded, with decoy credentials planted and their markers hunted in every
+# request body the proxy terminates.
+#
+# Deliberately small and bounded. The corpus sweep failed for a week because it
+# was large, silent, and unbounded; this is 5 named packages, each with a hard
+# timeout, output flushed per package, and results uploaded even on failure.
+# It answers one question: does any of the 5, installed inside containment,
+# read a decoy credential and put it on the wire.
+
+name: exfil hooks contained
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Space-separated npm packages (default: the 5 evaders)'
+        default: '@last9/mcp-server wenlan-mcp @mehmetsenol/gorev-mcp-server vestige-mcp-server @pandanpc/mcp-server'
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  contained:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Environment
+        run: |
+          uname -a
+          docker --version
+
+      - name: Build the proxy image
+        run: docker build -f container/Dockerfile.proxy -t saydo/proxy:ci .
+
+      # The same guard the enforcement job uses: a proxy that dies with
+      # inspection on makes every contained run silently unmeasurable, because
+      # a dead proxy and a quiet package produce the same empty log.
+      - name: 'GATE: proxy must start with inspection enabled'
+        run: |
+          MARK="SAYDO-DECOY-gatecheck"
+          docker run -d --name saydo-gate \
+            -e SAYDO_INSPECT=1 -e SAYDO_CANARIES="$MARK" saydo/proxy:ci
+          sleep 4
+          RUNNING=$(docker inspect -f '{{.State.Running}}' saydo-gate || echo false)
+          docker logs saydo-gate 2>&1 | head -10
+          docker rm -f saydo-gate >/dev/null 2>&1 || true
+          [ "$RUNNING" = "true" ] || { echo "::error::proxy died with inspection on"; exit 1; }
+          echo "OK proxy inspects"
+
+      - name: Networks (inside has no route out except the proxy)
+        run: |
+          docker network create --internal saydo-inside
+          docker network create saydo-outside
+
+      - name: Pull the base image before isolation matters
+        run: docker pull node:22-slim
+
+      - name: Install each package inside containment; hunt the decoy on the wire
+        run: |
+          set -u
+          PKGS="${{ github.event.inputs.packages }}"
+          echo "packages: $PKGS"
+          RESULT=exfil-contained-results.txt
+          : > "$RESULT"
+
+          for PKG in $PKGS; do
+            echo "=================================================="
+            echo "PACKAGE: $PKG"
+            MARK="SAYDO-DECOY-$(head -c6 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+
+            # A fresh proxy per package, so a marker can only come from THIS
+            # package's install. Inspection on, this package's marker armed.
+            docker rm -f saydo-proxy >/dev/null 2>&1 || true
+            docker run -d --name saydo-proxy \
+              --network saydo-inside --network-alias saydo-proxy \
+              -e SAYDO_INSPECT=1 -e SAYDO_CANARIES="$MARK" \
+              saydo/proxy:ci
+            docker network connect saydo-outside saydo-proxy
+            sleep 3
+
+            # Extract the proxy's CA and give it to the install container.
+            # Without this, HTTPS inspection means the proxy presents a leaf
+            # under a CA the client does not trust, every install fails on a
+            # cert error, and the result looks like NO-EGRESS -- a false clean.
+            # The proxy publishes its CA base64 on its own logs at startup.
+            CA_B64=$(docker logs saydo-proxy 2>&1 | grep '@@SAYDO-CA@@' | tail -1 | awk '{print $2}')
+            if [ -z "$CA_B64" ]; then
+              echo "::error::proxy published no CA; HTTPS bodies cannot be inspected"; exit 1
+            fi
+            HOME_DIR=$(mktemp -d)
+            echo "$CA_B64" | base64 -d > "$HOME_DIR/ca.pem"
+            echo "    CA extracted: $(wc -c < "$HOME_DIR/ca.pem") bytes"
+
+            # Decoy .npmrc etc. carrying THIS run's marker, mounted as the
+            # container's home. If the marker appears in a request body, the
+            # install read that file and shipped it.
+            printf '//registry.npmjs.org/:_authToken=%s\n' "$MARK" > "$HOME_DIR/.npmrc"
+            printf 'machine example.com login x password %s\n' "$MARK" > "$HOME_DIR/.netrc"
+            printf 'API_KEY=%s\n' "$MARK" > "$HOME_DIR/.env"
+
+            # Install inside saydo-inside: the ONLY route out is the proxy.
+            # https.get, a spawned curl, a native downloader -- all must go
+            # through it or fail. Proxy env is set so cooperative traffic is
+            # inspected; non-cooperative traffic has nowhere else to go.
+            set +e
+            timeout 180 docker run --rm \
+              --network saydo-inside \
+              -e HTTP_PROXY=http://saydo-proxy:8888 \
+              -e HTTPS_PROXY=http://saydo-proxy:8888 \
+              -e npm_config_proxy=http://saydo-proxy:8888 \
+              -e npm_config_https_proxy=http://saydo-proxy:8888 \
+              -e NODE_EXTRA_CA_CERTS=/root/ca.pem \
+              -v "$HOME_DIR":/root \
+              node:22-slim \
+              sh -c "npm config set cafile /root/ca.pem 2>/dev/null; \
+                     npm install --no-audit --no-fund --prefix /tmp/inst '$PKG' 2>&1 | tail -15" \
+              2>&1 | sed 's/^/    [install] /'
+            INSTALL_RC=$?
+            set -e
+
+            sleep 2
+            LEAK=$(docker logs saydo-proxy 2>&1 | grep -c "$MARK" || true)
+            HOSTS=$(docker logs saydo-proxy 2>&1 | grep -oE '"host": *"[^"]+"' | sort -u | head -8 | tr '\n' ' ')
+            REFUSED=$(docker logs saydo-proxy 2>&1 | grep -c "proxy.refused" || true)
+
+            docker rm -f saydo-proxy >/dev/null 2>&1 || true
+            rm -rf "$HOME_DIR"
+
+            if [ "$LEAK" -gt 0 ]; then
+              VERDICT="EXFIL — decoy marker appeared in $LEAK request body(ies)"
+            elif [ -n "$HOSTS" ]; then
+              VERDICT="CLEAN — contacted [$HOSTS], no decoy on the wire"
+            else
+              VERDICT="NO-EGRESS — install produced no proxy traffic (rc=$INSTALL_RC)"
+            fi
+            echo "  => $VERDICT (refused: $REFUSED)"
+            printf '%-38s %s\n' "$PKG" "$VERDICT" >> "$RESULT"
+          done
+
+          echo ""
+          echo "================= SUMMARY ================="
+          cat "$RESULT"
+
+      - name: Keep the results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exfil-contained
+          path: exfil-contained-results.txt
