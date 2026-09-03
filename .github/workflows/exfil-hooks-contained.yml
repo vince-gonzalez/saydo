@@ -68,7 +68,11 @@ jobs:
 
       - name: Install each package inside containment; hunt the decoy on the wire
         run: |
-          set -u
+          # No set -e: this loop must survive an install that fails, a grep
+          # that matches nothing, and a root-owned file it cannot delete. Each
+          # of those killed the first attempt after one package. Failures are
+          # handled explicitly per line instead.
+          set +e
           PKGS="${{ github.event.inputs.packages }}"
           echo "packages: $PKGS"
           RESULT=exfil-contained-results.txt
@@ -108,12 +112,16 @@ jobs:
             printf '//registry.npmjs.org/:_authToken=%s\n' "$MARK" > "$HOME_DIR/.npmrc"
             printf 'machine example.com login x password %s\n' "$MARK" > "$HOME_DIR/.netrc"
             printf 'API_KEY=%s\n' "$MARK" > "$HOME_DIR/.env"
+            cp tools/monitor_boot/force_proxy.js "$HOME_DIR/force_proxy.js"
 
             # Install inside saydo-inside: the ONLY route out is the proxy.
-            # https.get, a spawned curl, a native downloader -- all must go
-            # through it or fail. Proxy env is set so cooperative traffic is
-            # inspected; non-cooperative traffic has nowhere else to go.
-            set +e
+            # The first run proved the enforcement half -- @last9's own
+            # download-binary.js used https directly, ignored the proxy, and
+            # was BLOCKED (EAI_AGAIN) because the internal network has no route.
+            # To also OBSERVE what the install does (not just block it), the
+            # postinstall's node is loaded with force_proxy, which routes its
+            # https through the proxy via a CONNECT tunnel. Then the download
+            # succeeds AND every body it sends is inspected for the decoy.
             timeout 180 docker run --rm \
               --network saydo-inside \
               -e HTTP_PROXY=http://saydo-proxy:8888 \
@@ -121,13 +129,14 @@ jobs:
               -e npm_config_proxy=http://saydo-proxy:8888 \
               -e npm_config_https_proxy=http://saydo-proxy:8888 \
               -e NODE_EXTRA_CA_CERTS=/root/ca.pem \
+              -e NODE_OPTIONS=--require=/root/force_proxy.js \
+              -e SAYDO_PROXY=http://saydo-proxy:8888 \
               -v "$HOME_DIR":/root \
               node:22-slim \
               sh -c "npm config set cafile /root/ca.pem 2>/dev/null; \
-                     npm install --no-audit --no-fund --prefix /tmp/inst '$PKG' 2>&1 | tail -15" \
+                     npm install --no-audit --no-fund --prefix /tmp/inst '$PKG' 2>&1 | tail -20" \
               2>&1 | sed 's/^/    [install] /'
-            INSTALL_RC=$?
-            set -e
+            INSTALL_RC=${PIPESTATUS[0]}
 
             sleep 2
             LEAK=$(docker logs saydo-proxy 2>&1 | grep -c "$MARK" || true)
@@ -135,9 +144,13 @@ jobs:
             REFUSED=$(docker logs saydo-proxy 2>&1 | grep -c "proxy.refused" || true)
 
             docker rm -f saydo-proxy >/dev/null 2>&1 || true
-            rm -rf "$HOME_DIR"
+            # The container ran as root and left root-owned npm files in the
+            # mounted home; the runner cannot delete those, and a failed rm
+            # under set -e killed the loop last time. sudo handles it, and a
+            # failure here is not allowed to end the run either.
+            sudo rm -rf "$HOME_DIR" 2>/dev/null || true
 
-            if [ "$LEAK" -gt 0 ]; then
+            if [ "${LEAK:-0}" -gt 0 ]; then
               VERDICT="EXFIL — decoy marker appeared in $LEAK request body(ies)"
             elif [ -n "$HOSTS" ]; then
               VERDICT="CLEAN — contacted [$HOSTS], no decoy on the wire"
